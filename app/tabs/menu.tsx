@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
 
 const CATEGORIES = ['All', 'Starters', 'Mains', 'Sides', 'Drinks', 'Desserts'];
 
 const MENU_ITEMS = [
-  { id: '1', name: 'Grilled Chicken Burger', category: 'Mains', price: 85, emoji: '🍔', description: 'Juicy grilled chicken with fresh lettuce and house sauce' },
-  { id: '2', name: 'Beef Burger', category: 'Mains', price: 90, emoji: '🍔', description: 'Classic beef patty with cheese and pickles' },
-  { id: '3', name: 'Chicken Wings', category: 'Starters', price: 65, emoji: '🍗', description: '6 crispy wings with your choice of sauce' },
-  { id: '4', name: 'Loaded Fries', category: 'Sides', price: 45, emoji: '🍟', description: 'Crispy fries topped with cheese and jalapeños' },
-  { id: '5', name: 'Caesar Salad', category: 'Starters', price: 55, emoji: '🥗', description: 'Fresh romaine, croutons, parmesan and caesar dressing' },
-  { id: '6', name: 'Grilled Steak', category: 'Mains', price: 160, emoji: '🥩', description: '200g sirloin steak cooked to your liking' },
-  { id: '7', name: 'Coca Cola', category: 'Drinks', price: 20, emoji: '🥤', description: '330ml can' },
-  { id: '8', name: 'Chocolate Cake', category: 'Desserts', price: 40, emoji: '🍰', description: 'Rich chocolate cake with cream' },
-  { id: '9', name: 'Onion Rings', category: 'Sides', price: 35, emoji: '🧅', description: 'Golden crispy onion rings' },
-  { id: '10', name: 'Fruit Juice', category: 'Drinks', price: 25, emoji: '🧃', description: 'Fresh orange or apple juice' },
+  { id: '1', name: 'Grilled Chicken Burger', category: 'Mains', price: 85, icon: 'fast-food', description: 'Juicy grilled chicken with fresh lettuce and house sauce' },
+  { id: '2', name: 'Beef Burger', category: 'Mains', price: 90, icon: 'fast-food', description: 'Classic beef patty with cheese and pickles' },
+  { id: '3', name: 'Chicken Wings', category: 'Starters', price: 65, icon: 'restaurant', description: '6 crispy wings with your choice of sauce' },
+  { id: '4', name: 'Loaded Fries', category: 'Sides', price: 45, icon: 'restaurant', description: 'Crispy fries topped with cheese and jalapeños' },
+  { id: '5', name: 'Caesar Salad', category: 'Starters', price: 55, icon: 'leaf', description: 'Fresh romaine, croutons, parmesan and caesar dressing' },
+  { id: '6', name: 'Grilled Steak', category: 'Mains', price: 160, icon: 'restaurant', description: '200g sirloin steak cooked to your liking' },
+  { id: '7', name: 'Coca Cola', category: 'Drinks', price: 20, icon: 'wine', description: '330ml can' },
+  { id: '8', name: 'Chocolate Cake', category: 'Desserts', price: 40, icon: 'cafe', description: 'Rich chocolate cake with cream' },
+  { id: '9', name: 'Onion Rings', category: 'Sides', price: 35, icon: 'restaurant', description: 'Golden crispy onion rings' },
+  { id: '10', name: 'Fruit Juice', category: 'Drinks', price: 25, icon: 'wine', description: 'Fresh orange or apple juice' },
 ];
 
 export default function Menu() {
@@ -32,7 +33,7 @@ export default function Menu() {
 
   return (
     <View style={styles.container}>
-      
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Our Menu</Text>
@@ -41,9 +42,10 @@ export default function Menu() {
 
       {/* Search */}
       <View style={styles.searchWrap}>
+        <Ionicons name="search" size={16} color={Colors.grey} style={styles.searchIcon} />
         <TextInput
           style={styles.search}
-          placeholder="🔍  Search menu..."
+          placeholder="Search menu..."
           placeholderTextColor={Colors.grey}
           value={search}
           onChangeText={setSearch}
@@ -67,8 +69,8 @@ export default function Menu() {
       <ScrollView style={styles.list} contentContainerStyle={{ padding: 20, paddingTop: 8 }}>
         {filtered.map(item => (
           <View key={item.id} style={styles.card}>
-            <View style={styles.cardEmoji}>
-              <Text style={styles.emoji}>{item.emoji}</Text>
+            <View style={styles.cardIcon}>
+              <Ionicons name={item.icon as any} size={32} color={Colors.pink} />
             </View>
             <View style={styles.cardInfo}>
               <Text style={styles.itemName}>{item.name}</Text>
@@ -79,7 +81,12 @@ export default function Menu() {
                   style={[styles.addBtn, cart.includes(item.id) && styles.addBtnDone]}
                   onPress={() => addToCart(item.id)}
                 >
-                  <Text style={styles.addBtnText}>{cart.includes(item.id) ? '✓ Added' : '+ Add'}</Text>
+                  <Ionicons
+                    name={cart.includes(item.id) ? 'checkmark' : 'add'}
+                    size={16}
+                    color={Colors.black}
+                  />
+                  <Text style={styles.addBtnText}>{cart.includes(item.id) ? 'Added' : 'Add'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -92,11 +99,12 @@ export default function Menu() {
 
 const styles = StyleSheet.create({
   container:      { flex: 1, backgroundColor: Colors.white },
-  header:         { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16, backgroundColor: Colors.white },
+  header:         { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 },
   title:          { fontSize: 28, fontWeight: '800', color: Colors.black },
   subtitle:       { fontSize: 13, color: Colors.grey, marginTop: 2 },
-  searchWrap:     { paddingHorizontal: 20, marginBottom: 12 },
-  search:         { backgroundColor: Colors.lightGrey, borderRadius: 12, padding: 12, fontSize: 15, color: Colors.black },
+  searchWrap:     { flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginBottom: 12, backgroundColor: Colors.lightGrey, borderRadius: 12, paddingHorizontal: 12 },
+  searchIcon:     { marginRight: 8 },
+  search:         { flex: 1, paddingVertical: 12, fontSize: 15, color: Colors.black },
   cats:           { flexGrow: 0, marginBottom: 4 },
   catBtn:         { paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.lightGrey, marginRight: 8 },
   catBtnActive:   { backgroundColor: Colors.pink },
@@ -104,14 +112,13 @@ const styles = StyleSheet.create({
   catTextActive:  { color: Colors.white },
   list:           { flex: 1 },
   card:           { flexDirection: 'row', backgroundColor: Colors.white, borderRadius: 14, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 2, overflow: 'hidden' },
-  cardEmoji:      { width: 90, backgroundColor: Colors.lightGrey, alignItems: 'center', justifyContent: 'center' },
-  emoji:          { fontSize: 36 },
+  cardIcon:       { width: 90, backgroundColor: Colors.lightGrey, alignItems: 'center', justifyContent: 'center' },
   cardInfo:       { flex: 1, padding: 14 },
   itemName:       { fontSize: 15, fontWeight: '700', color: Colors.black, marginBottom: 4 },
   itemDesc:       { fontSize: 12, color: Colors.grey, lineHeight: 18, marginBottom: 10 },
   cardBottom:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   price:          { fontSize: 16, fontWeight: '800', color: Colors.pink },
-  addBtn:         { backgroundColor: Colors.yellow, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 },
+  addBtn:         { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: Colors.yellow, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 },
   addBtnDone:     { backgroundColor: Colors.lightGrey },
   addBtnText:     { fontSize: 13, fontWeight: '700', color: Colors.black },
 });

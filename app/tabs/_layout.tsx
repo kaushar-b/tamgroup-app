@@ -1,15 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { View, Text, StyleSheet } from 'react-native';
-
-function TabIcon({ emoji, label, focused }: { emoji: string; label: string; focused: boolean }) {
-  return (
-    <View style={styles.tabItem}>
-      <Text style={styles.emoji}>{emoji}</Text>
-      <Text style={[styles.label, focused && styles.labelActive]}>{label}</Text>
-    </View>
-  );
-}
+import { Ionicons } from '@expo/vector-icons';
 
 export default function TabsLayout() {
   return (
@@ -21,43 +12,44 @@ export default function TabsLayout() {
           borderTopColor: Colors.border,
           height: 64,
           paddingBottom: 8,
+          paddingTop: 4,
         },
         tabBarActiveTintColor: Colors.pink,
         tabBarInactiveTintColor: Colors.grey,
-        tabBarShowLabel: false,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" label="Home" focused={focused} />,
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="menu"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🍽️" label="Menu" focused={focused} />,
+          tabBarLabel: 'Menu',
+          tabBarIcon: ({ color, size }) => <Ionicons name="restaurant" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="cart"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🛒" label="Cart" focused={focused} />,
+          tabBarLabel: 'Cart',
+          tabBarIcon: ({ color, size }) => <Ionicons name="cart" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="orders"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="📋" label="Orders" focused={focused} />,
+          tabBarLabel: 'Orders',
+          tabBarIcon: ({ color, size }) => <Ionicons name="receipt" size={size} color={color} />,
         }}
       />
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  tabItem:     { alignItems: 'center', justifyContent: 'center', paddingTop: 6 },
-  emoji:       { fontSize: 20 },
-  label:       { fontSize: 10, color: Colors.grey, marginTop: 2 },
-  labelActive: { color: Colors.pink, fontWeight: '600' },
-});

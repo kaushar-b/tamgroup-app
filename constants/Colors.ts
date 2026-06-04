@@ -1,7 +1,7 @@
 export const Colors = {
   pink:       '#FF4164',
-  yellow:     '#FFE14C',
-  red:        '#D7000F',
+  yellow:     '#FFD637',
+  red:        '#A00003',
   white:      '#FFFFFF',
   black:      '#1a1612',
   grey:       '#5c5248',

@@ -38,6 +38,7 @@ function TabsNavigator() {
         tabBarInactiveTintColor: Colors.grey,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarHideOnKeyboard: true,
+        tabBarPressColor: 'transparent',
       }}
     >
       <Tabs.Screen name="index" options={{ tabBarLabel: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />

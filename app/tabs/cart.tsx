@@ -8,11 +8,21 @@ export default function Cart() {
   const { items, addToCart, removeFromCart, clearCart, total } = useCart();
   const router = useRouter();
 
+  const removeAll = (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (item) for (let x = 0; x < item.quantity; x++) removeFromCart(id);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Cart</Text>
-        <Text style={styles.subtitle}>{items.length === 0 ? 'No items yet' : `${items.reduce((s,i)=>s+i.quantity,0)} items`}</Text>
+        <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Ionicons name="home-outline" size={22} color={Colors.black} />
+        </TouchableOpacity>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={styles.title}>Your Cart</Text>
+          <Text style={styles.subtitle}>{items.length === 0 ? 'No items yet' : `${items.reduce((s, i) => s + i.quantity, 0)} items`}</Text>
+        </View>
       </View>
 
       {items.length === 0 ? (
@@ -33,18 +43,15 @@ export default function Cart() {
                 <Text style={styles.itemPrice}>P {item.price}.00 each</Text>
               </View>
               <View style={styles.qtyRow}>
-                <TouchableOpacity style={styles.qtyBtn} onPress={() => removeFromCart(item.id)}>
+                <TouchableOpacity style={styles.qtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
                   <Ionicons name="remove" size={16} color={Colors.black} />
                 </TouchableOpacity>
                 <Text style={styles.qtyText}>{item.quantity}</Text>
-                <TouchableOpacity style={styles.qtyBtn} onPress={() => addToCart(item.id)}>
+                <TouchableOpacity style={styles.qtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
                   <Ionicons name="add" size={16} color={Colors.black} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.binBtn} onPress={() => {
-                const it = items.find(i => i.id === item.id);
-                if (it) for (let x = 0; x < it.quantity; x++) removeFromCart(item.id);
-              }}>
+              <TouchableOpacity style={styles.binBtn} onPress={() => removeAll(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <Ionicons name="trash-outline" size={18} color={Colors.red} />
               </TouchableOpacity>
             </View>
@@ -65,6 +72,7 @@ export default function Cart() {
           style={[styles.checkoutBtn, items.length === 0 && styles.checkoutDisabled]}
           disabled={items.length === 0}
           onPress={() => router.push('/checkout')}
+          hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
         >
           <Ionicons name="card" size={18} color={Colors.black} />
           <Text style={styles.checkoutText}>Proceed to Checkout</Text>
@@ -76,8 +84,8 @@ export default function Cart() {
 
 const styles = StyleSheet.create({
   container:        { flex: 1, backgroundColor: Colors.white },
-  header:           { paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16 },
-  title:            { fontSize: 28, fontWeight: '800', color: Colors.black },
+  header:           { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16 },
+  title:            { fontSize: 26, fontWeight: '800', color: Colors.black },
   subtitle:         { fontSize: 13, color: Colors.grey, marginTop: 2 },
   emptyWrap:        { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyIcon:        { width: 96, height: 96, borderRadius: 48, backgroundColor: Colors.lightGrey, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
@@ -90,7 +98,7 @@ const styles = StyleSheet.create({
   itemName:         { fontSize: 14, fontWeight: '700', color: Colors.black },
   itemPrice:        { fontSize: 12, color: Colors.grey, marginTop: 2 },
   qtyRow:           { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: Colors.lightGrey, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, marginRight: 10 },
-  qtyBtn:           { padding: 2 },
+  qtyBtn:           { padding: 3 },
   qtyText:          { fontSize: 14, fontWeight: '800', color: Colors.black, minWidth: 18, textAlign: 'center' },
   binBtn:           { padding: 6 },
   clearBtn:         { alignItems: 'center', marginTop: 4 },

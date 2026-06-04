@@ -61,7 +61,7 @@ export default function Home() {
 
         {/* Header */}
         <View style={styles.header}>
-          <Image source={require('../../assets/logo.png.jpeg')} style={styles.logo} resizeMode="contain" />
+          <Image source={require('../../assets/rectangle.png')} style={styles.logo} resizeMode="contain" />
           <View style={{ flex: 1 }} />
           <View style={styles.headerRight}>
             <Text style={styles.greeting}>Hello, {displayName}</Text>

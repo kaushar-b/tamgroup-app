@@ -24,8 +24,10 @@ export default function Checkout() {
     if (!phone.trim()) { Alert.alert('Missing Info', 'Please enter your phone number.'); return; }
     if (orderType === 'delivery' && !address1.trim()) { Alert.alert('Missing Info', 'Please enter your delivery address.'); return; }
     Alert.alert(
-      'Order Placed!',
-      orderType === 'pickup' ? 'Your order will be ready for pick up in about 15 minutes!' : 'Your order is being prepared and will be on its way soon!',
+      orderType === 'pickup' ? 'Order Placed!' : 'Order Placed!',
+      orderType === 'pickup'
+        ? 'Your order will be ready for pick up in about 15 minutes!'
+        : 'Your order is being prepared and will be on its way soon!',
       [{ text: 'OK', onPress: () => { clearCart(); router.replace('/tabs'); } }]
     );
   };
@@ -40,7 +42,7 @@ export default function Checkout() {
           <Text style={styles.title}>Checkout</Text>
         </View>
 
-        <ScrollView style={styles.scroll} contentContainerStyle={{ padding: 20, paddingBottom: 120 }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 120 }}>
           <Text style={styles.sectionLabel}>How would you like your order?</Text>
           <View style={styles.toggleRow}>
             <TouchableOpacity style={[styles.toggleBtn, orderType === 'pickup' && styles.toggleActive]} onPress={() => setOrderType('pickup')}>
@@ -61,11 +63,11 @@ export default function Checkout() {
               <Text style={styles.inputLabel}>Full Name *</Text>
               <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="e.g. John Doe" placeholderTextColor={Colors.grey} />
             </View>
-            <View style={[styles.inputWrap, { borderTopWidth: 1, borderTopColor: Colors.border }]}>
+            <View style={[styles.inputWrap, styles.inputBorder]}>
               <Text style={styles.inputLabel}>Phone Number (Botswana) *</Text>
               <View style={styles.phoneRow}>
                 <View style={styles.phonePrefix}><Text style={styles.phonePrefixText}>🇧🇼 +267</Text></View>
-                <TextInput style={[styles.input, { flex: 1, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }]} value={phone} onChangeText={setPhone} placeholder="71 234 567" placeholderTextColor={Colors.grey} keyboardType="phone-pad" maxLength={9} />
+                <TextInput style={[styles.input, { flex: 1, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, borderLeftWidth: 0 }]} value={phone} onChangeText={setPhone} placeholder="71 234 567" placeholderTextColor={Colors.grey} keyboardType="phone-pad" maxLength={9} />
               </View>
             </View>
           </View>
@@ -78,11 +80,11 @@ export default function Checkout() {
                   <Text style={styles.inputLabel}>Address Line 1 *</Text>
                   <TextInput style={styles.input} value={address1} onChangeText={setAddress1} placeholder="House/Plot No, Street Name" placeholderTextColor={Colors.grey} />
                 </View>
-                <View style={[styles.inputWrap, { borderTopWidth: 1, borderTopColor: Colors.border }]}>
+                <View style={[styles.inputWrap, styles.inputBorder]}>
                   <Text style={styles.inputLabel}>Address Line 2</Text>
                   <TextInput style={styles.input} value={address2} onChangeText={setAddress2} placeholder="Area / Suburb (optional)" placeholderTextColor={Colors.grey} />
                 </View>
-                <View style={[styles.inputWrap, { borderTopWidth: 1, borderTopColor: Colors.border }]}>
+                <View style={[styles.inputWrap, styles.inputBorder]}>
                   <Text style={styles.inputLabel}>City</Text>
                   <TextInput style={styles.input} value={city} onChangeText={setCity} placeholder="e.g. Gaborone" placeholderTextColor={Colors.grey} />
                 </View>
@@ -129,34 +131,34 @@ export default function Checkout() {
 }
 
 const styles = StyleSheet.create({
-  container:         { flex: 1, backgroundColor: Colors.white },
+  container:         { flex: 1, backgroundColor: '#fff' },
   header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12 },
-  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.lightGrey, alignItems: 'center', justifyContent: 'center' },
-  title:             { fontSize: 22, fontWeight: '800', color: Colors.black },
-  scroll:            { flex: 1 },
-  sectionLabel:      { fontSize: 15, fontWeight: '700', color: Colors.black, marginBottom: 12, marginTop: 4 },
+  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' },
+  title:             { fontSize: 22, fontWeight: '800', color: '#1a1612' },
+  sectionLabel:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 12, marginTop: 4 },
   toggleRow:         { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  toggleBtn:         { flex: 1, alignItems: 'center', padding: 18, borderRadius: 16, backgroundColor: Colors.lightGrey, borderWidth: 2, borderColor: 'transparent', gap: 6 },
-  toggleActive:      { backgroundColor: Colors.pink, borderColor: Colors.pink },
-  toggleTitle:       { fontSize: 16, fontWeight: '800', color: Colors.grey },
-  toggleTitleActive: { color: Colors.white },
-  toggleSub:         { fontSize: 12, color: Colors.grey, textAlign: 'center' },
+  toggleBtn:         { flex: 1, alignItems: 'center', padding: 18, borderRadius: 16, backgroundColor: '#f5f5f5', borderWidth: 2, borderColor: 'transparent', gap: 6 },
+  toggleActive:      { backgroundColor: '#FBA4AD', borderColor: '#FBA4AD' },
+  toggleTitle:       { fontSize: 16, fontWeight: '800', color: '#6b6b6b' },
+  toggleTitleActive: { color: '#fff' },
+  toggleSub:         { fontSize: 12, color: '#6b6b6b', textAlign: 'center' },
   toggleSubActive:   { color: 'rgba(255,255,255,0.85)' },
-  inputGroup:        { backgroundColor: Colors.lightGrey, borderRadius: 16, marginBottom: 20, overflow: 'hidden' },
+  inputGroup:        { backgroundColor: '#f5f5f5', borderRadius: 16, marginBottom: 20, overflow: 'hidden' },
   inputWrap:         { padding: 14 },
-  inputLabel:        { fontSize: 12, fontWeight: '600', color: Colors.grey, marginBottom: 8 },
-  input:             { fontSize: 15, color: Colors.black, backgroundColor: Colors.white, borderRadius: 10, padding: 12, borderWidth: 1, borderColor: Colors.border },
+  inputBorder:       { borderTopWidth: 1, borderTopColor: '#efefef' },
+  inputLabel:        { fontSize: 12, fontWeight: '600', color: '#6b6b6b', marginBottom: 8 },
+  input:             { fontSize: 15, color: '#1a1612', backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#efefef' },
   phoneRow:          { flexDirection: 'row' },
-  phonePrefix:       { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
-  phonePrefixText:   { fontSize: 15, fontWeight: '600', color: Colors.black },
-  summaryBox:        { backgroundColor: Colors.lightGrey, borderRadius: 16, padding: 16, marginBottom: 20 },
+  phonePrefix:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#efefef', borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
+  phonePrefixText:   { fontSize: 15, fontWeight: '600', color: '#1a1612' },
+  summaryBox:        { backgroundColor: '#f5f5f5', borderRadius: 16, padding: 16, marginBottom: 20 },
   summaryRow:        { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  summaryItem:       { fontSize: 14, color: Colors.grey },
-  summaryPrice:      { fontSize: 14, fontWeight: '600', color: Colors.black },
-  summaryDivider:    { height: 1, backgroundColor: Colors.border, marginVertical: 6 },
-  summaryTotal:      { fontSize: 16, fontWeight: '800', color: Colors.black },
-  summaryTotalAmt:   { fontSize: 16, fontWeight: '800', color: Colors.pink },
-  footer:            { padding: 20, paddingBottom: 32, borderTopWidth: 1, borderTopColor: Colors.border, backgroundColor: Colors.white },
-  placeBtn:          { backgroundColor: Colors.yellow, borderRadius: 14, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  placeBtnText:      { fontSize: 16, fontWeight: '700', color: Colors.black },
+  summaryItem:       { fontSize: 14, color: '#6b6b6b' },
+  summaryPrice:      { fontSize: 14, fontWeight: '600', color: '#1a1612' },
+  summaryDivider:    { height: 1, backgroundColor: '#efefef', marginVertical: 6 },
+  summaryTotal:      { fontSize: 16, fontWeight: '800', color: '#1a1612' },
+  summaryTotalAmt:   { fontSize: 16, fontWeight: '800', color: '#FBA4AD' },
+  footer:            { padding: 20, paddingBottom: 32, borderTopWidth: 1, borderTopColor: '#efefef', backgroundColor: '#fff' },
+  placeBtn:          { backgroundColor: '#FFDD32', borderRadius: 14, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  placeBtnText:      { fontSize: 16, fontWeight: '700', color: '#1a1612' },
 });

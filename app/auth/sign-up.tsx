@@ -74,13 +74,13 @@ export default function SignUp() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3C3C5', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 },
   logo:      { width: 280, height: 160, marginBottom: 28 },
-  card:      { width: '100%', backgroundColor: '#fff', borderRadius: 20, padding: 24, shadowColor: '#CE6F79', shadowOpacity: 0.15, shadowRadius: 16, elevation: 4 },
+  card:      { width: '100%', backgroundColor: '#fff', borderRadius: 20, padding: 24, shadowColor: '#CE6F79', shadowOpacity: 0.12, shadowRadius: 16, elevation: 4 },
   title:     { fontSize: 24, fontWeight: '700', color: '#1a1612', marginBottom: 4 },
   subtitle:  { fontSize: 14, color: '#6b6b6b', marginBottom: 24 },
   error:     { backgroundColor: '#fff0f0', color: '#D10000', padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 },
-  input:     { borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, padding: 14, fontSize: 15, color: '#1a1612', marginBottom: 14, backgroundColor: '#FDF0F0' },
+  input:     { borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, padding: 14, fontSize: 15, color: '#1a1612', marginBottom: 14, backgroundColor: '#FADAD9' },
   btn:       { backgroundColor: '#FFDD32', borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 4 },
   btnText:   { fontSize: 16, fontWeight: '700', color: '#1a1612' },
   linkWrap:  { marginTop: 20, alignItems: 'center' },

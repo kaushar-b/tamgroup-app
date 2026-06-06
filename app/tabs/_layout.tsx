@@ -3,11 +3,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
 import { View, Text, StyleSheet } from 'react-native';
 
-function CartIcon({ color, size }: { color: string; size: number }) {
+function CartIcon({ size }: { size: number }) {
   const { count } = useCart();
   return (
     <View>
-      <Ionicons name="cart" size={size} color={color} />
+      <Ionicons name="cart" size={size} color="#CE6F79" />
       {count > 0 && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{count > 9 ? '9+' : count}</Text>
@@ -41,13 +41,13 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ tabBarLabel: 'Home', tabBarIcon: ({ size }) => <Ionicons name="home" size={size} color="#CE6F79" /> }} />
       <Tabs.Screen name="menu" options={{ tabBarLabel: 'Menu', tabBarIcon: ({ size }) => <Ionicons name="restaurant" size={size} color="#CE6F79" /> }} />
-      <Tabs.Screen name="cart" options={{ tabBarLabel: 'Cart', tabBarIcon: ({ size }) => <CartIcon color="#CE6F79" size={size} /> }} />
+      <Tabs.Screen name="cart" options={{ tabBarLabel: 'Cart', tabBarIcon: ({ size }) => <CartIcon size={size} /> }} />
       <Tabs.Screen name="orders" options={{ tabBarLabel: 'Orders', tabBarIcon: ({ size }) => <Ionicons name="receipt" size={size} color="#CE6F79" /> }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#CE6F79', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '800' },
+  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#FFDD32', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  badgeText: { color: '#1a1612', fontSize: 10, fontWeight: '800' },
 });

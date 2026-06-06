@@ -58,7 +58,6 @@ export default function Checkout() {
               <Text style={[s.toggleSub, orderType === 'pickup' && s.toggleSubActive]}>Collect from restaurant</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[s.toggleBtn, orderType === 'delivery' && s.toggleActive]} onPress={() => { setOrderType('delivery'); setErrors(e => ({ ...e, orderType: '' })); }}>
-              {/* scooter = car-sport is closest in Ionicons, or use "bicycle" — using "car" as scooter fallback */}
               <Ionicons name="car-sport" size={28} color={orderType === 'delivery' ? '#fff' : '#CE6F79'} />
               <Text style={[s.toggleTitle, orderType === 'delivery' && s.toggleTitleActive]}>Delivery</Text>
               <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P30 delivery fee</Text>
@@ -142,12 +141,12 @@ export default function Checkout() {
 }
 
 const s = StyleSheet.create({
-  container:         { flex: 1, backgroundColor: '#F3C3C5' },
-  header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12, backgroundColor: '#FADAD9' },
-  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F3C3C5', alignItems: 'center', justifyContent: 'center' },
+  container:         { flex: 1, backgroundColor: '#fff' },
+  header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F3C3C5' },
+  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
   title:             { fontSize: 22, fontWeight: '800', color: '#1a1612' },
   sectionLabel:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 8, marginTop: 8 },
-  fieldError:        { fontSize: 12, color: '#D10000', marginBottom: 8, marginTop: -4 },
+  fieldError:        { fontSize: 12, color: '#D10000', marginBottom: 6 },
   toggleRow:         { flexDirection: 'row', gap: 12, marginBottom: 24 },
   toggleBtn:         { flex: 1, alignItems: 'center', padding: 18, borderRadius: 16, backgroundColor: '#FADAD9', borderWidth: 2, borderColor: 'transparent', gap: 6 },
   toggleActive:      { backgroundColor: '#CE6F79', borderColor: '#CE6F79' },
@@ -155,14 +154,14 @@ const s = StyleSheet.create({
   toggleTitleActive: { color: '#fff' },
   toggleSub:         { fontSize: 12, color: '#CE6F79', textAlign: 'center' },
   toggleSubActive:   { color: 'rgba(255,255,255,0.85)' },
-  inputGroup:        { backgroundColor: '#FADAD9', borderRadius: 16, marginBottom: 20, overflow: 'hidden' },
+  inputGroup:        { backgroundColor: '#fff', borderRadius: 16, marginBottom: 20, overflow: 'hidden', borderWidth: 1, borderColor: '#F3C3C5' },
   inputWrap:         { padding: 14 },
   inputBorder:       { borderTopWidth: 1, borderTopColor: '#F3C3C5' },
   inputLabel:        { fontSize: 12, fontWeight: '600', color: '#CE6F79', marginBottom: 8 },
-  input:             { fontSize: 15, color: '#1a1612', backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#F3C3C5' },
+  input:             { fontSize: 15, color: '#1a1612', backgroundColor: '#FADAD9', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#F3C3C5' },
   inputError:        { borderColor: '#D10000' },
   phoneRow:          { flexDirection: 'row' },
-  phonePrefix:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
+  phonePrefix:       { backgroundColor: '#FADAD9', borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
   phonePrefixText:   { fontSize: 15, fontWeight: '600', color: '#1a1612' },
   summaryBox:        { backgroundColor: '#FADAD9', borderRadius: 16, padding: 16, marginBottom: 20 },
   summaryRow:        { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
@@ -171,7 +170,7 @@ const s = StyleSheet.create({
   summaryDivider:    { height: 1, backgroundColor: '#F3C3C5', marginVertical: 6 },
   summaryTotal:      { fontSize: 16, fontWeight: '800', color: '#1a1612' },
   summaryTotalAmt:   { fontSize: 16, fontWeight: '800', color: '#CE6F79' },
-  footer:            { padding: 20, paddingBottom: 36, borderTopWidth: 1, borderTopColor: '#F3C3C5', backgroundColor: '#FADAD9' },
+  footer:            { padding: 20, paddingBottom: 36, borderTopWidth: 1, borderTopColor: '#F3C3C5', backgroundColor: '#fff' },
   placeBtn:          { backgroundColor: '#FFDD32', borderRadius: 14, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   placeBtnText:      { fontSize: 16, fontWeight: '700', color: '#1a1612' },
 });

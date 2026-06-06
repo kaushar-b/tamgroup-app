@@ -6,15 +6,9 @@ import { View, ActivityIndicator } from 'react-native';
 import { CartProvider } from '../context/CartContext';
 
 const tokenCache = {
-  async getToken(key: string) {
-    try { return await SecureStore.getItemAsync(key); } catch { return null; }
-  },
-  async saveToken(key: string, value: string) {
-    try { await SecureStore.setItemAsync(key, value); } catch {}
-  },
-  async clearToken(key: string) {
-    try { await SecureStore.deleteItemAsync(key); } catch {}
-  },
+  getToken: (key: string) => SecureStore.getItemAsync(key),
+  saveToken: (key: string, value: string) => SecureStore.setItemAsync(key, value),
+  deleteToken: (key: string) => SecureStore.deleteItemAsync(key),
 };
 
 function AuthGate() {

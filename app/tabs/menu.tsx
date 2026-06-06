@@ -11,7 +11,6 @@ function ProductModal({ item, onClose }: { item: typeof MENU_ITEMS[0] | null; on
   const { addToCart, removeFromCart, items } = useCart();
   if (!item) return null;
   const qty = items.find(i => i.id === item.id)?.quantity ?? 0;
-
   return (
     <Modal visible={!!item} transparent animationType="slide" onRequestClose={onClose}>
       <View style={modal.backdrop}>
@@ -163,12 +162,12 @@ const modal = StyleSheet.create({
 
 const styles = StyleSheet.create({
   container:     { flex: 1, backgroundColor: '#F3C3C5' },
-  header:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 14, backgroundColor: '#FADAD9' },
+  header:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 14, backgroundColor: '#fff' },
   homeBtn:       { width: 44, height: 44, justifyContent: 'center' },
   headerCenter:  { flex: 1, alignItems: 'center' },
   title:         { fontSize: 22, fontWeight: '800', color: '#1a1612' },
   subtitle:      { fontSize: 11, color: '#CE6F79', marginTop: 1, letterSpacing: 0.5 },
-  searchWrap:    { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 14, marginBottom: 8, backgroundColor: '#FADAD9', borderRadius: 12, paddingHorizontal: 12 },
+  searchWrap:    { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 14, marginBottom: 8, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, borderWidth: 1, borderColor: '#F3C3C5' },
   search:        { flex: 1, paddingVertical: 12, fontSize: 15, color: '#1a1612' },
   cats:          { flexGrow: 0 },
   catBtn:        { paddingHorizontal: 20, paddingVertical: 13, borderRadius: 8, backgroundColor: '#FADAD9', borderWidth: 1, borderColor: '#F3C3C5' },
@@ -176,8 +175,8 @@ const styles = StyleSheet.create({
   catText:       { fontSize: 14, fontWeight: '700', color: '#CE6F79' },
   catTextActive: { color: '#fff' },
   list:          { flex: 1 },
-  card:          { flexDirection: 'row', backgroundColor: '#FADAD9', borderRadius: 14, marginBottom: 12, elevation: 1, borderWidth: 1, borderColor: '#F3C3C5', overflow: 'hidden', height: CARD_H },
-  cardImg:       { width: CARD_H, height: CARD_H, backgroundColor: '#F3C3C5', alignItems: 'center', justifyContent: 'center' },
+  card:          { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, elevation: 1, borderWidth: 1, borderColor: '#F3C3C5', overflow: 'hidden', height: CARD_H },
+  cardImg:       { width: CARD_H, height: CARD_H, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
   cardInfo:      { flex: 1, padding: 12, justifyContent: 'center' },
   itemName:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 4 },
   itemDesc:      { fontSize: 12, color: '#6b6b6b', lineHeight: 17, marginBottom: 10 },

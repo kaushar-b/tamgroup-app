@@ -1,12 +1,11 @@
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 
 const { width: SW } = Dimensions.get('window');
 const SQ = SW - 40;
-
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 const FOOD_SLIDES = [
   { id: '1', label: 'Grilled Chicken' },
@@ -24,14 +23,13 @@ export default function Home() {
   const [showAccount, setShowAccount] = useState(false);
   const heroRef = useRef<FlatList>(null);
   const foodRef = useRef<FlatList>(null);
-
   const initial = (user?.emailAddresses?.[0]?.emailAddress?.[0] || 'U').toUpperCase();
 
   useEffect(() => {
     const t = setInterval(() => {
       setHeroSlide(prev => {
         const next = (prev + 1) % HERO_BG.length;
-        heroRef.current?.scrollToIndex({ index: next, animated: true });
+        try { heroRef.current?.scrollToIndex({ index: next, animated: true }); } catch {}
         return next;
       });
     }, 4300);
@@ -51,9 +49,10 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <ScrollView contentContainerStyle={styles.content} stickyHeaderIndices={[0]}>
 
-        {/* Header */}
+        {/* Header — white, extends to very top */}
         <View style={styles.header}>
           <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
           <View style={{ flex: 1 }} />
@@ -62,13 +61,12 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Hero Slideshow */}
+        {/* Hero */}
         <View style={styles.heroWrap}>
           <FlatList
             ref={heroRef}
             data={HERO_BG}
-            horizontal
-            pagingEnabled
+            horizontal pagingEnabled
             showsHorizontalScrollIndicator={false}
             scrollEnabled={false}
             keyExtractor={(_, i) => String(i)}
@@ -82,9 +80,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
           <View style={styles.dots}>
-            {HERO_BG.map((_, i) => (
-              <View key={i} style={[styles.dot, i === heroSlide && styles.dotActive]} />
-            ))}
+            {HERO_BG.map((_, i) => <View key={i} style={[styles.dot, i === heroSlide && styles.dotActive]} />)}
           </View>
         </View>
 
@@ -105,13 +101,12 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Food Slideshow — SQUARE, AUTO */}
+        {/* Food Slideshow — square, auto */}
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}
             data={FOOD_SLIDES}
-            horizontal
-            pagingEnabled
+            horizontal pagingEnabled
             showsHorizontalScrollIndicator={false}
             keyExtractor={i => i.id}
             renderItem={({ item }) => (
@@ -126,9 +121,7 @@ export default function Home() {
             )}
           />
           <View style={styles.foodDots}>
-            {FOOD_SLIDES.map((_, i) => (
-              <View key={i} style={[styles.foodDot, i === foodSlide && styles.foodDotActive]} />
-            ))}
+            {FOOD_SLIDES.map((_, i) => <View key={i} style={[styles.foodDot, i === foodSlide && styles.foodDotActive]} />)}
           </View>
         </View>
 
@@ -149,7 +142,6 @@ export default function Home() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
-      {/* Account Modal */}
       <Modal visible={showAccount} transparent animationType="slide" onRequestClose={() => setShowAccount(false)}>
         <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setShowAccount(false)} />
         <View style={styles.accountSheet}>
@@ -175,12 +167,12 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  content:         { paddingTop: 52, paddingBottom: 20 },
-  header:          { flexDirection: 'row', alignItems: 'center', paddingLeft: 0, paddingRight: 20, marginBottom: 18, backgroundColor: '#FADAD9', paddingVertical: 10 },
-  logo:            { width: 160, height: 60 },
+  content:         { paddingBottom: 20 },
+  header:          { flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 0, paddingRight: 20, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' },
+  logo:            { width: 180, height: 64 },
   avatarCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
   avatarText:      { fontSize: 18, fontWeight: '800', color: '#fff' },
-  heroWrap:        { marginHorizontal: 20, borderRadius: 18, overflow: 'hidden', marginBottom: 20, height: 200 },
+  heroWrap:        { marginHorizontal: 20, marginTop: 16, borderRadius: 18, overflow: 'hidden', marginBottom: 20, height: 200 },
   heroSlide:       { width: SQ, height: 200 },
   heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.15)' },
   heroTitle:       { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 14, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
@@ -191,7 +183,7 @@ const styles = StyleSheet.create({
   dotActive:       { width: 18, backgroundColor: '#fff' },
   sectionTitle:    { fontSize: 17, fontWeight: '700', color: '#1a1612', marginBottom: 12, paddingHorizontal: 20 },
   actions:         { flexDirection: 'row', gap: 10, marginBottom: 20, paddingHorizontal: 20 },
-  actionCard:      { flex: 1, backgroundColor: '#FADAD9', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 8 },
+  actionCard:      { flex: 1, backgroundColor: '#fff', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 8, elevation: 1, shadowColor: '#CE6F79', shadowOpacity: 0.1, shadowRadius: 4 },
   actionLabel:     { fontSize: 13, fontWeight: '600', color: '#1a1612' },
   foodSlideWrap:   { marginHorizontal: 20, marginBottom: 8, height: SQ, borderRadius: 16, overflow: 'hidden' },
   foodSlide:       { width: SQ, height: SQ },

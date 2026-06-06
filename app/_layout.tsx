@@ -3,6 +3,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { View, ActivityIndicator } from 'react-native';
+import { CartProvider } from '../context/CartContext';
 
 const tokenCache = {
   async getToken(key: string) {
@@ -44,7 +45,9 @@ export default function RootLayout() {
       tokenCache={tokenCache}
     >
       <ClerkLoaded>
-        <AuthGate />
+        <CartProvider>
+          <AuthGate />
+        </CartProvider>
       </ClerkLoaded>
     </ClerkProvider>
   );

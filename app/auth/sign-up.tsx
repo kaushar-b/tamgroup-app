@@ -38,35 +38,33 @@ export default function SignUp() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.logoWrap}>
-        <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-      </View>
-      <View style={styles.card}>
+    <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <Image source={require('../../assets/logo.png')} style={s.logo} resizeMode="contain" />
+      <View style={s.card}>
         {!pendingVerification ? (
           <>
-            <Text style={styles.title}>Create account</Text>
-            <Text style={styles.subtitle}>Sign up to start ordering</Text>
-            {error ? <Text style={styles.error}>{error}</Text> : null}
-            <TextInput style={styles.input} placeholder="Email address" placeholderTextColor="#6b6b6b" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#6b6b6b" value={password} onChangeText={setPassword} secureTextEntry />
-            <TouchableOpacity style={styles.btn} onPress={onSignUp} disabled={loading}>
-              {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={styles.btnText}>Create Account</Text>}
+            <Text style={s.title}>Create account</Text>
+            <Text style={s.subtitle}>Sign up to start ordering</Text>
+            {error ? <Text style={s.error}>{error}</Text> : null}
+            <TextInput style={s.input} placeholder="Email address" placeholderTextColor="#6b6b6b" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+            <TextInput style={s.input} placeholder="Password" placeholderTextColor="#6b6b6b" value={password} onChangeText={setPassword} secureTextEntry />
+            <TouchableOpacity style={s.btn} onPress={onSignUp} disabled={loading}>
+              {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={s.btnText}>Create Account</Text>}
             </TouchableOpacity>
             <Link href="/auth/sign-in" asChild>
-              <TouchableOpacity style={styles.linkWrap}>
-                <Text style={styles.linkText}>Already have an account? <Text style={styles.link}>Sign in</Text></Text>
+              <TouchableOpacity style={s.linkWrap}>
+                <Text style={s.linkText}>Already have an account? <Text style={s.link}>Sign in</Text></Text>
               </TouchableOpacity>
             </Link>
           </>
         ) : (
           <>
-            <Text style={styles.title}>Check your email</Text>
-            <Text style={styles.subtitle}>We sent a verification code to {email}</Text>
-            {error ? <Text style={styles.error}>{error}</Text> : null}
-            <TextInput style={styles.input} placeholder="Verification code" placeholderTextColor="#6b6b6b" value={code} onChangeText={setCode} keyboardType="number-pad" />
-            <TouchableOpacity style={styles.btn} onPress={onVerify} disabled={loading}>
-              {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={styles.btnText}>Verify Email</Text>}
+            <Text style={s.title}>Check your email</Text>
+            <Text style={s.subtitle}>We sent a code to {email}</Text>
+            {error ? <Text style={s.error}>{error}</Text> : null}
+            <TextInput style={s.input} placeholder="Verification code" placeholderTextColor="#6b6b6b" value={code} onChangeText={setCode} keyboardType="number-pad" />
+            <TouchableOpacity style={s.btn} onPress={onVerify} disabled={loading}>
+              {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={s.btnText}>Verify Email</Text>}
             </TouchableOpacity>
           </>
         )}
@@ -75,10 +73,9 @@ export default function SignUp() {
   );
 }
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  logoWrap:  { alignItems: 'center', marginBottom: 36 },
-  logo:      { width: 200, height: 120 },
+  logo:      { width: 240, height: 140, marginBottom: 32 },
   card:      { width: '100%', backgroundColor: '#fff', borderRadius: 16, padding: 24, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, elevation: 3, borderWidth: 1, borderColor: '#efefef' },
   title:     { fontSize: 24, fontWeight: '700', color: '#1a1612', marginBottom: 4 },
   subtitle:  { fontSize: 14, color: '#6b6b6b', marginBottom: 24 },

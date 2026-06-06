@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { CartProvider, useCart } from '../../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import { View, Text, StyleSheet } from 'react-native';
 
 function CartIcon({ color, size }: { color: string; size: number }) {
@@ -18,14 +17,14 @@ function CartIcon({ color, size }: { color: string; size: number }) {
   );
 }
 
-function TabsNavigator() {
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.white,
-          borderTopColor: Colors.border,
+          backgroundColor: '#fff',
+          borderTopColor: '#efefef',
           height: 72,
           paddingBottom: 16,
           paddingTop: 8,
@@ -34,11 +33,10 @@ function TabsNavigator() {
           shadowOpacity: 0.08,
           shadowRadius: 12,
         },
-        tabBarActiveTintColor: Colors.pink,
-        tabBarInactiveTintColor: Colors.grey,
+        tabBarActiveTintColor: '#FBA4AD',
+        tabBarInactiveTintColor: '#6b6b6b',
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarHideOnKeyboard: true,
-        tabBarPressColor: 'transparent',
       }}
     >
       <Tabs.Screen name="index" options={{ tabBarLabel: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
@@ -49,15 +47,7 @@ function TabsNavigator() {
   );
 }
 
-export default function TabsLayout() {
-  return (
-    <CartProvider>
-      <TabsNavigator />
-    </CartProvider>
-  );
-}
-
 const styles = StyleSheet.create({
-  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: Colors.pink, borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#FBA4AD', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   badgeText: { color: '#fff', fontSize: 10, fontWeight: '800' },
 });

@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 
 const CATEGORIES = ['All', 'Starters', 'Mains', 'Sides', 'Drinks', 'Desserts'];
 const { width: SW } = Dimensions.get('window');
-const C = { pink: '#FBA4AD', yellow: '#FFDD32', red: '#D10000', white: '#fff', black: '#1a1612', grey: '#6b6b6b', light: '#f5f5f5', border: '#efefef' };
 
 function ProductModal({ item, onClose }: { item: typeof MENU_ITEMS[0] | null; onClose: () => void }) {
   const { addToCart, removeFromCart, items } = useCart();
@@ -19,14 +18,14 @@ function ProductModal({ item, onClose }: { item: typeof MENU_ITEMS[0] | null; on
         <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
         <View style={modal.sheet}>
           <TouchableOpacity style={modal.closeBtn} onPress={onClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Ionicons name="close" size={20} color={C.black} />
+            <Ionicons name="close" size={20} color="#1a1612" />
           </TouchableOpacity>
-          {/* Full-width square image */}
+          {/* Full-width square image, no side gaps */}
           <View style={modal.imageBox}>
-            <Ionicons name={item.icon as any} size={80} color={C.pink} />
-            <Text style={modal.imagePlaceholder}>Swipe for more images</Text>
+            <Ionicons name={item.icon as any} size={80} color="#FBA4AD" />
+            <Text style={{ fontSize: 11, color: '#aaa', marginTop: 6 }}>Image coming soon</Text>
           </View>
-          <ScrollView style={modal.bodyScroll} contentContainerStyle={modal.body}>
+          <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={modal.body}>
             <Text style={modal.name}>{item.name}</Text>
             <View style={modal.metaRow}>
               <View style={modal.catBadge}><Text style={modal.catBadgeText}>{item.category}</Text></View>
@@ -36,17 +35,17 @@ function ProductModal({ item, onClose }: { item: typeof MENU_ITEMS[0] | null; on
             <Text style={modal.details}>{item.details}</Text>
             {qty === 0 ? (
               <TouchableOpacity style={modal.addBtn} onPress={() => addToCart(item.id)}>
-                <Ionicons name="cart" size={18} color={C.black} />
+                <Ionicons name="cart" size={18} color="#1a1612" />
                 <Text style={modal.addBtnText}>Add to Cart</Text>
               </TouchableOpacity>
             ) : (
               <View style={modal.qtyRow}>
                 <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Ionicons name="remove" size={20} color={C.black} />
+                  <Ionicons name="remove" size={20} color="#1a1612" />
                 </TouchableOpacity>
                 <Text style={modal.qtyText}>{qty} in cart</Text>
                 <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Ionicons name="add" size={20} color={C.black} />
+                  <Ionicons name="add" size={20} color="#1a1612" />
                 </TouchableOpacity>
               </View>
             )}
@@ -77,7 +76,7 @@ export default function Menu() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={styles.homeBtn}>
-          <Ionicons name="home-outline" size={22} color={C.black} />
+          <Ionicons name="home-outline" size={22} color="#1a1612" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.title}>Menu</Text>
@@ -87,13 +86,13 @@ export default function Menu() {
       </View>
 
       <View style={styles.searchWrap}>
-        <Ionicons name="search" size={16} color={C.grey} style={{ marginRight: 8 }} />
-        <TextInput style={styles.search} placeholder="Search menu..." placeholderTextColor={C.grey} value={search} onChangeText={setSearch} />
+        <Ionicons name="search" size={16} color="#6b6b6b" style={{ marginRight: 8 }} />
+        <TextInput style={styles.search} placeholder="Search menu..." placeholderTextColor="#6b6b6b" value={search} onChangeText={setSearch} />
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cats} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, paddingVertical: 6 }}>
         {CATEGORIES.map(cat => (
-          <TouchableOpacity key={cat} style={[styles.catBtn, selected === cat && styles.catBtnActive]} onPress={() => setSelected(cat)} hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}>
+          <TouchableOpacity key={cat} style={[styles.catBtn, selected === cat && styles.catBtnActive]} onPress={() => setSelected(cat)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
             <Text style={[styles.catText, selected === cat && styles.catTextActive]}>{cat}</Text>
           </TouchableOpacity>
         ))}
@@ -104,9 +103,9 @@ export default function Menu() {
           const qty = getQty(item.id);
           return (
             <TouchableOpacity key={item.id} style={styles.card} onPress={() => setActiveItem(item)} activeOpacity={0.75}>
-              {/* Square image on left */}
+              {/* Square image — same height as card, no extra space */}
               <View style={styles.cardImg}>
-                <Ionicons name={item.icon as any} size={30} color={C.pink} />
+                <Ionicons name={item.icon as any} size={34} color="#FBA4AD" />
               </View>
               <View style={styles.cardInfo}>
                 <Text style={styles.itemName}>{item.name}</Text>
@@ -115,17 +114,17 @@ export default function Menu() {
                   <Text style={styles.price}>P {item.price}.00</Text>
                   {qty === 0 ? (
                     <TouchableOpacity style={styles.addBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                      <Ionicons name="add" size={16} color={C.black} />
+                      <Ionicons name="add" size={16} color="#1a1612" />
                       <Text style={styles.addBtnText}>Add</Text>
                     </TouchableOpacity>
                   ) : (
                     <View style={styles.qtyRow}>
                       <TouchableOpacity style={styles.qtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                        <Ionicons name="remove" size={14} color={C.black} />
+                        <Ionicons name="remove" size={14} color="#1a1612" />
                       </TouchableOpacity>
                       <Text style={styles.qtyText}>{qty}</Text>
                       <TouchableOpacity style={styles.qtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                        <Ionicons name="add" size={14} color={C.black} />
+                        <Ionicons name="add" size={14} color="#1a1612" />
                       </TouchableOpacity>
                     </View>
                   )}
@@ -142,28 +141,26 @@ export default function Menu() {
   );
 }
 
-const CARD_IMG = 88;
+const CARD_H = 110;
 
 const modal = StyleSheet.create({
-  backdrop:         { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:            { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '90%' },
-  closeBtn:         { position: 'absolute', top: 14, right: 14, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' },
-  imageBox:         { width: SW, height: SW, backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
-  imagePlaceholder: { fontSize: 12, color: '#aaa', marginTop: 8 },
-  bodyScroll:       { maxHeight: 340 },
-  body:             { padding: 24 },
-  name:             { fontSize: 22, fontWeight: '800', color: '#1a1612', marginBottom: 10 },
-  metaRow:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  catBadge:         { backgroundColor: '#FFF0F3', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6 },
-  catBadgeText:     { fontSize: 12, fontWeight: '600', color: '#FBA4AD' },
-  price:            { fontSize: 22, fontWeight: '800', color: '#FBA4AD' },
-  desc:             { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 10 },
-  details:          { fontSize: 13, color: '#9b9b9b', lineHeight: 20, marginBottom: 24, fontStyle: 'italic' },
-  addBtn:           { backgroundColor: '#FFDD32', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  addBtnText:       { fontSize: 16, fontWeight: '700', color: '#1a1612' },
-  qtyRow:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, backgroundColor: '#f5f5f5', borderRadius: 14, padding: 14 },
-  qtyBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
-  qtyText:          { fontSize: 18, fontWeight: '800', color: '#1a1612' },
+  backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
+  closeBtn:     { position: 'absolute', top: 14, right: 14, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' },
+  imageBox:     { width: SW, height: SW, backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  body:         { padding: 24 },
+  name:         { fontSize: 22, fontWeight: '800', color: '#1a1612', marginBottom: 10 },
+  metaRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  catBadge:     { backgroundColor: '#FFF0F3', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 6 },
+  catBadgeText: { fontSize: 12, fontWeight: '600', color: '#FBA4AD' },
+  price:        { fontSize: 22, fontWeight: '800', color: '#FBA4AD' },
+  desc:         { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 8 },
+  details:      { fontSize: 13, color: '#9b9b9b', lineHeight: 20, marginBottom: 24, fontStyle: 'italic' },
+  addBtn:       { backgroundColor: '#FFDD32', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  addBtnText:   { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, backgroundColor: '#f5f5f5', borderRadius: 14, padding: 14 },
+  qtyBtn:       { width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+  qtyText:      { fontSize: 18, fontWeight: '800', color: '#1a1612' },
 });
 
 const styles = StyleSheet.create({
@@ -172,18 +169,18 @@ const styles = StyleSheet.create({
   homeBtn:       { width: 44, height: 44, justifyContent: 'center' },
   headerCenter:  { flex: 1, alignItems: 'center' },
   title:         { fontSize: 22, fontWeight: '800', color: '#1a1612' },
-  subtitle:      { fontSize: 11, color: '#6b6b6b', marginTop: 1, letterSpacing: 0.3 },
+  subtitle:      { fontSize: 11, color: '#6b6b6b', marginTop: 1, letterSpacing: 0.5 },
   searchWrap:    { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginBottom: 8, backgroundColor: '#f5f5f5', borderRadius: 12, paddingHorizontal: 12 },
   search:        { flex: 1, paddingVertical: 12, fontSize: 15, color: '#1a1612' },
   cats:          { flexGrow: 0 },
-  catBtn:        { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#efefef' },
+  catBtn:        { paddingHorizontal: 20, paddingVertical: 13, borderRadius: 8, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#efefef' },
   catBtnActive:  { backgroundColor: '#FBA4AD', borderColor: '#FBA4AD' },
   catText:       { fontSize: 14, fontWeight: '700', color: '#6b6b6b' },
   catTextActive: { color: '#fff' },
   list:          { flex: 1 },
-  card:          { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2, borderWidth: 1, borderColor: '#efefef', overflow: 'hidden' },
-  cardImg:       { width: CARD_IMG, height: CARD_IMG, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' },
-  cardInfo:      { flex: 1, padding: 12 },
+  card:          { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2, borderWidth: 1, borderColor: '#efefef', overflow: 'hidden', height: CARD_H },
+  cardImg:       { width: CARD_H, height: CARD_H, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' },
+  cardInfo:      { flex: 1, padding: 12, justifyContent: 'center' },
   itemName:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 4 },
   itemDesc:      { fontSize: 12, color: '#6b6b6b', lineHeight: 17, marginBottom: 10 },
   cardBottom:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

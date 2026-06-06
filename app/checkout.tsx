@@ -13,15 +13,23 @@ export default function Checkout() {
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
   const [city, setCity] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const deliveryFee = orderType === 'delivery' ? 30 : 0;
   const grandTotal = total + deliveryFee;
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!orderType) e.orderType = 'Please select Pick Up or Delivery';
+    if (!name.trim()) e.name = 'Full name is required';
+    if (!phone.trim()) e.phone = 'Phone number is required';
+    if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address is required for delivery';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const handlePlaceOrder = () => {
-    if (!orderType) { Alert.alert('Select Order Type', 'Please choose Pickup or Delivery.'); return; }
-    if (!name.trim()) { Alert.alert('Missing Info', 'Please enter your full name.'); return; }
-    if (!phone.trim()) { Alert.alert('Missing Info', 'Please enter your phone number.'); return; }
-    if (orderType === 'delivery' && !address1.trim()) { Alert.alert('Missing Info', 'Please enter your delivery address.'); return; }
+    if (!validate()) return;
     Alert.alert(
       'Order Placed!',
       orderType === 'pickup' ? 'Your order will be ready for pick up in about 15 minutes!' : 'Your order is being prepared and will be on its way soon!',
@@ -40,15 +48,18 @@ export default function Checkout() {
         </View>
 
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 130 }}>
+
           <Text style={s.sectionLabel}>How would you like your order?</Text>
+          {errors.orderType ? <Text style={s.fieldError}>{errors.orderType}</Text> : null}
           <View style={s.toggleRow}>
-            <TouchableOpacity style={[s.toggleBtn, orderType === 'pickup' && s.toggleActive]} onPress={() => setOrderType('pickup')}>
-              <Ionicons name="storefront" size={28} color={orderType === 'pickup' ? '#fff' : '#6b6b6b'} />
+            <TouchableOpacity style={[s.toggleBtn, orderType === 'pickup' && s.toggleActive]} onPress={() => { setOrderType('pickup'); setErrors(e => ({ ...e, orderType: '' })); }}>
+              <Ionicons name="storefront" size={28} color={orderType === 'pickup' ? '#fff' : '#CE6F79'} />
               <Text style={[s.toggleTitle, orderType === 'pickup' && s.toggleTitleActive]}>Pick Up</Text>
               <Text style={[s.toggleSub, orderType === 'pickup' && s.toggleSubActive]}>Collect from restaurant</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[s.toggleBtn, orderType === 'delivery' && s.toggleActive]} onPress={() => setOrderType('delivery')}>
-              <Ionicons name="bicycle" size={28} color={orderType === 'delivery' ? '#fff' : '#6b6b6b'} />
+            <TouchableOpacity style={[s.toggleBtn, orderType === 'delivery' && s.toggleActive]} onPress={() => { setOrderType('delivery'); setErrors(e => ({ ...e, orderType: '' })); }}>
+              {/* scooter = car-sport is closest in Ionicons, or use "bicycle" — using "car" as scooter fallback */}
+              <Ionicons name="car-sport" size={28} color={orderType === 'delivery' ? '#fff' : '#CE6F79'} />
               <Text style={[s.toggleTitle, orderType === 'delivery' && s.toggleTitleActive]}>Delivery</Text>
               <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P30 delivery fee</Text>
             </TouchableOpacity>
@@ -58,14 +69,16 @@ export default function Checkout() {
           <View style={s.inputGroup}>
             <View style={s.inputWrap}>
               <Text style={s.inputLabel}>Full Name *</Text>
-              <TextInput style={s.input} value={name} onChangeText={setName} placeholder="e.g. John Doe" placeholderTextColor="#6b6b6b" />
+              <TextInput style={[s.input, errors.name && s.inputError]} value={name} onChangeText={v => { setName(v); setErrors(e => ({ ...e, name: '' })); }} placeholder="e.g. John Doe" placeholderTextColor="#9b7b7e" />
+              {errors.name ? <Text style={s.fieldError}>{errors.name}</Text> : null}
             </View>
             <View style={[s.inputWrap, s.inputBorder]}>
               <Text style={s.inputLabel}>Phone Number (Botswana) *</Text>
               <View style={s.phoneRow}>
                 <View style={s.phonePrefix}><Text style={s.phonePrefixText}>🇧🇼 +267</Text></View>
-                <TextInput style={[s.input, { flex: 1, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, borderLeftWidth: 0 }]} value={phone} onChangeText={setPhone} placeholder="71 234 567" placeholderTextColor="#6b6b6b" keyboardType="phone-pad" maxLength={9} />
+                <TextInput style={[s.input, { flex: 1, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, borderLeftWidth: 0 }, errors.phone && s.inputError]} value={phone} onChangeText={v => { setPhone(v); setErrors(e => ({ ...e, phone: '' })); }} placeholder="71 234 567" placeholderTextColor="#9b7b7e" keyboardType="phone-pad" maxLength={9} />
               </View>
+              {errors.phone ? <Text style={s.fieldError}>{errors.phone}</Text> : null}
             </View>
           </View>
 
@@ -75,15 +88,16 @@ export default function Checkout() {
               <View style={s.inputGroup}>
                 <View style={s.inputWrap}>
                   <Text style={s.inputLabel}>Address Line 1 *</Text>
-                  <TextInput style={s.input} value={address1} onChangeText={setAddress1} placeholder="House/Plot No, Street Name" placeholderTextColor="#6b6b6b" />
+                  <TextInput style={[s.input, errors.address1 && s.inputError]} value={address1} onChangeText={v => { setAddress1(v); setErrors(e => ({ ...e, address1: '' })); }} placeholder="House/Plot No, Street Name" placeholderTextColor="#9b7b7e" />
+                  {errors.address1 ? <Text style={s.fieldError}>{errors.address1}</Text> : null}
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>
                   <Text style={s.inputLabel}>Address Line 2</Text>
-                  <TextInput style={s.input} value={address2} onChangeText={setAddress2} placeholder="Area / Suburb (optional)" placeholderTextColor="#6b6b6b" />
+                  <TextInput style={s.input} value={address2} onChangeText={setAddress2} placeholder="Area / Suburb (optional)" placeholderTextColor="#9b7b7e" />
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>
                   <Text style={s.inputLabel}>City</Text>
-                  <TextInput style={s.input} value={city} onChangeText={setCity} placeholder="e.g. Gaborone" placeholderTextColor="#6b6b6b" />
+                  <TextInput style={s.input} value={city} onChangeText={setCity} placeholder="e.g. Gaborone" placeholderTextColor="#9b7b7e" />
                 </View>
               </View>
             </>
@@ -128,34 +142,36 @@ export default function Checkout() {
 }
 
 const s = StyleSheet.create({
-  container:         { flex: 1, backgroundColor: '#fff' },
-  header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12 },
-  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' },
+  container:         { flex: 1, backgroundColor: '#F3C3C5' },
+  header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12, backgroundColor: '#FADAD9' },
+  backBtn:           { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F3C3C5', alignItems: 'center', justifyContent: 'center' },
   title:             { fontSize: 22, fontWeight: '800', color: '#1a1612' },
-  sectionLabel:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 12, marginTop: 8 },
+  sectionLabel:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 8, marginTop: 8 },
+  fieldError:        { fontSize: 12, color: '#D10000', marginBottom: 8, marginTop: -4 },
   toggleRow:         { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  toggleBtn:         { flex: 1, alignItems: 'center', padding: 18, borderRadius: 16, backgroundColor: '#f5f5f5', borderWidth: 2, borderColor: 'transparent', gap: 6 },
-  toggleActive:      { backgroundColor: '#FBA4AD', borderColor: '#FBA4AD' },
-  toggleTitle:       { fontSize: 16, fontWeight: '800', color: '#6b6b6b' },
+  toggleBtn:         { flex: 1, alignItems: 'center', padding: 18, borderRadius: 16, backgroundColor: '#FADAD9', borderWidth: 2, borderColor: 'transparent', gap: 6 },
+  toggleActive:      { backgroundColor: '#CE6F79', borderColor: '#CE6F79' },
+  toggleTitle:       { fontSize: 16, fontWeight: '800', color: '#CE6F79' },
   toggleTitleActive: { color: '#fff' },
-  toggleSub:         { fontSize: 12, color: '#6b6b6b', textAlign: 'center' },
+  toggleSub:         { fontSize: 12, color: '#CE6F79', textAlign: 'center' },
   toggleSubActive:   { color: 'rgba(255,255,255,0.85)' },
-  inputGroup:        { backgroundColor: '#f5f5f5', borderRadius: 16, marginBottom: 20, overflow: 'hidden' },
+  inputGroup:        { backgroundColor: '#FADAD9', borderRadius: 16, marginBottom: 20, overflow: 'hidden' },
   inputWrap:         { padding: 14 },
-  inputBorder:       { borderTopWidth: 1, borderTopColor: '#efefef' },
-  inputLabel:        { fontSize: 12, fontWeight: '600', color: '#6b6b6b', marginBottom: 8 },
-  input:             { fontSize: 15, color: '#1a1612', backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#efefef' },
+  inputBorder:       { borderTopWidth: 1, borderTopColor: '#F3C3C5' },
+  inputLabel:        { fontSize: 12, fontWeight: '600', color: '#CE6F79', marginBottom: 8 },
+  input:             { fontSize: 15, color: '#1a1612', backgroundColor: '#fff', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#F3C3C5' },
+  inputError:        { borderColor: '#D10000' },
   phoneRow:          { flexDirection: 'row' },
-  phonePrefix:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#efefef', borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
+  phonePrefix:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, borderTopRightRadius: 0, borderBottomRightRadius: 0, padding: 12, paddingHorizontal: 14, justifyContent: 'center' },
   phonePrefixText:   { fontSize: 15, fontWeight: '600', color: '#1a1612' },
-  summaryBox:        { backgroundColor: '#f5f5f5', borderRadius: 16, padding: 16, marginBottom: 20 },
+  summaryBox:        { backgroundColor: '#FADAD9', borderRadius: 16, padding: 16, marginBottom: 20 },
   summaryRow:        { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
   summaryItem:       { fontSize: 14, color: '#6b6b6b' },
   summaryPrice:      { fontSize: 14, fontWeight: '600', color: '#1a1612' },
-  summaryDivider:    { height: 1, backgroundColor: '#efefef', marginVertical: 6 },
+  summaryDivider:    { height: 1, backgroundColor: '#F3C3C5', marginVertical: 6 },
   summaryTotal:      { fontSize: 16, fontWeight: '800', color: '#1a1612' },
-  summaryTotalAmt:   { fontSize: 16, fontWeight: '800', color: '#FBA4AD' },
-  footer:            { padding: 20, paddingBottom: 36, borderTopWidth: 1, borderTopColor: '#efefef', backgroundColor: '#fff' },
+  summaryTotalAmt:   { fontSize: 16, fontWeight: '800', color: '#CE6F79' },
+  footer:            { padding: 20, paddingBottom: 36, borderTopWidth: 1, borderTopColor: '#F3C3C5', backgroundColor: '#FADAD9' },
   placeBtn:          { backgroundColor: '#FFDD32', borderRadius: 14, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   placeBtnText:      { fontSize: 16, fontWeight: '700', color: '#1a1612' },
 });

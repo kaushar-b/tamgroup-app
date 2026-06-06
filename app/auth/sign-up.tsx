@@ -46,8 +46,8 @@ export default function SignUp() {
             <Text style={s.title}>Create account</Text>
             <Text style={s.subtitle}>Sign up to start ordering</Text>
             {error ? <Text style={s.error}>{error}</Text> : null}
-            <TextInput style={s.input} placeholder="Email address" placeholderTextColor="#6b6b6b" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-            <TextInput style={s.input} placeholder="Password" placeholderTextColor="#6b6b6b" value={password} onChangeText={setPassword} secureTextEntry />
+            <TextInput style={s.input} placeholder="Email address" placeholderTextColor="#9b7b7e" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+            <TextInput style={s.input} placeholder="Password" placeholderTextColor="#9b7b7e" value={password} onChangeText={setPassword} secureTextEntry />
             <TouchableOpacity style={s.btn} onPress={onSignUp} disabled={loading}>
               {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={s.btnText}>Create Account</Text>}
             </TouchableOpacity>
@@ -62,7 +62,7 @@ export default function SignUp() {
             <Text style={s.title}>Check your email</Text>
             <Text style={s.subtitle}>We sent a code to {email}</Text>
             {error ? <Text style={s.error}>{error}</Text> : null}
-            <TextInput style={s.input} placeholder="Verification code" placeholderTextColor="#6b6b6b" value={code} onChangeText={setCode} keyboardType="number-pad" />
+            <TextInput style={s.input} placeholder="Verification code" placeholderTextColor="#9b7b7e" value={code} onChangeText={setCode} keyboardType="number-pad" />
             <TouchableOpacity style={s.btn} onPress={onVerify} disabled={loading}>
               {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={s.btnText}>Verify Email</Text>}
             </TouchableOpacity>
@@ -74,16 +74,16 @@ export default function SignUp() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  logo:      { width: 240, height: 140, marginBottom: 32 },
-  card:      { width: '100%', backgroundColor: '#fff', borderRadius: 16, padding: 24, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, elevation: 3, borderWidth: 1, borderColor: '#efefef' },
+  container: { flex: 1, backgroundColor: '#F3C3C5', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  logo:      { width: 280, height: 160, marginBottom: 28 },
+  card:      { width: '100%', backgroundColor: '#fff', borderRadius: 20, padding: 24, shadowColor: '#CE6F79', shadowOpacity: 0.15, shadowRadius: 16, elevation: 4 },
   title:     { fontSize: 24, fontWeight: '700', color: '#1a1612', marginBottom: 4 },
   subtitle:  { fontSize: 14, color: '#6b6b6b', marginBottom: 24 },
   error:     { backgroundColor: '#fff0f0', color: '#D10000', padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 },
-  input:     { borderWidth: 1, borderColor: '#efefef', borderRadius: 10, padding: 14, fontSize: 15, color: '#1a1612', marginBottom: 14, backgroundColor: '#f5f5f5' },
+  input:     { borderWidth: 1, borderColor: '#F3C3C5', borderRadius: 10, padding: 14, fontSize: 15, color: '#1a1612', marginBottom: 14, backgroundColor: '#FDF0F0' },
   btn:       { backgroundColor: '#FFDD32', borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 4 },
   btnText:   { fontSize: 16, fontWeight: '700', color: '#1a1612' },
   linkWrap:  { marginTop: 20, alignItems: 'center' },
   linkText:  { color: '#6b6b6b', fontSize: 14 },
-  link:      { color: '#FBA4AD', fontWeight: '600' },
+  link:      { color: '#CE6F79', fontWeight: '600' },
 });

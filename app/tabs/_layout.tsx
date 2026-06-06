@@ -23,31 +23,31 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#efefef',
+          backgroundColor: '#FADAD9',
+          borderTopColor: '#F3C3C5',
           height: 72,
           paddingBottom: 16,
           paddingTop: 8,
           elevation: 8,
-          shadowColor: '#000',
-          shadowOpacity: 0.08,
+          shadowColor: '#CE6F79',
+          shadowOpacity: 0.15,
           shadowRadius: 12,
         },
-        tabBarActiveTintColor: '#FBA4AD',
-        tabBarInactiveTintColor: '#6b6b6b',
+        tabBarActiveTintColor: '#CE6F79',
+        tabBarInactiveTintColor: '#CE6F79',
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarHideOnKeyboard: true,
       }}
     >
-      <Tabs.Screen name="index" options={{ tabBarLabel: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
-      <Tabs.Screen name="menu" options={{ tabBarLabel: 'Menu', tabBarIcon: ({ color, size }) => <Ionicons name="restaurant" size={size} color={color} /> }} />
-      <Tabs.Screen name="cart" options={{ tabBarLabel: 'Cart', tabBarIcon: ({ color, size }) => <CartIcon color={color} size={size} /> }} />
-      <Tabs.Screen name="orders" options={{ tabBarLabel: 'Orders', tabBarIcon: ({ color, size }) => <Ionicons name="receipt" size={size} color={color} /> }} />
+      <Tabs.Screen name="index" options={{ tabBarLabel: 'Home', tabBarIcon: ({ size }) => <Ionicons name="home" size={size} color="#CE6F79" /> }} />
+      <Tabs.Screen name="menu" options={{ tabBarLabel: 'Menu', tabBarIcon: ({ size }) => <Ionicons name="restaurant" size={size} color="#CE6F79" /> }} />
+      <Tabs.Screen name="cart" options={{ tabBarLabel: 'Cart', tabBarIcon: ({ size }) => <CartIcon color="#CE6F79" size={size} /> }} />
+      <Tabs.Screen name="orders" options={{ tabBarLabel: 'Orders', tabBarIcon: ({ size }) => <Ionicons name="receipt" size={size} color="#CE6F79" /> }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#FBA4AD', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#CE6F79', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   badgeText: { color: '#fff', fontSize: 10, fontWeight: '800' },
 });

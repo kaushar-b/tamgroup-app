@@ -25,14 +25,14 @@ function AuthGate() {
   useEffect(() => {
     if (!isLoaded) return;
     const inAuth = segments[0] === 'auth';
-    const inAdmin = segments[0] === 'admin';
-    if (!isSignedIn && !inAuth && !inAdmin) router.replace('/auth/sign-in');
+    const inManage = segments[0] === 'ManageMyApp';
+    if (!isSignedIn && !inAuth && !inManage) router.replace('/auth/sign-in');
     else if (isSignedIn && inAuth) router.replace('/tabs');
   }, [isLoaded, isSignedIn]);
 
   if (!isLoaded) return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-      <ActivityIndicator size="large" color="#FBA4AD" />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FADAD9' }}>
+      <ActivityIndicator size="large" color="#CE6F79" />
     </View>
   );
   return <Slot />;

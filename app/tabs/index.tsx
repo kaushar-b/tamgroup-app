@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 const { width: SW } = Dimensions.get('window');
 const SQ = SW - 40;
 
-const HERO_BG = ['#FBA4AD', '#f7c0c8', '#FBA4AD'];
+const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 const FOOD_SLIDES = [
   { id: '1', label: 'Grilled Chicken' },
   { id: '2', label: 'Beef Burger' },
@@ -20,6 +20,7 @@ export default function Home() {
   const { signOut } = useAuth();
   const router = useRouter();
   const [heroSlide, setHeroSlide] = useState(0);
+  const [foodSlide, setFoodSlide] = useState(0);
   const [showAccount, setShowAccount] = useState(false);
   const heroRef = useRef<FlatList>(null);
   const foodRef = useRef<FlatList>(null);
@@ -39,13 +40,17 @@ export default function Home() {
 
   useEffect(() => {
     const t = setInterval(() => {
-      foodRef.current?.scrollToIndex({ index: 0, animated: false });
-    }, 4000);
+      setFoodSlide(prev => {
+        const next = (prev + 1) % FOOD_SLIDES.length;
+        try { foodRef.current?.scrollToIndex({ index: next, animated: true }); } catch {}
+        return next;
+      });
+    }, 4500);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
       <ScrollView contentContainerStyle={styles.content}>
 
         {/* Header */}
@@ -57,7 +62,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Hero Slideshow — only BG slides, text fixed on top */}
+        {/* Hero Slideshow */}
         <View style={styles.heroWrap}>
           <FlatList
             ref={heroRef}
@@ -68,9 +73,7 @@ export default function Home() {
             scrollEnabled={false}
             keyExtractor={(_, i) => String(i)}
             style={StyleSheet.absoluteFill}
-            renderItem={({ item }) => (
-              <View style={[styles.heroSlide, { backgroundColor: item }]} />
-            )}
+            renderItem={({ item }) => <View style={[styles.heroSlide, { backgroundColor: item }]} />}
           />
           <View style={styles.heroTextOverlay} pointerEvents="box-none">
             <Text style={styles.heroTitle}>Fresh & Delicious</Text>
@@ -89,20 +92,20 @@ export default function Home() {
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actions}>
           <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/tabs/menu')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="restaurant" size={30} color="#FBA4AD" />
+            <Ionicons name="restaurant" size={30} color="#CE6F79" />
             <Text style={styles.actionLabel}>Menu</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/tabs/cart')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="cart" size={30} color="#FFDD32" />
+            <Ionicons name="cart" size={30} color="#CE6F79" />
             <Text style={styles.actionLabel}>Cart</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/tabs/orders')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="receipt" size={30} color="#1a1612" />
+            <Ionicons name="receipt" size={30} color="#CE6F79" />
             <Text style={styles.actionLabel}>Orders</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Food Slideshow — SQUARE */}
+        {/* Food Slideshow — SQUARE, AUTO */}
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}
@@ -114,7 +117,7 @@ export default function Home() {
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.foodSlide} onPress={() => router.push('/tabs/menu')} activeOpacity={0.85}>
                 <View style={styles.foodImageBox}>
-                  <Ionicons name="image-outline" size={36} color="#bbb" />
+                  <Ionicons name="image-outline" size={40} color="#CE6F79" />
                 </View>
                 <View style={styles.foodLabelWrap}>
                   <Text style={styles.foodLabel}>{item.label}</Text>
@@ -122,18 +125,23 @@ export default function Home() {
               </TouchableOpacity>
             )}
           />
+          <View style={styles.foodDots}>
+            {FOOD_SLIDES.map((_, i) => (
+              <View key={i} style={[styles.foodDot, i === foodSlide && styles.foodDotActive]} />
+            ))}
+          </View>
         </View>
 
         {/* Info */}
         <View style={styles.infoCard}>
           <View style={styles.infoRow}>
-            <Ionicons name="location" size={18} color="#D10000" />
+            <Ionicons name="location" size={18} color="#CE6F79" />
             <Text style={styles.infoTitle}>Find Us</Text>
           </View>
           <Text style={styles.infoText}>Mowana Park Mall | Phakalane, Botswana</Text>
           <View style={styles.infoDivider} />
           <View style={styles.infoRow}>
-            <Ionicons name="time" size={18} color="#1a1612" />
+            <Ionicons name="time" size={18} color="#CE6F79" />
             <Text style={styles.infoTitle}>Hours</Text>
           </View>
           <Text style={styles.infoText}>Mon – Sun: 8:00 AM – 10:00 PM</Text>
@@ -168,11 +176,11 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   content:         { paddingTop: 52, paddingBottom: 20 },
-  header:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginBottom: 18 },
-  logo:            { width: 140, height: 52 },
-  avatarCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: '#FBA4AD', alignItems: 'center', justifyContent: 'center' },
+  header:          { flexDirection: 'row', alignItems: 'center', paddingLeft: 0, paddingRight: 20, marginBottom: 18, backgroundColor: '#FADAD9', paddingVertical: 10 },
+  logo:            { width: 160, height: 60 },
+  avatarCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
   avatarText:      { fontSize: 18, fontWeight: '800', color: '#fff' },
-  heroWrap:        { marginHorizontal: 20, borderRadius: 18, overflow: 'hidden', marginBottom: 24, height: 200 },
+  heroWrap:        { marginHorizontal: 20, borderRadius: 18, overflow: 'hidden', marginBottom: 20, height: 200 },
   heroSlide:       { width: SQ, height: 200 },
   heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.15)' },
   heroTitle:       { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 14, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
@@ -181,28 +189,31 @@ const styles = StyleSheet.create({
   dots:            { position: 'absolute', bottom: 10, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
   dot:             { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)' },
   dotActive:       { width: 18, backgroundColor: '#fff' },
-  sectionTitle:    { fontSize: 17, fontWeight: '700', color: '#1a1612', marginBottom: 14, paddingHorizontal: 20 },
-  actions:         { flexDirection: 'row', gap: 10, marginBottom: 24, paddingHorizontal: 20 },
-  actionCard:      { flex: 1, backgroundColor: '#f5f5f5', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 8 },
+  sectionTitle:    { fontSize: 17, fontWeight: '700', color: '#1a1612', marginBottom: 12, paddingHorizontal: 20 },
+  actions:         { flexDirection: 'row', gap: 10, marginBottom: 20, paddingHorizontal: 20 },
+  actionCard:      { flex: 1, backgroundColor: '#FADAD9', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 8 },
   actionLabel:     { fontSize: 13, fontWeight: '600', color: '#1a1612' },
-  foodSlideWrap:   { marginHorizontal: 20, marginBottom: 24, height: SQ, borderRadius: 16, overflow: 'hidden' },
+  foodSlideWrap:   { marginHorizontal: 20, marginBottom: 8, height: SQ, borderRadius: 16, overflow: 'hidden' },
   foodSlide:       { width: SQ, height: SQ },
-  foodImageBox:    { ...StyleSheet.absoluteFillObject, backgroundColor: '#e8e8e8', alignItems: 'center', justifyContent: 'center' },
-  foodLabelWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.45)', paddingHorizontal: 14, paddingVertical: 12 },
+  foodImageBox:    { ...StyleSheet.absoluteFillObject, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
+  foodLabelWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.4)', paddingHorizontal: 14, paddingVertical: 12 },
   foodLabel:       { fontSize: 16, fontWeight: '700', color: '#fff' },
-  infoCard:        { backgroundColor: '#f5f5f5', borderRadius: 16, padding: 18, marginHorizontal: 20 },
+  foodDots:        { position: 'absolute', bottom: 52, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
+  foodDot:         { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.4)' },
+  foodDotActive:   { width: 16, backgroundColor: '#fff' },
+  infoCard:        { backgroundColor: '#FADAD9', borderRadius: 16, padding: 18, marginHorizontal: 20, marginTop: 12 },
   infoRow:         { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   infoTitle:       { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:        { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
-  infoDivider:     { height: 1, backgroundColor: '#efefef', marginVertical: 12 },
+  infoDivider:     { height: 1, backgroundColor: '#F3C3C5', marginVertical: 12 },
   modalBackdrop:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   accountSheet:    { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 44 },
-  sheetHandle:     { width: 40, height: 4, backgroundColor: '#efefef', borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
+  sheetHandle:     { width: 40, height: 4, backgroundColor: '#F3C3C5', borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   accountHeader:   { alignItems: 'center', marginBottom: 20 },
-  avatarLarge:     { width: 72, height: 72, borderRadius: 36, backgroundColor: '#FBA4AD', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  avatarLarge:     { width: 72, height: 72, borderRadius: 36, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   avatarLargeText: { fontSize: 32, fontWeight: '800', color: '#fff' },
   accountEmail:    { fontSize: 14, color: '#6b6b6b' },
-  accountDivider:  { height: 1, backgroundColor: '#efefef', marginBottom: 8 },
-  accountRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#efefef' },
+  accountDivider:  { height: 1, backgroundColor: '#F3C3C5', marginBottom: 8 },
+  accountRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F3C3C5' },
   accountRowText:  { flex: 1, fontSize: 15, fontWeight: '600', color: '#1a1612' },
 });

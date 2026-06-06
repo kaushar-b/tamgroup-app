@@ -1,6 +1,6 @@
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 
@@ -50,17 +50,17 @@ export default function Home() {
   return (
     <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ScrollView contentContainerStyle={styles.content} stickyHeaderIndices={[0]}>
 
-        {/* Header — white, extends to very top */}
-        <View style={styles.header}>
-          <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity style={styles.avatarCircle} onPress={() => setShowAccount(true)}>
-            <Text style={styles.avatarText}>{initial}</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Header — pinned at very top, full white, logo flush left */}
+      <View style={styles.header}>
+        <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity style={styles.avatarCircle} onPress={() => setShowAccount(true)}>
+          <Text style={styles.avatarText}>{initial}</Text>
+        </TouchableOpacity>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.content}>
         {/* Hero */}
         <View style={styles.heroWrap}>
           <FlatList
@@ -142,6 +142,7 @@ export default function Home() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
+      {/* Account Modal */}
       <Modal visible={showAccount} transparent animationType="slide" onRequestClose={() => setShowAccount(false)}>
         <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setShowAccount(false)} />
         <View style={styles.accountSheet}>
@@ -167,11 +168,23 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  content:         { paddingBottom: 20 },
-  header:          { flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 0, paddingRight: 20, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' },
-  logo:            { width: 180, height: 64 },
+  header:          {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingTop: 48,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    paddingRight: 16,
+    elevation: 2,
+    shadowColor: '#CE6F79',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  logo:            { width: 190, height: 68, marginLeft: 0 },
   avatarCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
   avatarText:      { fontSize: 18, fontWeight: '800', color: '#fff' },
+  content:         { paddingBottom: 20 },
   heroWrap:        { marginHorizontal: 20, marginTop: 16, borderRadius: 18, overflow: 'hidden', marginBottom: 20, height: 200 },
   heroSlide:       { width: SQ, height: 200 },
   heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.15)' },

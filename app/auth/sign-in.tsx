@@ -16,7 +16,7 @@ export default function SignIn() {
   const handleLogoTap = () => {
     tapCount.current += 1;
     if (tapTimer.current) clearTimeout(tapTimer.current);
-    tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2000);
+    tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2500);
     if (tapCount.current >= 5) {
       tapCount.current = 0;
       router.push('/ManageMyApp');
@@ -31,7 +31,7 @@ export default function SignIn() {
       await setActive({ session: result.createdSessionId });
       router.replace('/tabs');
     } catch (err: any) {
-      setError(err.errors?.[0]?.message || 'Sign in failed');
+      setError(err.errors?.[0]?.message || 'Sign in failed. Check your email and password.');
     } finally { setLoading(false); }
   };
 

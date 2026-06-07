@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 const { width: SW } = Dimensions.get('window');
 const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
+
 const FOOD_SLIDES = [
   { id: '1', label: 'Grilled Chicken' },
   { id: '2', label: 'Beef Burger' },
@@ -51,7 +52,6 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Header */}
       <View style={styles.header}>
         <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
         <Text style={styles.brandText}>Restaurant Group</Text>
@@ -62,7 +62,7 @@ export default function Home() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Hero */}
+        {/* Hero Slideshow */}
         <View style={styles.heroWrap}>
           <FlatList
             ref={heroRef}
@@ -72,7 +72,11 @@ export default function Home() {
             scrollEnabled={false}
             keyExtractor={(_, i) => String(i)}
             style={StyleSheet.absoluteFill}
-            renderItem={({ item }) => <View style={[styles.heroSlide, { backgroundColor: item }]} />}
+            renderItem={({ item, index }) => (
+  <View style={[styles.heroSlide, { backgroundColor: item }]}>
+    <Image source={HERO_IMAGES[index]} style={{...StyleSheet.absoluteFillObject, width:'100%', height:'100%'}} resizeMode="cover" />
+  </View>
+)}
           />
           <View style={styles.heroTextOverlay} pointerEvents="box-none">
             <Text style={styles.heroTitle}>Fresh & Delicious</Text>
@@ -102,7 +106,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Food Slideshow */}
+        {/* Food Slideshow — square, auto */}
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}

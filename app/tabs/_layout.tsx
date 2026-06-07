@@ -23,19 +23,20 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#FADAD9',
+          backgroundColor: '#fff',
           borderTopColor: '#F3C3C5',
-          height: 72,
-          paddingBottom: 16,
+          borderTopWidth: 1,
+          height: 80,
+          paddingBottom: 22,
           paddingTop: 8,
-          elevation: 8,
+          elevation: 10,
           shadowColor: '#CE6F79',
-          shadowOpacity: 0.15,
+          shadowOpacity: 0.12,
           shadowRadius: 12,
         },
         tabBarActiveTintColor: '#CE6F79',
         tabBarInactiveTintColor: '#CE6F79',
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', color: '#CE6F79' },
         tabBarHideOnKeyboard: true,
       }}
     >

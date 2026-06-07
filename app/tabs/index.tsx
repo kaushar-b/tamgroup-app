@@ -1,6 +1,6 @@
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 
@@ -51,9 +51,10 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Header — pinned at very top, full white, logo flush left */}
+      {/* Header */}
       <View style={styles.header}>
         <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.brandText}>Restaurant Group</Text>
         <View style={{ flex: 1 }} />
         <TouchableOpacity style={styles.avatarCircle} onPress={() => setShowAccount(true)}>
           <Text style={styles.avatarText}>{initial}</Text>
@@ -101,7 +102,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Food Slideshow — square, auto */}
+        {/* Food Slideshow */}
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}
@@ -142,7 +143,6 @@ export default function Home() {
         <View style={{ height: 24 }} />
       </ScrollView>
 
-      {/* Account Modal */}
       <Modal visible={showAccount} transparent animationType="slide" onRequestClose={() => setShowAccount(false)}>
         <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setShowAccount(false)} />
         <View style={styles.accountSheet}>
@@ -168,24 +168,13 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  header:          {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingTop: 48,
-    paddingBottom: 10,
-    paddingLeft: 0,
-    paddingRight: 16,
-    elevation: 2,
-    shadowColor: '#CE6F79',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-  },
-  logo:            { width: 190, height: 68, marginLeft: 0 },
-  avatarCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
-  avatarText:      { fontSize: 18, fontWeight: '800', color: '#fff' },
+  header:          { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingTop: 44, paddingBottom: 6, paddingLeft: 0, paddingRight: 14, elevation: 2, shadowColor: '#CE6F79', shadowOpacity: 0.08, shadowRadius: 4 },
+  logo:            { width: 160, height: 62, marginLeft: 0 },
+  brandText:       { fontSize: 13, fontWeight: '700', color: '#AD946B', marginLeft: 4, letterSpacing: 0.2 },
+  avatarCircle:    { width: 40, height: 40, borderRadius: 20, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
+  avatarText:      { fontSize: 17, fontWeight: '800', color: '#fff' },
   content:         { paddingBottom: 20 },
-  heroWrap:        { marginHorizontal: 20, marginTop: 16, borderRadius: 18, overflow: 'hidden', marginBottom: 20, height: 200 },
+  heroWrap:        { marginHorizontal: 20, marginTop: 14, borderRadius: 18, overflow: 'hidden', marginBottom: 18, height: 200 },
   heroSlide:       { width: SQ, height: 200 },
   heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.15)' },
   heroTitle:       { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 14, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
@@ -195,7 +184,7 @@ const styles = StyleSheet.create({
   dot:             { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)' },
   dotActive:       { width: 18, backgroundColor: '#fff' },
   sectionTitle:    { fontSize: 17, fontWeight: '700', color: '#1a1612', marginBottom: 12, paddingHorizontal: 20 },
-  actions:         { flexDirection: 'row', gap: 10, marginBottom: 20, paddingHorizontal: 20 },
+  actions:         { flexDirection: 'row', gap: 10, marginBottom: 18, paddingHorizontal: 20 },
   actionCard:      { flex: 1, backgroundColor: '#fff', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 8, elevation: 1, shadowColor: '#CE6F79', shadowOpacity: 0.1, shadowRadius: 4 },
   actionLabel:     { fontSize: 13, fontWeight: '600', color: '#1a1612' },
   foodSlideWrap:   { marginHorizontal: 20, marginBottom: 8, height: SQ, borderRadius: 16, overflow: 'hidden' },
@@ -206,7 +195,7 @@ const styles = StyleSheet.create({
   foodDots:        { position: 'absolute', bottom: 52, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
   foodDot:         { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.4)' },
   foodDotActive:   { width: 16, backgroundColor: '#fff' },
-  infoCard:        { backgroundColor: '#FADAD9', borderRadius: 16, padding: 18, marginHorizontal: 20, marginTop: 12 },
+  infoCard:        { backgroundColor: '#FADAD9', borderRadius: 16, padding: 18, marginHorizontal: 20, marginTop: 10 },
   infoRow:         { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   infoTitle:       { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:        { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },

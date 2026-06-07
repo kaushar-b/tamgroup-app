@@ -8,6 +8,13 @@ const { width: SW } = Dimensions.get('window');
 const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
+const FOOD_IMAGES: Record<string, any> = {
+  '1': require('../../assets/images/food1.jpg'),
+  '2': require('../../assets/images/food2.jpg'),
+  '3': require('../../assets/images/food3.jpg'),
+  '4': require('../../assets/images/food4.jpg'),
+};
+
 const FOOD_SLIDES = [
   { id: '1', label: 'Grilled Chicken' },
   { id: '2', label: 'Beef Burger' },
@@ -117,7 +124,7 @@ export default function Home() {
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.foodSlide} onPress={() => router.push('/tabs/menu')} activeOpacity={0.85}>
                 <View style={styles.foodImageBox}>
-                  <Ionicons name="image-outline" size={40} color="#CE6F79" />
+                  <Image source={FOOD_IMAGES[item.id]} style={{width:'100%',height:'100%'}} resizeMode="cover" />
                 </View>
                 <View style={styles.foodLabelWrap}>
                   <Text style={styles.foodLabel}>{item.label}</Text>

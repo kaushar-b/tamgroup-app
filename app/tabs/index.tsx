@@ -9,10 +9,10 @@ const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
 const FOOD_IMAGES: Record<string, any> = {
-  '1': require('../../assets/images/food1.jpg'),
-  '2': require('../../assets/images/food2.jpg'),
-  '3': require('../../assets/images/food3.jpg'),
-  '4': require('../../assets/images/food4.jpg'),
+  '1': require('../../assets/images/food1.jpeg'),
+  '2': require('../../assets/images/food2.jpeg'),
+  '3': require('../../assets/images/food3.jpeg'),
+  '4': require('../../assets/images/food4.jpeg'),
 };
 
 const FOOD_SLIDES = [
@@ -151,6 +151,10 @@ export default function Home() {
           </View>
           <Text style={styles.infoText}>Mon – Sun: 8:00 AM – 10:00 PM</Text>
         </View>
+        <TouchableOpacity style={styles.termsBtn} onPress={() => router.push('/terms')}>
+          <Ionicons name="information-circle-outline" size={16} color="#CE6F79" />
+          <Text style={styles.termsBtnText}>Terms of Service · Refund Policy · Privacy Policy</Text>
+        </TouchableOpacity>
         <View style={{ height: 24 }} />
       </ScrollView>
 
@@ -221,4 +225,6 @@ const styles = StyleSheet.create({
   accountDivider:  { height: 1, backgroundColor: '#F3C3C5', marginBottom: 8 },
   accountRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F3C3C5' },
   accountRowText:  { flex: 1, fontSize: 15, fontWeight: '600', color: '#1a1612' },
+  termsBtn:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 14, marginHorizontal: 20, marginTop: 12 },
+  termsBtnText:    { fontSize: 12, color: '#CE6F79', fontWeight: '600' },
 });

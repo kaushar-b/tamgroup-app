@@ -191,7 +191,7 @@ const modal = StyleSheet.create({
   backdrop:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheet:           { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
   closeBtn:        { position: 'absolute', top: 14, right: 14, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
-  imageBox:        { width: SW, height: SW * 0.75, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  imageBox:        { width: SW, height: SW, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
   imgNav:          { position: 'absolute', bottom: 10, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 },
   imgNavBtn:       { backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 20, padding: 6 },
   imgDots:         { flexDirection: 'row', gap: 5 },

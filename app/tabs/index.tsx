@@ -163,12 +163,12 @@ export default function Home() {
             <Text style={styles.accountEmail}>{user?.emailAddresses?.[0]?.emailAddress}</Text>
           </View>
           <View style={styles.accountDivider} />
-          <TouchableOpacity style={styles.accountRow}>
+          <TouchableOpacity style={styles.accountRow} onPress={() => { setShowAccount(false); router.push('/auth/change-password'); }}>
             <Ionicons name="key-outline" size={20} color="#6b6b6b" />
             <Text style={styles.accountRowText}>Change Password</Text>
             <Ionicons name="chevron-forward" size={16} color="#efefef" />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.accountRow, { borderBottomWidth: 0 }]} onPress={() => { setShowAccount(false); signOut(); }}>
+          <TouchableOpacity style={[styles.accountRow, { borderBottomWidth: 0 }]} onPress={async () => { setShowAccount(false); await signOut(); router.replace('/auth/sign-in'); }}>
             <Ionicons name="log-out-outline" size={20} color="#D10000" />
             <Text style={[styles.accountRowText, { color: '#D10000' }]}>Sign Out</Text>
           </TouchableOpacity>

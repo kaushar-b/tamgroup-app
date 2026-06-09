@@ -25,14 +25,16 @@ export default function SignIn() {
 
   const onSignIn = async () => {
     if (!isLoaded) return;
-    setLoading(true); setError('');
+    setLoading(true);
+    setError('');
     try {
       const result = await signIn.create({ identifier: email, password });
       await setActive({ session: result.createdSessionId });
-      router.replace('/tabs');
     } catch (err: any) {
       setError(err.errors?.[0]?.message || 'Sign in failed. Check your email and password.');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
+import { useUser } from '@clerk/clerk-expo';
 import { View, Text, StyleSheet } from 'react-native';
 
 function CartIcon({ size }: { size: number }) {
@@ -13,6 +14,16 @@ function CartIcon({ size }: { size: number }) {
           <Text style={styles.badgeText}>{count > 9 ? '9+' : count}</Text>
         </View>
       )}
+    </View>
+  );
+}
+
+function AccountIcon({ size }: { size: number }) {
+  const { user } = useUser();
+  const initial = (user?.emailAddresses?.[0]?.emailAddress?.[0] || 'U').toUpperCase();
+  return (
+    <View style={[styles.accountIconCircle, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }]}>
+      <Text style={[styles.accountIconText, { fontSize: size * 0.6 }]}>{initial}</Text>
     </View>
   );
 }
@@ -44,11 +55,14 @@ export default function TabsLayout() {
       <Tabs.Screen name="menu" options={{ tabBarLabel: 'Menu', tabBarIcon: ({ size }) => <Ionicons name="restaurant" size={size} color="#CE6F79" /> }} />
       <Tabs.Screen name="cart" options={{ tabBarLabel: 'Cart', tabBarIcon: ({ size }) => <CartIcon size={size} /> }} />
       <Tabs.Screen name="orders" options={{ tabBarLabel: 'Orders', tabBarIcon: ({ size }) => <Ionicons name="receipt" size={size} color="#CE6F79" /> }} />
+      <Tabs.Screen name="account" options={{ tabBarLabel: 'Account', tabBarIcon: ({ size }) => <AccountIcon size={size} /> }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  badge:     { position: 'absolute', top: -4, right: -6, backgroundColor: '#FFDD32', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
-  badgeText: { color: '#1a1612', fontSize: 10, fontWeight: '800' },
+  badge:            { position: 'absolute', top: -4, right: -6, backgroundColor: '#FFDD32', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  badgeText:        { color: '#1a1612', fontSize: 10, fontWeight: '800' },
+  accountIconCircle:{ backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
+  accountIconText:  { color: '#fff', fontWeight: '800' },
 });

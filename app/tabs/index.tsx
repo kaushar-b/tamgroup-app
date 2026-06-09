@@ -1,4 +1,3 @@
-import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Dimensions, FlatList, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +6,12 @@ import { useEffect, useRef, useState } from 'react';
 const { width: SW } = Dimensions.get('window');
 const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
+
+const HERO_IMAGES = [
+  require('../../assets/images/hero1.jpeg'),
+  require('../../assets/images/hero2.jpeg'),
+  require('../../assets/images/hero3.jpeg'),
+];
 
 const FOOD_IMAGES: Record<string, any> = {
   '1': require('../../assets/images/food1.jpeg'),
@@ -23,15 +28,12 @@ const FOOD_SLIDES = [
 ];
 
 export default function Home() {
-  const { user } = useUser();
-  const { signOut } = useAuth();
   const router = useRouter();
   const [heroSlide, setHeroSlide] = useState(0);
   const [foodSlide, setFoodSlide] = useState(0);
-  const [showAccount, setShowAccount] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const heroRef = useRef<FlatList>(null);
   const foodRef = useRef<FlatList>(null);
-  const initial = (user?.emailAddresses?.[0]?.emailAddress?.[0] || 'U').toUpperCase();
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -59,12 +61,13 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: '#F3C3C5' }}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
+      {/* Header */}
       <View style={styles.header}>
         <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
         <Text style={styles.brandText}>Restaurant Group</Text>
         <View style={{ flex: 1 }} />
-        <TouchableOpacity style={styles.avatarCircle} onPress={() => setShowAccount(true)}>
-          <Text style={styles.avatarText}>{initial}</Text>
+        <TouchableOpacity style={styles.menuBtn} onPress={() => setShowDropdown(true)}>
+          <Ionicons name="ellipsis-vertical" size={22} color="#1a1612" />
         </TouchableOpacity>
       </View>
 
@@ -80,10 +83,10 @@ export default function Home() {
             keyExtractor={(_, i) => String(i)}
             style={StyleSheet.absoluteFill}
             renderItem={({ item, index }) => (
-  <View style={[styles.heroSlide, { backgroundColor: item }]}>
-    <Image source={HERO_IMAGES[index]} style={{...StyleSheet.absoluteFillObject, width:'100%', height:'100%'}} resizeMode="cover" />
-  </View>
-)}
+              <View style={[styles.heroSlide, { backgroundColor: item }]}>
+                <Image source={HERO_IMAGES[index]} style={{ ...StyleSheet.absoluteFillObject }} resizeMode="cover" />
+              </View>
+            )}
           />
           <View style={styles.heroTextOverlay} pointerEvents="box-none">
             <Text style={styles.heroTitle}>Fresh & Delicious</Text>
@@ -113,7 +116,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Food Slideshow — square, auto */}
+        {/* Food Slideshow */}
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}
@@ -123,9 +126,7 @@ export default function Home() {
             keyExtractor={i => i.id}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.foodSlide} onPress={() => router.push('/tabs/menu')} activeOpacity={0.85}>
-                <View style={styles.foodImageBox}>
-                  <Image source={FOOD_IMAGES[item.id]} style={{width:'100%',height:'100%'}} resizeMode="cover" />
-                </View>
+                <Image source={FOOD_IMAGES[item.id]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
                 <View style={styles.foodLabelWrap}>
                   <Text style={styles.foodLabel}>{item.label}</Text>
                 </View>
@@ -151,30 +152,22 @@ export default function Home() {
           </View>
           <Text style={styles.infoText}>Mon – Sun: 8:00 AM – 10:00 PM</Text>
         </View>
-        <TouchableOpacity style={styles.termsBtn} onPress={() => router.push('/terms')}>
-          <Ionicons name="information-circle-outline" size={16} color="#CE6F79" />
-          <Text style={styles.termsBtnText}>Terms of Service · Refund Policy · Privacy Policy</Text>
-        </TouchableOpacity>
+
         <View style={{ height: 24 }} />
       </ScrollView>
 
-      <Modal visible={showAccount} transparent animationType="slide" onRequestClose={() => setShowAccount(false)}>
-        <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setShowAccount(false)} />
-        <View style={styles.accountSheet}>
-          <View style={styles.sheetHandle} />
-          <View style={styles.accountHeader}>
-            <View style={styles.avatarLarge}><Text style={styles.avatarLargeText}>{initial}</Text></View>
-            <Text style={styles.accountEmail}>{user?.emailAddresses?.[0]?.emailAddress}</Text>
-          </View>
-          <View style={styles.accountDivider} />
-          <TouchableOpacity style={styles.accountRow} onPress={() => { setShowAccount(false); router.push('/auth/change-password'); }}>
-            <Ionicons name="key-outline" size={20} color="#6b6b6b" />
-            <Text style={styles.accountRowText}>Change Password</Text>
-            <Ionicons name="chevron-forward" size={16} color="#efefef" />
+      {/* Dropdown Menu Modal */}
+      <Modal visible={showDropdown} transparent animationType="fade" onRequestClose={() => setShowDropdown(false)}>
+        <TouchableOpacity style={styles.dropdownBackdrop} activeOpacity={1} onPress={() => setShowDropdown(false)} />
+        <View style={styles.dropdownMenu}>
+          <TouchableOpacity style={styles.dropdownRow} onPress={() => { setShowDropdown(false); router.push('/about'); }}>
+            <Ionicons name="information-circle-outline" size={18} color="#CE6F79" />
+            <Text style={styles.dropdownText}>About Us</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.accountRow, { borderBottomWidth: 0 }]} onPress={async () => { setShowAccount(false); await signOut(); router.replace('/auth/sign-in'); }}>
-            <Ionicons name="log-out-outline" size={20} color="#D10000" />
-            <Text style={[styles.accountRowText, { color: '#D10000' }]}>Sign Out</Text>
+          <View style={styles.dropdownDivider} />
+          <TouchableOpacity style={styles.dropdownRow} onPress={() => { setShowDropdown(false); router.push('/terms'); }}>
+            <Ionicons name="document-text-outline" size={18} color="#CE6F79" />
+            <Text style={styles.dropdownText}>Policy</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -186,13 +179,12 @@ const styles = StyleSheet.create({
   header:          { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingTop: 44, paddingBottom: 6, paddingLeft: 0, paddingRight: 14, elevation: 2, shadowColor: '#CE6F79', shadowOpacity: 0.08, shadowRadius: 4 },
   logo:            { width: 160, height: 62, marginLeft: 0 },
   brandText:       { fontSize: 13, fontWeight: '700', color: '#AD946B', marginLeft: 4, letterSpacing: 0.2 },
-  avatarCircle:    { width: 40, height: 40, borderRadius: 20, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
-  avatarText:      { fontSize: 17, fontWeight: '800', color: '#fff' },
+  menuBtn:         { padding: 8 },
   content:         { paddingBottom: 20 },
   heroWrap:        { marginHorizontal: 20, marginTop: 14, borderRadius: 18, overflow: 'hidden', marginBottom: 18, height: 200 },
   heroSlide:       { width: SQ, height: 200 },
-  heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.15)' },
-  heroTitle:       { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 14, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
+  heroTextOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', padding: 20, backgroundColor: 'rgba(0,0,0,0.25)' },
+  heroTitle:       { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 14, textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
   heroBtn:         { backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, alignSelf: 'flex-start' },
   heroBtnText:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   dots:            { position: 'absolute', bottom: 10, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
@@ -204,7 +196,6 @@ const styles = StyleSheet.create({
   actionLabel:     { fontSize: 13, fontWeight: '600', color: '#1a1612' },
   foodSlideWrap:   { marginHorizontal: 20, marginBottom: 8, height: SQ, borderRadius: 16, overflow: 'hidden' },
   foodSlide:       { width: SQ, height: SQ },
-  foodImageBox:    { ...StyleSheet.absoluteFillObject, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
   foodLabelWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.4)', paddingHorizontal: 14, paddingVertical: 12 },
   foodLabel:       { fontSize: 16, fontWeight: '700', color: '#fff' },
   foodDots:        { position: 'absolute', bottom: 52, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
@@ -215,16 +206,9 @@ const styles = StyleSheet.create({
   infoTitle:       { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:        { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
   infoDivider:     { height: 1, backgroundColor: '#F3C3C5', marginVertical: 12 },
-  modalBackdrop:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  accountSheet:    { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 44 },
-  sheetHandle:     { width: 40, height: 4, backgroundColor: '#F3C3C5', borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
-  accountHeader:   { alignItems: 'center', marginBottom: 20 },
-  avatarLarge:     { width: 72, height: 72, borderRadius: 36, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  avatarLargeText: { fontSize: 32, fontWeight: '800', color: '#fff' },
-  accountEmail:    { fontSize: 14, color: '#6b6b6b' },
-  accountDivider:  { height: 1, backgroundColor: '#F3C3C5', marginBottom: 8 },
-  accountRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F3C3C5' },
-  accountRowText:  { flex: 1, fontSize: 15, fontWeight: '600', color: '#1a1612' },
-  termsBtn:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 14, marginHorizontal: 20, marginTop: 12 },
-  termsBtnText:    { fontSize: 12, color: '#CE6F79', fontWeight: '600' },
+  dropdownBackdrop:{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  dropdownMenu:    { position: 'absolute', top: 100, right: 14, backgroundColor: '#fff', borderRadius: 14, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, elevation: 8, minWidth: 160, overflow: 'hidden' },
+  dropdownRow:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 14 },
+  dropdownText:    { fontSize: 15, fontWeight: '600', color: '#1a1612' },
+  dropdownDivider: { height: 1, backgroundColor: '#F3C3C5', marginHorizontal: 16 },
 });

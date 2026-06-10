@@ -11,37 +11,57 @@ const { width: SW } = Dimensions.get('window');
 // Then update the PRODUCT_IMAGES map below with the correct filenames.
 const PRODUCT_IMAGES: Record<string, any[]> = {
   '1': [
-    require('../../assets/images/products/dish1.jpeg'),
+    require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
+    require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'),
+    require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg'),
   ],
   '2': [
-    require('../../assets/images/products/dish2.jpeg'),
+    require('../../assets/images/products/Coq au Vin1.jpeg'),
+    require('../../assets/images/products/Coq au Vin2.jpeg'),
+    require('../../assets/images/products/Coq au Vin3.jpeg'),
+    require('../../assets/images/products/Coq au Vin4.jpeg'),
   ],
   '3': [
-    require('../../assets/images/products/dish3.jpeg'),
+    require('../../assets/images/products/Stuffed Vegetables1.jpeg'),
+    require('../../assets/images/products/Stuffed Vegetables2.jpeg'),
   ],
   '4': [
-    require('../../assets/images/products/dish4.jpeg'),
+    require('../../assets/images/products/Beef Bourguignon1.jpeg'),
+    require('../../assets/images/products/Beef Bourguignon2.jpeg'),
+    require('../../assets/images/products/Beef Bourguignon3.jpeg'),
   ],
   '5': [
-    require('../../assets/images/products/dish5.jpeg'),
+    require('../../assets/images/products/Lamb Chops1.jpeg'),
+    require('../../assets/images/products/Lamb Chops2.jpeg'),
   ],
   '6': [
-    require('../../assets/images/products/dish6.jpeg'),
+    require('../../assets/images/products/Seafood Paella1.jpeg'),
+    require('../../assets/images/products/Seafood Paella2.jpeg'),
   ],
   '7': [
-    require('../../assets/images/products/dish7.jpeg'),
+    require('../../assets/images/products/Garlic Butter Shrimp1.jpeg'),
+    require('../../assets/images/products/Garlic Butter Shrimp2.jpeg'),
+    require('../../assets/images/products/Garlic Butter Shrimp3.jpeg'),
+    require('../../assets/images/products/Garlic Butter Shrimp4.jpeg'),
   ],
   '8': [
-    require('../../assets/images/products/dish8.jpeg'),
+    require('../../assets/images/products/Seafood Stew1.jpeg'),
+    require('../../assets/images/products/Seafood Stew2.jpeg'),
+    require('../../assets/images/products/Seafood Stew3.jpeg'),
+    require('../../assets/images/products/Seafood Stew4.jpeg'),
   ],
   '9': [
-    require('../../assets/images/products/dish9.jpeg'),
+    require('../../assets/images/products/Poached Egg1.jpeg'),
+    require('../../assets/images/products/Poached Egg2.jpeg'),
   ],
   '10': [
-    require('../../assets/images/products/dish10.jpeg'),
+    require('../../assets/images/products/Roasted Red1.jpeg'),
+    require('../../assets/images/products/Roasted Red2.jpeg'),
+    require('../../assets/images/products/Roasted Red3.jpeg'),
   ],
   '11': [
-    require('../../assets/images/products/dish11.jpeg'),
+    require('../../assets/images/products/blue cheese salad1.jpeg'),
+    require('../../assets/images/products/blue cheese salad2.jpeg'),
   ],
 };
 

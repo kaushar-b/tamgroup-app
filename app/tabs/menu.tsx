@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCart, MenuItem } from '../../context/CartContext';
 import { useRouter } from 'expo-router';
 
-const CATEGORIES = ['All', 'Starters', 'Mains', 'Sides', 'Drinks', 'Desserts'];
+const CATEGORIES = ['All', 'Arabic', 'French', 'Grills', 'Burgers', 'Seafood', 'Pasta', 'Salads', 'Sides', 'Drinks', 'Desserts'];
 const { width: SW } = Dimensions.get('window');
 
 function ProductModal({ item, onClose }: { item: MenuItem | null; onClose: () => void }) {

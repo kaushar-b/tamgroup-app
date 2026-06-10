@@ -8,23 +8,21 @@ const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
 const HERO_IMAGES = [
-  require('../../assets/images/hero1.jpeg'),
-  require('../../assets/images/hero2.jpeg'),
-  require('../../assets/images/hero3.jpeg'),
+  require('../../assets/images/Seafood Stew4.jpeg'),
+  require('../../assets/images/Garlic Butter Shrimp1.jpeg'),
+  require('../../assets/images/Tomato & Basil Bruschetta1.jpeg'),
 ];
 
 const FOOD_IMAGES: Record<string, any> = {
-  '1': require('../../assets/images/food1.jpeg'),
-  '2': require('../../assets/images/food2.jpeg'),
-  '3': require('../../assets/images/food3.jpeg'),
-  '4': require('../../assets/images/food4.jpeg'),
+  '1': require('../../assets/images/Marseille, France.jpeg'),
+  '2': require('../../assets/images/Lisbon, Portugal.jpeg'),
+  '3': require('../../assets/images/Barcelona, Spain.jpeg'),
 };
 
 const FOOD_SLIDES = [
-  { id: '1', label: 'Grilled Chicken' },
-  { id: '2', label: 'Beef Burger' },
-  { id: '3', label: 'Loaded Fries' },
-  { id: '4', label: 'Arabic Food' },
+  { id: '1', label: 'Marseille, France' },
+  { id: '2', label: 'Lisbon, Portugal' },
+  { id: '3', label: 'Barcelona, Spain' },
 ];
 
 export default function Home() {

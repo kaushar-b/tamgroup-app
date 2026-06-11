@@ -1,4 +1,3 @@
-
 import { initializeApp } from 'firebase/app';
 
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';

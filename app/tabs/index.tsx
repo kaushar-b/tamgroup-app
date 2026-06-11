@@ -8,8 +8,8 @@ const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
 const HERO_IMAGES = [
-  require('../../assets/images/Seafood Stew4.jpeg'),
-  require('../../assets/images/Tomato & Basil Bruschetta1.jpeg'),
+  require('../../assets/images/products/Seafood Stew4.jpeg'),
+  require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
   require('../../assets/images/products/Coq au Vin.jpeg'),
 ];
 

@@ -1,8 +1,10 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../context/CartContext';
-import { useUser } from '@clerk/clerk-expo';
 import { View, Text, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 
 function CartIcon({ size }: { size: number }) {
   const { count } = useCart();
@@ -19,8 +21,12 @@ function CartIcon({ size }: { size: number }) {
 }
 
 function AccountIcon({ size }: { size: number }) {
-  const { user } = useUser();
-  const initial = (user?.emailAddresses?.[0]?.emailAddress?.[0] || 'U').toUpperCase();
+  const [user, setUser] = useState<User | null>(null);
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, setUser);
+    return unsub;
+  }, []);
+  const initial = (user?.email?.[0] || 'U').toUpperCase();
   return (
     <View style={[styles.accountIconCircle, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }]}>
       <Text style={[styles.accountIconText, { fontSize: size * 0.6 }]}>{initial}</Text>
@@ -61,8 +67,8 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  badge:            { position: 'absolute', top: -4, right: -6, backgroundColor: '#FFDD32', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
-  badgeText:        { color: '#1a1612', fontSize: 10, fontWeight: '800' },
-  accountIconCircle:{ backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
-  accountIconText:  { color: '#fff', fontWeight: '800' },
+  badge:             { position: 'absolute', top: -4, right: -6, backgroundColor: '#FFDD32', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  badgeText:         { color: '#1a1612', fontSize: 10, fontWeight: '800' },
+  accountIconCircle: { backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center' },
+  accountIconText:   { color: '#fff', fontWeight: '800' },
 });

@@ -1,39 +1,36 @@
-import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo';
 import { Slot, useRouter, useSegments } from 'expo-router';
-import { useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 import { CartProvider } from '../context/CartContext';
 
-const tokenCache = {
-  async getToken(key: string) {
-    try { return await SecureStore.getItemAsync(key); } catch { return null; }
-  },
-  async saveToken(key: string, value: string) {
-    try { await SecureStore.setItemAsync(key, value); } catch {}
-  },
-  async deleteToken(key: string) {
-    try { await SecureStore.deleteItemAsync(key); } catch {}
-  },
-};
-
 function AuthGate() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoaded) return;
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoaded(true);
+    });
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
     const inAuth = segments[0] === 'auth';
     const inManage = segments[0] === 'ManageMyApp';
-    if (!isSignedIn && !inAuth && !inManage) {
+    if (!user && !inAuth && !inManage) {
       router.replace('/auth/sign-in');
-    } else if (isSignedIn && inAuth) {
+    } else if (user && inAuth) {
       router.replace('/tabs');
     }
-  }, [isLoaded, isSignedIn, segments]);
+  }, [loaded, user, segments]);
 
-  if (!isLoaded) return (
+  if (!loaded) return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FADAD9' }}>
       <ActivityIndicator size="large" color="#CE6F79" />
     </View>
@@ -44,15 +41,8 @@ function AuthGate() {
 
 export default function RootLayout() {
   return (
-    <ClerkProvider
-      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}
-      tokenCache={tokenCache}
-    >
-      <ClerkLoaded>
-        <CartProvider>
-          <AuthGate />
-        </CartProvider>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <CartProvider>
+      <AuthGate />
+    </CartProvider>
   );
 }

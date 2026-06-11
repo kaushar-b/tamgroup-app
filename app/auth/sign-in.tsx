@@ -1,10 +1,10 @@
-import { useSignIn } from '@clerk/clerk-expo';
-import { Link, useRouter } from 'expo-router';
 import { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 
 export default function SignIn() {
-  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,14 +24,23 @@ export default function SignIn() {
   };
 
   const onSignIn = async () => {
-    if (!isLoaded) return;
+    if (!email || !password) { setError('Please enter your email and password.'); return; }
     setLoading(true);
     setError('');
     try {
-      const result = await signIn.create({ identifier: email, password });
-      await setActive({ session: result.createdSessionId });
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      // AuthGate handles navigation automatically
     } catch (err: any) {
-      setError(err.errors?.[0]?.message || 'Sign in failed. Check your email and password.');
+      const code = err.code;
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setError('Incorrect email or password.');
+      } else if (code === 'auth/invalid-email') {
+        setError('Please enter a valid email address.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Too many attempts. Please try again later.');
+      } else {
+        setError('Sign in failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -51,11 +60,9 @@ export default function SignIn() {
         <TouchableOpacity style={s.btn} onPress={onSignIn} disabled={loading}>
           {loading ? <ActivityIndicator color="#1a1612" /> : <Text style={s.btnText}>Sign In</Text>}
         </TouchableOpacity>
-        <Link href="/auth/sign-up" asChild>
-          <TouchableOpacity style={s.linkWrap}>
-            <Text style={s.linkText}>Don't have an account? <Text style={s.link}>Sign up</Text></Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity style={s.linkWrap} onPress={() => router.push('/auth/sign-up')}>
+          <Text style={s.linkText}>Don't have an account? <Text style={s.link}>Sign up</Text></Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );

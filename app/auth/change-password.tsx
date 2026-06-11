@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, Alert } from 'react-native';
-import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 
 export default function ChangePassword() {
-  const { user } = useUser();
   const router = useRouter();
   const [current, setCurrent] = useState('');
   const [newPass, setNewPass] = useState('');
@@ -13,18 +13,29 @@ export default function ChangePassword() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = async () => {
-    if (!newPass.trim()) { Alert.alert('Error', 'Please enter a new password'); return; }
+    if (!current || !newPass || !confirm) { Alert.alert('Error', 'Please fill in all fields'); return; }
     if (newPass !== confirm) { Alert.alert('Error', 'Passwords do not match'); return; }
-    if (newPass.length < 8) { Alert.alert('Error', 'Password must be at least 8 characters'); return; }
+    if (newPass.length < 6) { Alert.alert('Error', 'Password must be at least 6 characters'); return; }
     setLoading(true);
     try {
-      await user?.updatePassword({ currentPassword: current, newPassword: newPass });
+      const user = auth.currentUser;
+      if (!user || !user.email) throw new Error('Not signed in');
+      const credential = EmailAuthProvider.credential(user.email, current);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPass);
       Alert.alert('Success', 'Password changed successfully', [
         { text: 'OK', onPress: () => router.back() }
       ]);
     } catch (err: any) {
-      Alert.alert('Error', err.errors?.[0]?.message || 'Failed to change password');
-    } finally { setLoading(false); }
+      const code = err.code;
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        Alert.alert('Error', 'Current password is incorrect');
+      } else {
+        Alert.alert('Error', 'Failed to change password. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

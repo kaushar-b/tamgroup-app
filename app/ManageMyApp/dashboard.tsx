@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '@clerk/clerk-expo';
+
 import { useRouter } from 'expo-router';
 
 const INITIAL_MENU = [
@@ -28,7 +28,7 @@ const CATS = ['Starters', 'Mains', 'Sides', 'Drinks', 'Desserts'];
 type MenuItem = typeof INITIAL_MENU[0];
 
 export default function AdminDashboard() {
-  const { signOut } = useAuth();
+  
   const router = useRouter();
   const [tab, setTab] = useState<'orders'|'menu'|'home'>('orders');
   const [menuItems, setMenuItems] = useState(INITIAL_MENU);
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
     <View style={s.container}>
       <View style={s.header}>
         <Text style={s.headerTitle}>Admin Dashboard</Text>
-        <TouchableOpacity onPress={() => { signOut(); router.replace('/auth/sign-in'); }} style={s.signOutBtn}>
+        <TouchableOpacity onPress={() => { router.replace('/auth/sign-in'); }} style={s.signOutBtn}>
           <Ionicons name="log-out-outline" size={20} color="#D10000" />
         </TouchableOpacity>
       </View>

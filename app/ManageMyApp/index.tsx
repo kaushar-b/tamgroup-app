@@ -1,24 +1,23 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Alert } from 'react-native';
-import { useSignIn } from '@clerk/clerk-expo';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 import { useRouter } from 'expo-router';
 
 export default function AdminLogin() {
-  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onLogin = async () => {
-    if (!isLoaded) return;
+    if (!email || !password) return;
     setLoading(true);
     try {
-      const result = await signIn.create({ identifier: email, password });
-      await setActive({ session: result.createdSessionId });
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       router.replace('/ManageMyApp/dashboard');
     } catch (err: any) {
-      Alert.alert('Access Denied', err.errors?.[0]?.message || 'Login failed');
+      Alert.alert('Access Denied', 'Invalid email or password');
     } finally { setLoading(false); }
   };
 

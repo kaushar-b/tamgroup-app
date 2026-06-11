@@ -15,7 +15,7 @@ export default function Terms() {
       <ScrollView contentContainerStyle={s.content}>
 
         <Text style={s.sectionTitle}>Terms of Service</Text>
-        <Text style={s.body}>By placing an order through the TAM Restaurant Group app, you agree to these terms. Orders are subject to availability and confirmation. TAM Restaurant Group reserves the right to cancel any order at its discretion. Prices are listed in Botswana Pula (BWP) and are inclusive of applicable taxes.</Text>
+        <Text style={s.body}>By placing an order through the TAM Restaurant Group app, you agree to these terms. Orders are subject to availability and confirmation. TAM Restaurant Group reserves the right to cancel any order at its discretion.</Text>
 
         <Text style={s.sectionTitle}>Ordering & Payment</Text>
         <Text style={s.body}>All orders must be paid in full at the time of placement. Payments are processed securely. TAM Restaurant Group does not store payment card details. Orders are only confirmed once payment has been successfully processed.</Text>
@@ -23,11 +23,8 @@ export default function Terms() {
         <Text style={s.sectionTitle}>Delivery Policy</Text>
         <Text style={s.body}>Delivery is available within our designated service area. Delivery fees are calculated at checkout. Estimated delivery times are provided as a guide only and may vary due to distance, traffic, or order volume. TAM Restaurant Group is not liable for delays beyond our reasonable control.</Text>
 
-        <Text style={s.sectionTitle}>Pick Up Policy</Text>
-        <Text style={s.body}>Pick up orders will be ready within approximately 15 minutes of order confirmation. Please collect your order from TAM Restaurant Group at Mowana Park Mall, Phakalane, Botswana. Uncollected orders after 30 minutes may be disposed of.</Text>
-
         <Text style={s.sectionTitle}>No Refund Policy</Text>
-        <Text style={s.body}>All sales are final. TAM Restaurant Group does not offer refunds under any circumstances once an order has been placed and payment has been processed. In the event of an error on our part, we will endeavour to resolve the issue by replacing the affected item.</Text>
+        <Text style={s.body}>All sales are final. TAM Restaurant Group does not offer refunds under any circumstances once an order has been placed and payment has been processed.</Text>
 
         <Text style={s.sectionTitle}>No Returns Policy</Text>
         <Text style={s.body}>Due to the perishable nature of food products, we do not accept returns. All items leave our kitchen in accordance with our quality standards. If you have a concern about your order, please contact us immediately upon receipt.</Text>
@@ -41,7 +38,7 @@ export default function Terms() {
         <Text style={s.sectionTitle}>Contact Us</Text>
         <Text style={s.body}>For any queries or concerns regarding your order, please contact us at:</Text>
         <Text style={s.contact}>+267 00 000 000</Text>
-        <Text style={s.body}>Mowana Park Mall, Phakalane, Botswana{'\n'}Mon – Sun: 8:00 AM – 10:00 PM</Text>
+        <Text style={s.body}>Mowana Park Mall, Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
         <View style={{ height: 40 }} />
       </ScrollView>

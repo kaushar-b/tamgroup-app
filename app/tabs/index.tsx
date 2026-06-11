@@ -9,8 +9,8 @@ const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
 const HERO_IMAGES = [
   require('../../assets/images/Seafood Stew4.jpeg'),
-  require('../../assets/images/Garlic Butter Shrimp1.jpeg'),
   require('../../assets/images/Tomato & Basil Bruschetta1.jpeg'),
+  require('../../assets/images/Seafood Stew1.jpeg'),
 ];
 
 const FOOD_IMAGES: Record<string, any> = {
@@ -61,8 +61,7 @@ export default function Home() {
 
       {/* Header */}
       <View style={styles.header}>
-        <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.brandText}>Restaurant Group</Text>
+        <Text style={styles.brandText}>TAM Restaurant Group</Text>
         <View style={{ flex: 1 }} />
         <TouchableOpacity style={styles.menuBtn} onPress={() => setShowDropdown(true)}>
           <Ionicons name="ellipsis-vertical" size={22} color="#1a1612" />
@@ -148,7 +147,7 @@ export default function Home() {
             <Ionicons name="time" size={18} color="#CE6F79" />
             <Text style={styles.infoTitle}>Hours</Text>
           </View>
-          <Text style={styles.infoText}>Mon – Sun: 8:00 AM – 10:00 PM</Text>
+          <Text style={styles.infoText}>Mon – Sun: 7:00 AM – 10:00 PM</Text>
         </View>
 
         <View style={{ height: 24 }} />
@@ -174,9 +173,9 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  header:          { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingTop: 44, paddingBottom: 6, paddingLeft: 0, paddingRight: 14, elevation: 2, shadowColor: '#CE6F79', shadowOpacity: 0.08, shadowRadius: 4 },
+  header:          { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingTop: 44, paddingBottom: 6, paddingLeft: 20, paddingRight: 14, elevation: 2, shadowColor: '#CE6F79', shadowOpacity: 0.08, shadowRadius: 4 },
   logo:            { width: 160, height: 62, marginLeft: 0 },
-  brandText:       { fontSize: 13, fontWeight: '700', color: '#AD946B', marginLeft: 4, letterSpacing: 0.2 },
+  brandText:       { fontSize: 20, fontWeight: '800', color: '#AD946B', letterSpacing: 0.2 },
   menuBtn:         { padding: 8 },
   content:         { paddingBottom: 20 },
   heroWrap:        { marginHorizontal: 20, marginTop: 14, borderRadius: 18, overflow: 'hidden', marginBottom: 18, height: 200 },

@@ -217,15 +217,26 @@ export default function Menu() {
                     <Text style={styles.cardName}>{item.name}</Text>
                     <Text style={styles.cardDesc} numberOfLines={2}>{item.description}</Text>
                   </View>
-                  {/* Yellow cart circle */}
-                  <TouchableOpacity
-                    style={[styles.cartCircle, qty > 0 && styles.cartCircleActive]}
-                    onPress={e => { e.stopPropagation?.(); addToCart(item.id); }}
-                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                  >
-                    <Ionicons name="cart" size={18} color={qty > 0 ? '#fff' : '#1a1612'} />
-                    {qty > 0 && <Text style={styles.cartCircleQty}>{qty}</Text>}
-                  </TouchableOpacity>
+                  {/* Cart / qty controls */}
+                  {qty === 0 ? (
+                    <TouchableOpacity
+                      style={styles.cartCircle}
+                      onPress={e => { e.stopPropagation?.(); addToCart(item.id); }}
+                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                    >
+                      <Ionicons name="cart" size={18} color="#1a1612" />
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={styles.cardQtyRow}>
+                      <TouchableOpacity style={styles.cardQtyBtn} onPress={e => { e.stopPropagation?.(); removeFromCart(item.id); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                        <Ionicons name="remove" size={16} color="#1a1612" />
+                      </TouchableOpacity>
+                      <Text style={styles.cardQtyText}>{qty}</Text>
+                      <TouchableOpacity style={styles.cardQtyBtn} onPress={e => { e.stopPropagation?.(); addToCart(item.id); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                        <Ionicons name="add" size={16} color="#1a1612" />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.cardPrice}>P {item.price}.00</Text>
               </View>
@@ -244,12 +255,12 @@ const modal = StyleSheet.create({
   backdrop:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
   closeBtn:    { position: 'absolute', top: 14, right: 14, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' },
-  imageBox:    { width: SW, height: Math.round(SW * 0.6), backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  imageBox:    { width: SW, height: SW, backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
   navBtn:      { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   imgDots:     { position: 'absolute', bottom: 10, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
   imgDot:      { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)' },
   imgDotActive:{ width: 14, backgroundColor: '#fff' },
-  body:        { padding: 20, paddingBottom: 36 },
+  body:        { padding: 20, paddingBottom: 60 },
   name:        { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },
   desc:        { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 },
   footer:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -281,5 +292,8 @@ const styles = StyleSheet.create({
   cardPrice:          { fontSize: 16, fontWeight: '800', color: '#CE6F79' },
   cartCircle:         { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFDD32', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   cartCircleActive:   { backgroundColor: '#CE6F79' },
+  cardQtyRow:         { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F3C3C5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 },
+  cardQtyBtn:         { padding: 2 },
+  cardQtyText:        { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' },
   cartCircleQty:      { position: 'absolute', top: -4, right: -4, backgroundColor: '#1a1612', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
 });

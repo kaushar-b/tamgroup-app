@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -20,30 +20,15 @@ export default function About() {
 
       <ScrollView contentContainerStyle={s.content}>
         <View style={s.logoSection}>
-          <View style={s.logoBadge}>
-            <Text style={s.logoBadgeText}>TAM</Text>
-          </View>
-          <Text style={s.brandName}>TAM Restaurant Group</Text>
+          <Image source={require('./assets/logo.png')} style={s.logo} resizeMode="contain" />
           <Text style={s.tagline}>Fresh & Delicious, Every Time</Text>
         </View>
 
         <Text style={s.sectionTitle}>Who We Are</Text>
-        <Text style={s.body}>TAM Restaurant Group is a proudly Botswana-based restaurant located at Mowana Park Mall, Phakalane. We are passionate about delivering fresh, high-quality meals to our customers — whether you dine in, pick up, or order for delivery.</Text>
-
-        <Text style={s.sectionTitle}>Our Mission</Text>
-        <Text style={s.body}>To bring exceptional food experiences to every customer, crafted with the finest ingredients and served with warmth and care.</Text>
+        <Text style={s.body}>We are passionate about delivering fresh, high quality meals to our customers, whether you dine in, pickup, or order for delivery.</Text>
 
         <Text style={s.sectionTitle}>Find Us</Text>
-        <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 8:00 AM – 10:00 PM</Text>
-
-        <View style={s.divider} />
-
-        <Text style={s.sectionTitle}>Check Out Our Site</Text>
-        <TouchableOpacity style={s.linkRow} onPress={() => openLink('https://tamgroup-restaurant.co.bw')}>
-          <Ionicons name="globe-outline" size={20} color="#CE6F79" />
-          <Text style={s.linkText}>tamgroup-restaurant.co.bw</Text>
-          <Ionicons name="open-outline" size={16} color="#aaa" />
-        </TouchableOpacity>
+        <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
         <View style={s.divider} />
 
@@ -66,6 +51,15 @@ export default function About() {
         </View>
         <Text style={s.reminderNote}>Reminder: update the Facebook link with the real page URL when available.</Text>
 
+        <View style={s.divider} />
+
+        <Text style={s.sectionTitle}>Check Out Our Site</Text>
+        <TouchableOpacity style={s.linkRow} onPress={() => openLink('https://tamgroup-restaurant.co.bw')}>
+          <Ionicons name="globe-outline" size={20} color="#CE6F79" />
+          <Text style={s.linkText}>tamgroup-restaurant.co.bw</Text>
+          <Ionicons name="open-outline" size={16} color="#aaa" />
+        </TouchableOpacity>
+
         <View style={{ height: 40 }} />
       </ScrollView>
     </View>
@@ -79,9 +73,7 @@ const s = StyleSheet.create({
   title:        { fontSize: 22, fontWeight: '800', color: '#1a1612' },
   content:      { padding: 24 },
   logoSection:  { alignItems: 'center', paddingVertical: 24 },
-  logoBadge:    { width: 80, height: 80, borderRadius: 20, backgroundColor: '#CE6F79', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  logoBadgeText:{ fontSize: 28, fontWeight: '900', color: '#fff' },
-  brandName:    { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
+  logo:         { width: 220, height: 120, marginBottom: 8 },
   tagline:      { fontSize: 13, color: '#6b6b6b', fontStyle: 'italic' },
   sectionTitle: { fontSize: 15, fontWeight: '800', color: '#1a1612', marginTop: 20, marginBottom: 8 },
   body:         { fontSize: 13, color: '#6b6b6b', lineHeight: 21 },

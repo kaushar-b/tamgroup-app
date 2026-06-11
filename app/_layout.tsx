@@ -7,21 +7,13 @@ import { CartProvider } from '../context/CartContext';
 
 const tokenCache = {
   async getToken(key: string) {
-    try {
-      return await SecureStore.getItemAsync(key);
-    } catch {
-      return null;
-    }
+    try { return await SecureStore.getItemAsync(key); } catch { return null; }
   },
   async saveToken(key: string, value: string) {
-    try {
-      await SecureStore.setItemAsync(key, value);
-    } catch {}
+    try { await SecureStore.setItemAsync(key, value); } catch {}
   },
   async deleteToken(key: string) {
-    try {
-      await SecureStore.deleteItemAsync(key);
-    } catch {}
+    try { await SecureStore.deleteItemAsync(key); } catch {}
   },
 };
 
@@ -39,13 +31,14 @@ function AuthGate() {
     } else if (isSignedIn && inAuth) {
       router.replace('/tabs');
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, segments]);
 
   if (!isLoaded) return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FADAD9' }}>
       <ActivityIndicator size="large" color="#CE6F79" />
     </View>
   );
+
   return <Slot />;
 }
 

@@ -20,7 +20,7 @@ export default function About() {
 
       <ScrollView contentContainerStyle={s.content}>
         <View style={s.logoSection}>
-          <Image source={require('../../assets/logo.png')} style={s.logo} resizeMode="contain" />
+          <Image source={require('../assets/logo.png')} style={s.logo} resizeMode="contain" />
           <Text style={s.tagline}>Fresh & Delicious, Every Time</Text>
         </View>
 

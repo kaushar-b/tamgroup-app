@@ -10,7 +10,7 @@ const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 const HERO_IMAGES = [
   require('../../assets/images/products/Seafood Stew4.jpeg'),
   require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
-  require('../../assets/images/products/Coq au Vin.jpeg'),
+  require('../../assets/images/products/Coq au Vin1.jpeg'),
 ];
 
 const FOOD_IMAGES: Record<string, any> = {
@@ -114,6 +114,7 @@ export default function Home() {
         </View>
 
         {/* Food Slideshow */}
+        <Text style={styles.sectionTitle}>Dishes from Around the World</Text>
         <View style={styles.foodSlideWrap}>
           <FlatList
             ref={foodRef}

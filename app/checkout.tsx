@@ -8,6 +8,7 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const router = useRouter();
   const [orderType, setOrderType] = useState<'pickup' | 'delivery' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'on_delivery' | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address1, setAddress1] = useState('');
@@ -21,6 +22,7 @@ export default function Checkout() {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!orderType) e.orderType = 'Please select Pick Up or Delivery';
+    if (orderType === 'delivery' && !paymentMethod) e.paymentMethod = 'Please select a payment method';
     if (!name.trim()) e.name = 'Full name is required';
     if (!phone.trim()) e.phone = 'Phone number is required';
     if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address is required for delivery';
@@ -63,6 +65,27 @@ export default function Checkout() {
               <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P30 delivery fee</Text>
             </TouchableOpacity>
           </View>
+
+          {orderType === 'delivery' && (
+            <>
+              <Text style={s.sectionLabel}>Payment Method</Text>
+              {errors.paymentMethod ? <Text style={s.fieldError}>{errors.paymentMethod}</Text> : null}
+              <TouchableOpacity
+                style={[s.payBtn, paymentMethod === 'online' && s.payBtnActive, { backgroundColor: paymentMethod === 'online' ? '#CE6F79' : '#FADAD9', borderColor: paymentMethod === 'online' ? '#CE6F79' : '#F3C3C5' }]}
+                onPress={() => { setPaymentMethod('online'); setErrors(e => ({ ...e, paymentMethod: '' })); }}
+              >
+                <Ionicons name="card" size={22} color={paymentMethod === 'online' ? '#fff' : '#CE6F79'} />
+                <Text style={[s.payBtnText, { color: paymentMethod === 'online' ? '#fff' : '#1a1612' }]}>Pay Online</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.payBtn, { marginTop: 10, backgroundColor: paymentMethod === 'on_delivery' ? '#1a1612' : '#FADAD9', borderColor: paymentMethod === 'on_delivery' ? '#1a1612' : '#F3C3C5' }]}
+                onPress={() => { setPaymentMethod('on_delivery'); setErrors(e => ({ ...e, paymentMethod: '' })); }}
+              >
+                <Ionicons name="wallet" size={22} color={paymentMethod === 'on_delivery' ? '#fff' : '#CE6F79'} />
+                <Text style={[s.payBtnText, { color: paymentMethod === 'on_delivery' ? '#fff' : '#1a1612' }]}>Pay on Delivery</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
           <Text style={s.sectionLabel}>Your Details</Text>
           <View style={s.inputGroup}>
@@ -173,4 +196,7 @@ const s = StyleSheet.create({
   footer:            { padding: 20, paddingBottom: 36, borderTopWidth: 1, borderTopColor: '#F3C3C5', backgroundColor: '#fff' },
   placeBtn:          { backgroundColor: '#FFDD32', borderRadius: 14, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   placeBtnText:      { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  payBtn:            { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 14, borderWidth: 2, marginBottom: 4 },
+  payBtnActive:      { },
+  payBtnText:        { fontSize: 15, fontWeight: '700' },
 });

@@ -8,9 +8,9 @@ const SQ = SW - 40;
 const HERO_BG = ['#FBA4AD', '#f0b8be', '#FBA4AD'];
 
 const HERO_IMAGES = [
-  require('../../assets/images/products/Seafood Stew4.jpeg'),
-  require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
-  require('../../assets/images/products/Coq au Vin1.jpeg'),
+  require('../../assets/images/Pink Slide.jpeg'),
+  require('../../assets/images/Yellow Slide.jpeg'),
+  require('../../assets/images/Red Slide.jpeg'),
 ];
 
 const FOOD_IMAGES: Record<string, any> = {
@@ -162,11 +162,7 @@ export default function Home() {
             <Ionicons name="information-circle-outline" size={18} color="#CE6F79" />
             <Text style={styles.dropdownText}>About Us</Text>
           </TouchableOpacity>
-          <View style={styles.dropdownDivider} />
-          <TouchableOpacity style={styles.dropdownRow} onPress={() => { setShowDropdown(false); router.push('/terms'); }}>
-            <Ionicons name="document-text-outline" size={18} color="#CE6F79" />
-            <Text style={styles.dropdownText}>Policy</Text>
-          </TouchableOpacity>
+
         </View>
       </Modal>
     </View>

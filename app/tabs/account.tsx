@@ -58,11 +58,7 @@ export default function Account() {
           <Text style={s.rowText}>About Us</Text>
           <Ionicons name="chevron-forward" size={16} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={s.row} onPress={() => router.push('/terms')}>
-          <View style={s.rowIcon}><Ionicons name="document-text-outline" size={20} color="#CE6F79" /></View>
-          <Text style={s.rowText}>Policy & Terms</Text>
-          <Ionicons name="chevron-forward" size={16} color="#ccc" />
-        </TouchableOpacity>
+
       </View>
       <View style={s.section}>
         <TouchableOpacity style={[s.row, s.signOutRow]} onPress={handleSignOut}>

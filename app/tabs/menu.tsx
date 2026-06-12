@@ -228,11 +228,11 @@ export default function Menu() {
                     </TouchableOpacity>
                   ) : (
                     <View style={styles.cardQtyRow}>
-                      <TouchableOpacity style={styles.cardQtyBtn} onPress={e => { e.stopPropagation?.(); removeFromCart(item.id); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <TouchableOpacity style={styles.cardQtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         <Ionicons name="remove" size={16} color="#1a1612" />
                       </TouchableOpacity>
                       <Text style={styles.cardQtyText}>{qty}</Text>
-                      <TouchableOpacity style={styles.cardQtyBtn} onPress={e => { e.stopPropagation?.(); addToCart(item.id); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <TouchableOpacity style={styles.cardQtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         <Ionicons name="add" size={16} color="#1a1612" />
                       </TouchableOpacity>
                     </View>

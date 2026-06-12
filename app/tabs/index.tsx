@@ -14,15 +14,15 @@ const HERO_IMAGES = [
 ];
 
 const FOOD_IMAGES: Record<string, any> = {
-  '1': require('../../assets/images/Marseille, France.jpeg'),
-  '2': require('../../assets/images/Lisbon, Portugal.jpeg'),
-  '3': require('../../assets/images/Barcelona, Spain.jpeg'),
+  '1': require('../../assets/images/products/Beef Bourguignon2.jpeg'),
+  '2': require('../../assets/images/products/Seafood Stew1.jpeg'),
+  '3': require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
 };
 
 const FOOD_SLIDES = [
-  { id: '1', label: 'Marseille, France' },
-  { id: '2', label: 'Lisbon, Portugal' },
-  { id: '3', label: 'Barcelona, Spain' },
+  { id: '1', label: 'Beef Bourguignon — France' },
+  { id: '2', label: 'Seafood Stew — Spain' },
+  { id: '3', label: 'Tomato & Basil Bruschetta — Italy' },
 ];
 
 export default function Home() {

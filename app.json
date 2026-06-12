@@ -23,7 +23,8 @@
         "backgroundColor": "#FADAD9"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.starkey18.tamgroup"
+      "package": "com.starkey18.tamgroup",
+      "userInterfaceStyle": "light"
     },
     "web": {
       "favicon": "./assets/favicon.png"

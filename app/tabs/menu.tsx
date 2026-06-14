@@ -79,12 +79,23 @@ export default function MenuSelector() {
           />
         </View>
 
-        {CATEGORIES.map(cat => (
-          <TouchableOpacity key={cat.id} style={s.catBtn} onPress={() => router.push(cat.route as any)}>
-            <Text style={s.catLabel}>{cat.label}</Text>
-            <Ionicons name="chevron-forward" size={22} color="#fff" />
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/starters')}>
+          <Image source={require('../../assets/images/buttons/starters btn.png')} style={s.catImg} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/paella')}>
+          <Image source={require('../../assets/images/buttons/paella btn.png')} style={s.catImg} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/desserts')}>
+          <Image source={require('../../assets/images/buttons/desserts btn.png')} style={s.catImg} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/specials')}>
+          <Image source={require('../../assets/images/buttons/weekly btn.png')} style={s.catImg} resizeMode="contain" />
+        </TouchableOpacity>
+        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/aperitifs')}>
+          <Image source={require('../../assets/images/buttons/signature btn.png')} style={s.catImg} resizeMode="contain" />
+        </TouchableOpacity>
+
+        <View style={{ height: 100 }} />
 
         {/* Footer */}
         <View style={s.footer}>
@@ -109,6 +120,8 @@ const s = StyleSheet.create({
   carouselImg:  { width: '100%', height: '100%' },
   catBtn:       { backgroundColor: RED, borderRadius: 50, paddingVertical: 20, paddingHorizontal: 28, marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 3 },
   catLabel:     { fontSize: 20, fontWeight: '800', color: '#fff', flex: 1, textAlign: 'center' },
+  catImgBtn:    { width: '100%', marginBottom: 16 },
+  catImg:       { width: '100%', height: undefined, aspectRatio: 1280 / 314, borderRadius: 16 },
   footer:       { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, marginTop: 30, marginHorizontal: -20 },
   footerLogo:   { width: 44, height: 28 },
   footerText:   { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },

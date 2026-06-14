@@ -66,7 +66,7 @@ export default function About() {
         <Text style={s.sectionTitle}>Find Us</Text>
         <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 80 }} />
         <View style={s.footer}>
           <Image source={require('../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
           <Text style={s.footerText}>TAM Group Company</Text>

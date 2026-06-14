@@ -108,13 +108,11 @@ export default function Home() {
 
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/tabs/menu')}>
-            <Ionicons name="restaurant" size={26} color={YELLOW} />
-            <Text style={styles.actionLabel}>Menu</Text>
+          <TouchableOpacity style={styles.actionImgBtn} onPress={() => router.push('/tabs/menu')}>
+            <Image source={require('../../assets/images/buttons/menu btn.png')} style={styles.actionImg} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/about')}>
-            <Ionicons name="information-circle" size={26} color={YELLOW} />
-            <Text style={styles.actionLabel}>About Us</Text>
+          <TouchableOpacity style={styles.actionImgBtn} onPress={() => router.push('/about')}>
+            <Image source={require('../../assets/images/buttons/about btn.png')} style={styles.actionImg} resizeMode="contain" />
           </TouchableOpacity>
         </View>
 
@@ -142,7 +140,7 @@ export default function Home() {
           <Text style={styles.infoText}>Mon – Sun: 7:00 AM – 10:00 PM</Text>
         </View>
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 80 }} />
 
         {/* Footer */}
         <View style={styles.footer}>
@@ -156,7 +154,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  header:        { flexDirection: 'row', alignItems: 'center', backgroundColor: YELLOW, paddingTop: 44, paddingBottom: 10, paddingHorizontal: 16 },
+  header:        { flexDirection: 'row', alignItems: 'center', backgroundColor: YELLOW, paddingTop: 44, paddingBottom: 2, paddingHorizontal: 16 },
   cartCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: RED, alignItems: 'center', justifyContent: 'center' },
   cartBadge:     { position: 'absolute', top: -4, right: -4, backgroundColor: '#fff', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   cartBadgeText: { color: RED, fontSize: 10, fontWeight: '800' },
@@ -169,6 +167,8 @@ const styles = StyleSheet.create({
   actionsRow:    { flexDirection: 'row', gap: 14, marginHorizontal: 16, marginTop: 14, marginBottom: 20 },
   actionBtn:     { flex: 1, backgroundColor: RED, borderRadius: 50, paddingVertical: 18, alignItems: 'center', gap: 8, elevation: 2 },
   actionLabel:   { fontSize: 19, fontWeight: '800', color: '#fff' },
+  actionImgBtn:  { flex: 1 },
+  actionImg:     { width: '100%', height: undefined, aspectRatio: 1024 / 512, borderRadius: 16 },
   sectionWrap:   { marginBottom: 20 },
   sectionTitle:  { fontSize: 16, fontWeight: '800', color: '#1a1612', marginBottom: 12, paddingHorizontal: 16 },
   worldWrap:     { marginHorizontal: 16, borderRadius: 16, overflow: 'hidden', backgroundColor: '#fff', elevation: 2 },

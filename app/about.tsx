@@ -66,6 +66,7 @@ export default function About() {
         <Text style={s.sectionTitle}>Find Us</Text>
         <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
+        <View style={{ height: 40 }} />
         <View style={s.footer}>
           <Image source={require('../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
           <Text style={s.footerText}>TAM Group Company</Text>
@@ -94,7 +95,7 @@ const s = StyleSheet.create({
   socialLabel:     { fontSize: 12, fontWeight: '600', color: '#fff' },
   linkRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
   linkText:        { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
-  footer:          { backgroundColor: '#fff', alignItems: 'center', paddingVertical: 20, marginTop: 20, borderRadius: 16 },
-  footerLogo:      { width: 60, height: 34, marginBottom: 4 },
-  footerText:      { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
+  footer:          { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, marginHorizontal: -20 },
+  footerLogo:      { width: 44, height: 28 },
+  footerText:      { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

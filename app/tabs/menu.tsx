@@ -109,7 +109,7 @@ const s = StyleSheet.create({
   carouselImg:  { width: '100%', height: '100%' },
   catBtn:       { backgroundColor: RED, borderRadius: 50, paddingVertical: 20, paddingHorizontal: 28, marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 3 },
   catLabel:     { fontSize: 20, fontWeight: '800', color: '#fff', flex: 1, textAlign: 'center' },
-  footer:       { backgroundColor: '#fff', alignItems: 'center', paddingVertical: 20, marginTop: 10 },
-  footerLogo:   { width: 60, height: 34, marginBottom: 4 },
-  footerText:   { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
+  footer:       { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, marginTop: 30, marginHorizontal: -20 },
+  footerLogo:   { width: 44, height: 28 },
+  footerText:   { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

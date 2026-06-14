@@ -59,7 +59,7 @@ export default function SignUp() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  container: { flex: 1, backgroundColor: '#FFD544', alignItems: 'center', justifyContent: 'center', padding: 24 },
   logo:      { width: 280, height: 160, marginBottom: 28 },
   card:      { width: '100%', backgroundColor: '#fff', borderRadius: 20, padding: 24, shadowColor: '#CE6F79', shadowOpacity: 0.12, shadowRadius: 16, elevation: 4 },
   title:     { fontSize: 24, fontWeight: '700', color: '#1a1612', marginBottom: 4 },

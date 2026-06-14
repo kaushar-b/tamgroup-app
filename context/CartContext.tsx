@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-export type CartItem = { id: string; name: string; price: number; icon: string; quantity: number; };
+export type CartItem = { id: string; name: string; price: number; icon: string; image?: any; quantity: number; };
 
-export type AddableItem = { id: string; name: string; price: number; icon?: string; };
+export type AddableItem = { id: string; name: string; price: number; icon?: string; image?: any; };
 
 type CartContextType = {
   items: CartItem[];
@@ -22,8 +22,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prev => {
       const existing = prev.find(i => i.id === id);
       if (existing) return prev.map(i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i);
-      if (!item) return prev; // no data available to add a new item
-      return [...prev, { id, name: item.name, price: item.price, icon: item.icon || 'restaurant', quantity: 1 }];
+      if (!item) return prev;
+      return [...prev, { id, name: item.name, price: item.price, icon: item.icon || 'restaurant', image: item.image, quantity: 1 }];
     });
   };
 

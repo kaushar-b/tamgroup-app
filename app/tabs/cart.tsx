@@ -17,7 +17,7 @@ export default function Cart() {
     <View style={s.container}>
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={s.homeBtn}>
-          <Ionicons name="home-outline" size={22} color="#1a1612" />
+          <Ionicons name="home-outline" size={22} color="#fff" />
         </TouchableOpacity>
         <View style={s.headerCenter}>
           <Text style={s.title}>Cart</Text>
@@ -35,9 +35,13 @@ export default function Cart() {
         <ScrollView contentContainerStyle={{ padding: 16 }}>
           {items.map(item => (
             <View key={item.id} style={s.card}>
-              <View style={s.cardIcon}>
-                <Ionicons name={item.icon as any} size={26} color={RED} />
-              </View>
+              {item.image ? (
+                <Image source={item.image} style={s.cardImg} resizeMode="cover" />
+              ) : (
+                <View style={s.cardIcon}>
+                  <Ionicons name={item.icon as any} size={26} color={RED} />
+                </View>
+              )}
               <View style={s.cardInfo}>
                 <Text style={s.itemName}>{item.name}</Text>
                 <Text style={s.itemPrice}>P {item.price}.00 each</Text>
@@ -82,17 +86,18 @@ export default function Cart() {
 
 const s = StyleSheet.create({
   container:        { flex: 1, backgroundColor: YELLOW },
-  header:           { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
+  header:           { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
   homeBtn:          { width: 44, height: 44, justifyContent: 'center' },
   headerCenter:     { flex: 1, alignItems: 'center' },
-  title:            { fontSize: 24, fontWeight: '800', color: '#1a1612' },
-  subtitle:         { fontSize: 13, color: RED, marginTop: 2 },
+  title:            { fontSize: 24, fontWeight: '800', color: '#fff' },
+  subtitle:         { fontSize: 13, color: '#fff', opacity: 0.85, marginTop: 2 },
   emptyWrap:        { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyIcon:        { width: 96, height: 96, borderRadius: 48, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   emptyTitle:       { fontSize: 20, fontWeight: '700', color: '#1a1612' },
   emptyText:        { fontSize: 14, color: '#6b6b6b' },
   card:             { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, padding: 12, elevation: 1 },
   cardIcon:         { width: 46, height: 46, backgroundColor: YELLOW, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  cardImg:          { width: 46, height: 46, borderRadius: 10, marginRight: 12 },
   cardInfo:         { flex: 1 },
   itemName:         { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   itemPrice:        { fontSize: 12, color: RED, marginTop: 2 },
@@ -102,7 +107,7 @@ const s = StyleSheet.create({
   binBtn:           { padding: 6 },
   clearBtn:         { alignItems: 'center', marginTop: 4 },
   clearText:        { fontSize: 13, color: RED, textDecorationLine: 'underline' },
-  footer:           { padding: 20, paddingBottom: 32, borderTopWidth: 1, borderTopColor: YELLOW, backgroundColor: '#fff' },
+  footer:           { padding: 20, paddingBottom: 32, borderTopWidth: 1, borderTopColor: YELLOW, backgroundColor: YELLOW },
   totalRow:         { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
   totalLabel:       { fontSize: 18, fontWeight: '700', color: '#1a1612' },
   totalAmount:      { fontSize: 18, fontWeight: '800', color: RED },

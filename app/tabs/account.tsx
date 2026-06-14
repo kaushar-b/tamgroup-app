@@ -46,17 +46,19 @@ export default function Account() {
         <TouchableOpacity style={s.row} onPress={() => router.push('/auth/change-password')}>
           <View style={s.rowIcon}><Ionicons name="key-outline" size={20} color={RED} /></View>
           <Text style={s.rowText}>Change Password</Text>
-          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          <Ionicons name="chevron-forward" size={16} color={RED} />
         </TouchableOpacity>
+        <View style={s.rowDivider} />
         <TouchableOpacity style={s.row} onPress={() => router.push('/tabs/orders')}>
           <View style={s.rowIcon}><Ionicons name="receipt-outline" size={20} color={RED} /></View>
           <Text style={s.rowText}>My Orders</Text>
-          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          <Ionicons name="chevron-forward" size={16} color={RED} />
         </TouchableOpacity>
+        <View style={s.rowDivider} />
         <TouchableOpacity style={s.row} onPress={() => router.push('/about')}>
           <View style={s.rowIcon}><Ionicons name="information-circle-outline" size={20} color={RED} /></View>
           <Text style={s.rowText}>About Us</Text>
-          <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          <Ionicons name="chevron-forward" size={16} color={RED} />
         </TouchableOpacity>
       </View>
       <View style={s.section}>
@@ -65,6 +67,7 @@ export default function Account() {
           <Text style={[s.rowText, { color: RED }]}>Sign Out</Text>
         </TouchableOpacity>
       </View>
+      <View style={{ flex: 1 }} />
       <View style={s.footerWrap}>
         <Image source={require('../../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
         <Text style={s.footerText}>TAM Group Company</Text>
@@ -77,16 +80,17 @@ const s = StyleSheet.create({
   container:    { flex: 1, backgroundColor: YELLOW },
   header:       { paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
   title:        { fontSize: 26, fontWeight: '800', color: '#1a1612' },
-  avatarWrap:   { alignItems: 'center', paddingVertical: 28, backgroundColor: '#fff', marginBottom: 16 },
+  avatarWrap:   { alignItems: 'center', paddingVertical: 28, backgroundColor: YELLOW, marginBottom: 16 },
   avatarCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: RED, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   avatarText:   { fontSize: 36, fontWeight: '800', color: '#fff' },
-  email:        { fontSize: 14, color: '#6b6b6b' },
-  section:      { backgroundColor: '#fff', marginBottom: 12 },
-  row:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: YELLOW },
-  rowIcon:      { width: 36, height: 36, borderRadius: 10, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
+  email:        { fontSize: 14, color: '#1a1612' },
+  section:      { backgroundColor: YELLOW, marginBottom: 12 },
+  row:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16 },
+  rowDivider:   { height: 1, backgroundColor: RED, marginHorizontal: 20, opacity: 0.3 },
+  rowIcon:      { width: 36, height: 36, borderRadius: 10, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginRight: 14 },
   rowText:      { flex: 1, fontSize: 15, fontWeight: '600', color: '#1a1612' },
   signOutRow:   { borderBottomWidth: 0 },
-  footerWrap:   { alignItems: 'center', paddingVertical: 16, marginTop: 'auto' },
-  footerLogo:   { width: 60, height: 34, marginBottom: 4 },
-  footerText:   { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
+  footerWrap:   { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, backgroundColor: '#fff', width: '100%' },
+  footerLogo:   { width: 44, height: 28 },
+  footerText:   { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

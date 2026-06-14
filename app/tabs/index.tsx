@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions, FlatList, StatusBar, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions, FlatList, StatusBar, useState as _u } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '../../context/CartContext';
@@ -18,6 +18,7 @@ const CAROUSEL_IMAGES = [
   require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
 ];
 
+// Manually set your 3 images + names here
 const DISHES_FROM_WORLD = [
   { id: '1', name: 'Barcelona, Spain', image: require('../../assets/images/Barcelona, Spain.jpeg') },
   { id: '2', name: 'Lisbon, Portugal', image: require('../../assets/images/Lisbon, Portugal.jpeg') },
@@ -31,6 +32,7 @@ export default function Home() {
   const { count } = useCart();
   const flatRef = useRef<FlatList>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [worldIdx, setWorldIdx] = useState(0);
 
   const LOOPED = [...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES];
   const START = CAROUSEL_IMAGES.length;
@@ -47,6 +49,13 @@ export default function Home() {
         return next;
       });
     }, 2000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setWorldIdx(prev => (prev + 1) % DISHES_FROM_WORLD.length);
+    }, 4000);
     return () => clearInterval(t);
   }, []);
 
@@ -74,6 +83,8 @@ export default function Home() {
           <Image source={require('../../assets/casadelsol.logo.png')} style={styles.heroImg} resizeMode="contain" />
         </View>
 
+        <View style={styles.divider} />
+
         {/* Carousel */}
         <View style={styles.carouselWrap}>
           <FlatList
@@ -93,6 +104,8 @@ export default function Home() {
           />
         </View>
 
+        <View style={styles.divider} />
+
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/tabs/menu')}>
@@ -105,17 +118,13 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* Dishes from around the world */}
+        {/* Dishes from around the world - single rotating square image */}
         <View style={styles.sectionWrap}>
           <Text style={styles.sectionTitle}>Dishes from around the world</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingHorizontal: 16, paddingBottom: 4 }}>
-            {DISHES_FROM_WORLD.map(dish => (
-              <View key={dish.id} style={styles.worldCard}>
-                <Image source={dish.image} style={styles.worldImg} resizeMode="cover" />
-                <Text style={styles.worldLabel}>{dish.name}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          <TouchableOpacity style={styles.worldWrap} onPress={() => router.push('/tabs/menu')} activeOpacity={0.9}>
+            <Image source={DISHES_FROM_WORLD[worldIdx].image} style={styles.worldImg} resizeMode="cover" />
+            <Text style={styles.worldLabel}>{DISHES_FROM_WORLD[worldIdx].name}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Find Us & Hours */}
@@ -133,6 +142,8 @@ export default function Home() {
           <Text style={styles.infoText}>Mon – Sun: 7:00 AM – 10:00 PM</Text>
         </View>
 
+        <View style={{ height: 40 }} />
+
         {/* Footer */}
         <View style={styles.footer}>
           <Image source={require('../../assets/logo.png')} style={styles.footerLogo} resizeMode="contain" />
@@ -149,25 +160,26 @@ const styles = StyleSheet.create({
   cartCircle:    { width: 42, height: 42, borderRadius: 21, backgroundColor: RED, alignItems: 'center', justifyContent: 'center' },
   cartBadge:     { position: 'absolute', top: -4, right: -4, backgroundColor: '#fff', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   cartBadgeText: { color: RED, fontSize: 10, fontWeight: '800' },
-  heroWrap:      { width: SW, height: SW * 0.6, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
-  heroImg:       { width: '85%', height: '85%' },
-  carouselWrap:  { marginTop: 8, marginBottom: 14 },
+  heroWrap:      { width: SW, height: SW * 0.72, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8, paddingTop: 0 },
+  heroImg:       { width: '100%', height: '100%' },
+  divider:       { height: 1, backgroundColor: '#1a1612', marginHorizontal: 16 },
+  carouselWrap:  { marginTop: 6, marginBottom: 6, paddingTop: 6 },
   carouselItem:  { width: ITEM_SIZE, height: ITEM_SIZE, marginRight: 8, borderRadius: 12, overflow: 'hidden' },
   carouselImg:   { width: '100%', height: '100%' },
-  actionsRow:    { flexDirection: 'row', gap: 14, marginHorizontal: 16, marginBottom: 20 },
+  actionsRow:    { flexDirection: 'row', gap: 14, marginHorizontal: 16, marginTop: 14, marginBottom: 20 },
   actionBtn:     { flex: 1, backgroundColor: RED, borderRadius: 50, paddingVertical: 18, alignItems: 'center', gap: 8, elevation: 2 },
-  actionLabel:   { fontSize: 17, fontWeight: '800', color: '#fff' },
+  actionLabel:   { fontSize: 19, fontWeight: '800', color: '#fff' },
   sectionWrap:   { marginBottom: 20 },
   sectionTitle:  { fontSize: 16, fontWeight: '800', color: '#1a1612', marginBottom: 12, paddingHorizontal: 16 },
-  worldCard:     { width: 160, borderRadius: 14, overflow: 'hidden', backgroundColor: '#fff', elevation: 2 },
-  worldImg:      { width: 160, height: 110 },
-  worldLabel:    { fontSize: 12, fontWeight: '700', color: '#1a1612', padding: 8 },
+  worldWrap:     { marginHorizontal: 16, borderRadius: 16, overflow: 'hidden', backgroundColor: '#fff', elevation: 2 },
+  worldImg:      { width: '100%', height: SW - 32, aspectRatio: 1 },
+  worldLabel:    { fontSize: 14, fontWeight: '700', color: '#1a1612', padding: 12, textAlign: 'center' },
   infoCard:      { backgroundColor: YELLOW_LIGHT, borderRadius: 16, padding: 18, marginHorizontal: 16, marginBottom: 20 },
   infoRow:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   infoTitle:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:      { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
   infoDivider:   { height: 1, backgroundColor: YELLOW, marginVertical: 12 },
-  footer:        { backgroundColor: '#fff', alignItems: 'center', paddingVertical: 20, marginTop: 10 },
-  footerLogo:    { width: 60, height: 34, marginBottom: 4 },
-  footerText:    { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
+  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, width: '100%' },
+  footerLogo:    { width: 44, height: 28 },
+  footerText:    { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

@@ -66,7 +66,7 @@ export default function Orders() {
     <View style={s.container}>
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={s.homeBtn}>
-          <Ionicons name="home-outline" size={22} color="#1a1612" />
+          <Ionicons name="home-outline" size={22} color="#fff" />
         </TouchableOpacity>
         <View style={s.headerCenter}>
           <Text style={s.title}>Orders</Text>
@@ -123,11 +123,11 @@ export default function Orders() {
 
 const s = StyleSheet.create({
   container:    { flex: 1, backgroundColor: YELLOW },
-  header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
+  header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
   homeBtn:      { width: 44, height: 44, justifyContent: 'center' },
   headerCenter: { flex: 1, alignItems: 'center' },
-  title:        { fontSize: 24, fontWeight: '800', color: '#1a1612' },
-  subtitle:     { fontSize: 13, color: RED, marginTop: 2 },
+  title:        { fontSize: 24, fontWeight: '800', color: '#fff' },
+  subtitle:     { fontSize: 13, color: '#fff', opacity: 0.85, marginTop: 2 },
   emptyWrap:    { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyTitle:   { fontSize: 20, fontWeight: '700', color: '#1a1612' },
   emptyText:    { fontSize: 14, color: '#6b6b6b' },

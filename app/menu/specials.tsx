@@ -28,14 +28,16 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={modal.backdrop}>
         <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
-        <View style={modal.sheet}>
+          <TouchableOpacity style={modal.backBtn} onPress={onClose}>
+            <Ionicons name="arrow-back" size={18} color="#1a1612" /><Text style={modal.backBtnText}>Back</Text>
+          </TouchableOpacity>
+          <View style={modal.sheet}>
           <View style={modal.imageBox}>
             <Image source={dish.images[imgIdx]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
             {dish.images.length > 1 && (<>
               <TouchableOpacity style={[modal.navBtn, { left: 10 }]} onPress={() => setImgIdx(i => Math.max(0, i - 1))}><Ionicons name="chevron-back" size={22} color="#fff" /></TouchableOpacity>
               <TouchableOpacity style={[modal.navBtn, { right: 10 }]} onPress={() => setImgIdx(i => Math.min(dish.images.length - 1, i + 1))}><Ionicons name="chevron-forward" size={22} color="#fff" /></TouchableOpacity>
             </>)}
-            <TouchableOpacity style={modal.backBtn} onPress={onClose}><Ionicons name="arrow-back" size={18} color="#1a1612" /><Text style={modal.backBtnText}>Back</Text></TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={modal.body}>
             <Text style={modal.name}>{dish.name}</Text>
@@ -43,12 +45,12 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
               {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
+                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -71,7 +73,7 @@ export default function Specials() {
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={s.backBtn} onPress={() => router.push('/tabs/menu')}>
           <Ionicons name="arrow-back" size={20} color="#1a1612" />
           <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
@@ -97,12 +99,12 @@ export default function Specials() {
                     <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
                   </View>
                   {qty === 0 ? (
-                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
+                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
                   ) : (
                     <View style={s.qtyRow}>
                       <TouchableOpacity style={s.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={16} color="#1a1612" /></TouchableOpacity>
                       <Text style={s.qtyText}>{qty}</Text>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
                     </View>
                   )}
                 </View>
@@ -126,7 +128,7 @@ export default function Specials() {
             <Text style={s.tableDish}>All 6 Specials</Text>
           </View>
         </View>
-        <View style={{ height: 20 }} />
+        <View style={{ height: 60 }} />
       </ScrollView>
       <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
     </View>
@@ -162,5 +164,5 @@ const s = StyleSheet.create({
   tableDish:    { fontSize: 14, color: '#6b6b6b', flex: 1, textAlign: 'right' },
 });
 const modal = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }, sheet: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' }, imageBox: { width: SW, height: SW, backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' }, navBtn: { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }, backBtn: { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 50, paddingHorizontal: 14, paddingVertical: 8, elevation: 3 }, backBtnText: { fontSize: 14, fontWeight: '700', color: '#1a1612' }, body: { padding: 20, paddingBottom: 60 }, name: { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 }, desc: { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 }, footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, price: { fontSize: 22, fontWeight: '800', color: RED }, cartCircle: { width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#F3C3C5', borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 }, qtyBtn: { padding: 4 }, qtyText: { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }, sheet: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' }, imageBox:    { width: SW, height: SW, backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' }, navBtn: { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }, backBtn: { position: 'absolute', top: 50, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 50, paddingHorizontal: 14, paddingVertical: 10, elevation: 5, zIndex: 10 }, backBtnText: { fontSize: 14, fontWeight: '700', color: '#1a1612' }, body: { padding: 20, paddingBottom: 60 }, name: { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 }, desc: { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 }, footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, price: { fontSize: 22, fontWeight: '800', color: RED }, cartCircle: { width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#F3C3C5', borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 }, qtyBtn: { padding: 4 }, qtyText: { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
 });

@@ -9,8 +9,8 @@ const RED = '#b60015';
 const YELLOW = '#FFD544';
 
 // ── PASTE YOUR TELEGRAM DETAILS HERE ──
-const TELEGRAM_BOT_TOKEN = '8944268822';
-const TELEGRAM_CHAT_ID = '8534438785:AAF1R4b49XktyN2TtDezeYt8EqyMV14zfCc';
+const TELEGRAM_BOT_TOKEN = '8534438785:AAF1R4b49XktyN2TtDezeYt8EqyMV14zfCc';
+const TELEGRAM_CHAT_ID = '8944268822';
 
 async function sendTelegram(message: string) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;

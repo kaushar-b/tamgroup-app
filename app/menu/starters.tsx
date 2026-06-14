@@ -9,9 +9,10 @@ const RED = '#b60015';
 const YELLOW = '#FFD544';
 
 const DISHES = [
-  { id: 's1', name: 'Tomato & Basil Bruschetta', description: 'Toasted bread topped with fresh tomato and basil.', details: 'Add your full description here.', price: 400, images: [require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'), require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg')] },
-  { id: 's2', name: 'Roasted Red Pepper', description: 'Slow roasted red peppers with herbs.', details: 'Add your full description here.', price: 400, images: [require('../../assets/images/products/Roasted Red1.jpeg'), require('../../assets/images/products/Roasted Red2.jpeg')] },
-  { id: 's3', name: 'Poached Egg', description: 'Perfectly poached egg on a bed of greens.', details: 'Add your full description here.', price: 400, images: [require('../../assets/images/products/Poached Egg1.jpeg'), require('../../assets/images/products/Poached Egg2.jpeg')] },
+  { id: 's1', name: 'Tomato & Basil Bruschetta', description: 'Toasted bread topped with fresh tomato and basil.', details: 'Crostini - Toasted bread topped with roasted cherry tomatoes, garlic, ricotta/cream cheese, and fresh basil.', price: 400, images: [require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'), require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'), require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg')] },
+  { id: 's2', name: 'Roasted Red Pepper', description: 'Slow roasted red peppers with herbs.', details: 'Marinated/roasted red peppers in olive oil with garlic, thyme, and balsamic.', price: 400, images: [require('../../assets/images/products/Roasted Red1.jpeg'), require('../../assets/images/products/Roasted Red2.jpeg'), require('../../assets/images/products/Roasted Red3.jpeg')] },
+  { id: 's3', name: 'Poached Egg', description: 'Perfectly poached egg on a bed of greens.', details: 'Toasted bread with grilled mushrooms, tomato, poached eggs, herbs, and a side green salad.', price: 400, images: [require('../../assets/images/products/Poached Egg1.jpeg'), require('../../assets/images/products/Poached Egg2.jpeg')] },
+  { id: 's4', name: 'Chicory Blue Cheese Salad', description: 'Endive, Apple, Roquefort and Walnut Salad.', details: 'Salade d\'endives aux pommes - Endive, Apple, Roquefort/Blue Cheese, and Walnut Salad.', price: 400, images: [require('../../assets/images/products/blue cheese salad1.jpeg'), require('../../assets/images/products/blue cheese salad2.jpeg')] },
 ];
 
 const STARTER_CATS = ['All', 'Signature Salads', 'Mediterranean'];
@@ -28,19 +29,12 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
         <View style={modal.sheet}>
           <View style={modal.imageBox}>
             <Image source={dish.images[imgIdx]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-            {dish.images.length > 1 && (
-              <>
-                <TouchableOpacity style={[modal.navBtn, { left: 10 }]} onPress={() => setImgIdx(i => Math.max(0, i - 1))}>
-                  <Ionicons name="chevron-back" size={22} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={[modal.navBtn, { right: 10 }]} onPress={() => setImgIdx(i => Math.min(dish.images.length - 1, i + 1))}>
-                  <Ionicons name="chevron-forward" size={22} color="#fff" />
-                </TouchableOpacity>
-              </>
-            )}
+            {dish.images.length > 1 && (<>
+              <TouchableOpacity style={[modal.navBtn, { left: 10 }]} onPress={() => setImgIdx(i => Math.max(0, i - 1))}><Ionicons name="chevron-back" size={22} color="#fff" /></TouchableOpacity>
+              <TouchableOpacity style={[modal.navBtn, { right: 10 }]} onPress={() => setImgIdx(i => Math.min(dish.images.length - 1, i + 1))}><Ionicons name="chevron-forward" size={22} color="#fff" /></TouchableOpacity>
+            </>)}
             <TouchableOpacity style={modal.backBtn} onPress={onClose}>
-              <Ionicons name="arrow-back" size={18} color="#1a1612" />
-              <Text style={modal.backBtnText}>Back</Text>
+              <Ionicons name="arrow-back" size={18} color="#1a1612" /><Text style={modal.backBtnText}>Back</Text>
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={modal.body}>
@@ -49,18 +43,12 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
               {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id)}>
-                  <Ionicons name="cart" size={20} color="#1a1612" />
-                </TouchableOpacity>
+                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id)}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}>
-                    <Ionicons name="remove" size={18} color="#1a1612" />
-                  </TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id)}>
-                    <Ionicons name="add" size={18} color="#1a1612" />
-                  </TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id)}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -77,17 +65,13 @@ export default function Starters() {
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('All');
   const [activeDish, setActiveDish] = useState<typeof DISHES[0] | null>(null);
-
-  const filtered = DISHES.filter(d =>
-    d.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = DISHES.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <View style={s.container}>
       <View style={s.header}>
         <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color="#1a1612" />
-          <Text style={s.backText}>Back</Text>
+          <Ionicons name="arrow-back" size={20} color="#1a1612" /><Text style={s.backText}>Back</Text>
         </TouchableOpacity>
         <View style={s.headerCenter}>
           <Text style={s.title}>Starters Menu</Text>
@@ -101,22 +85,20 @@ export default function Starters() {
         <TextInput style={s.search} placeholder="Search..." placeholderTextColor={RED} value={search} onChangeText={setSearch} />
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.catsScroll} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
+      <View style={s.catsRow}>
         {STARTER_CATS.map(cat => (
           <TouchableOpacity key={cat} style={[s.catChip, activeCat === cat && s.catChipActive]} onPress={() => setActiveCat(cat)}>
             <Text style={[s.catChipText, activeCat === cat && s.catChipTextActive]}>{cat}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       <ScrollView contentContainerStyle={s.list}>
         {filtered.map(dish => {
           const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
           return (
             <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
-              <View style={s.cardImgWrap}>
-                <Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" />
-              </View>
+              <View style={s.cardImgWrap}><Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" /></View>
               <View style={s.cardBody}>
                 <View style={s.cardTop}>
                   <View style={{ flex: 1 }}>
@@ -124,18 +106,12 @@ export default function Starters() {
                     <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
                   </View>
                   {qty === 0 ? (
-                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id)}>
-                      <Ionicons name="cart" size={18} color="#1a1612" />
-                    </TouchableOpacity>
+                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id)}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
                   ) : (
                     <View style={s.qtyRow}>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => removeFromCart(dish.id)}>
-                        <Ionicons name="remove" size={16} color="#1a1612" />
-                      </TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={16} color="#1a1612" /></TouchableOpacity>
                       <Text style={s.qtyText}>{qty}</Text>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id)}>
-                        <Ionicons name="add" size={16} color="#1a1612" />
-                      </TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id)}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
                     </View>
                   )}
                 </View>
@@ -152,49 +128,49 @@ export default function Starters() {
 }
 
 const s = StyleSheet.create({
-  container:    { flex: 1, backgroundColor: YELLOW },
-  header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' },
-  backBtn:      { flexDirection: 'row', alignItems: 'center', gap: 4, width: 60 },
-  backText:     { fontSize: 15, fontWeight: '700', color: '#1a1612' },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  title:        { fontSize: 18, fontWeight: '800', color: '#1a1612' },
-  subtitle:     { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5 },
-  searchWrap:   { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 12, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, borderWidth: 1, borderColor: '#FFD544' },
-  search:       { flex: 1, paddingVertical: 12, fontSize: 15, color: '#1a1612' },
-  catsScroll:   { marginTop: 10, marginBottom: 4, flexGrow: 0 },
-  catChip:      { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 50, backgroundColor: '#fff', borderWidth: 1, borderColor: '#FFD544' },
-  catChipActive:{ backgroundColor: RED, borderColor: RED },
-  catChipText:  { fontSize: 13, fontWeight: '600', color: '#1a1612' },
+  container:         { flex: 1, backgroundColor: YELLOW },
+  header:            { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' },
+  backBtn:           { flexDirection: 'row', alignItems: 'center', gap: 4, width: 60 },
+  backText:          { fontSize: 15, fontWeight: '700', color: '#1a1612' },
+  headerCenter:      { flex: 1, alignItems: 'center' },
+  title:             { fontSize: 18, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
+  subtitle:          { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
+  searchWrap:        { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 12, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, borderWidth: 1, borderColor: YELLOW },
+  search:            { flex: 1, paddingVertical: 12, fontSize: 15, color: '#1a1612' },
+  catsRow:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16, paddingVertical: 12 },
+  catChip:           { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 50, backgroundColor: '#fff', borderWidth: 1, borderColor: YELLOW },
+  catChipActive:     { backgroundColor: RED, borderColor: RED },
+  catChipText:       { fontSize: 13, fontWeight: '600', color: '#1a1612' },
   catChipTextActive: { color: '#fff' },
-  list:         { paddingHorizontal: 16, paddingTop: 12 },
-  card:         { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 },
-  cardImgWrap:  { width: '100%', height: Math.round((SW - 40) * 0.6) },
-  cardImg:      { width: '100%', height: '100%' },
-  cardBody:     { padding: 16 },
-  cardTop:      { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 10 },
-  cardName:     { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
-  cardDesc:     { fontSize: 13, color: '#6b6b6b', lineHeight: 19 },
-  cardPrice:    { fontSize: 16, fontWeight: '800', color: RED },
-  cartCircle:   { width: 44, height: 44, borderRadius: 22, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  qtyRow:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F3C3C5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 },
-  qtyBtn:       { padding: 2 },
-  qtyText:      { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' },
+  list:              { paddingHorizontal: 16, paddingTop: 4 },
+  card:              { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 },
+  cardImgWrap:       { width: '100%', height: Math.round((SW - 40) * 0.6) },
+  cardImg:           { width: '100%', height: '100%' },
+  cardBody:          { padding: 16 },
+  cardTop:           { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 10 },
+  cardName:          { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
+  cardDesc:          { fontSize: 13, color: '#6b6b6b', lineHeight: 19 },
+  cardPrice:         { fontSize: 16, fontWeight: '800', color: RED },
+  cartCircle:        { width: 44, height: 44, borderRadius: 22, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  qtyRow:            { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: YELLOW, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 },
+  qtyBtn:            { padding: 2 },
+  qtyText:           { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' },
 });
 
 const modal = StyleSheet.create({
-  backdrop:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  sheet:     { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
-  imageBox:  { width: SW, height: SW, backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
-  navBtn:    { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  backBtn:   { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 50, paddingHorizontal: 14, paddingVertical: 8, elevation: 3 },
+  backdrop:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
+  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
+  imageBox:    { width: SW, height: SW * 0.75, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  navBtn:      { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  backBtn:     { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 50, paddingHorizontal: 14, paddingVertical: 8, elevation: 3 },
   backBtnText: { fontSize: 14, fontWeight: '700', color: '#1a1612' },
-  body:      { padding: 20, paddingBottom: 60 },
-  name:      { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },
-  desc:      { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 },
-  footer:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  price:     { fontSize: 22, fontWeight: '800', color: RED },
-  cartCircle:{ width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' },
-  qtyRow:    { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#F3C3C5', borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 },
-  qtyBtn:    { padding: 4 },
-  qtyText:   { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
+  body:        { padding: 20, paddingBottom: 60 },
+  name:        { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },
+  desc:        { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 },
+  footer:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  price:       { fontSize: 22, fontWeight: '800', color: RED },
+  cartCircle:  { width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' },
+  qtyRow:      { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: YELLOW, borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 },
+  qtyBtn:      { padding: 4 },
+  qtyText:     { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
 });

@@ -22,13 +22,10 @@ export default function About() {
 
       <ScrollView contentContainerStyle={s.content}>
         <View style={s.logoSection}>
-          <Image source={require('../assets/logo.png')} style={s.logo} resizeMode="contain" />
-          <Text style={s.tagline}>Fresh & Delicious, Every Time</Text>
+          <Image source={require('../assets/casadelsol.logo.png')} style={s.logo} resizeMode="contain" />
         </View>
 
-        <View style={s.philosophyHeader}>
-          <Text style={s.philosophyTitle}>OUR PHILOSOPHY</Text>
-        </View>
+        <Text style={s.philosophyTitle}>OUR PHILOSOPHY</Text>
 
         <Text style={s.body}>At CASA DEL SOL, our cuisine is built upon a simple philosophy: to bring you a unique Mediterranean experience through authentic and generous flavours.</Text>
         <Text style={s.body}>We only use fresh, high-quality and seasonal ingredients, carefully selected from local producers.</Text>
@@ -69,7 +66,7 @@ export default function About() {
         <Text style={s.sectionTitle}>Find Us</Text>
         <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
-        <View style={s.footerWrap}>
+        <View style={s.footer}>
           <Image source={require('../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
           <Text style={s.footerText}>TAM Group Company</Text>
         </View>
@@ -79,27 +76,25 @@ export default function About() {
 }
 
 const s = StyleSheet.create({
-  container:        { flex: 1, backgroundColor: YELLOW },
-  header:           { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
-  backBtn:          { flexDirection: 'row', alignItems: 'center', gap: 4, width: 70 },
-  backText:         { fontSize: 15, fontWeight: '700', color: '#1a1612' },
-  headerTitle:      { flex: 1, fontSize: 20, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
-  content:          { padding: 20 },
-  logoSection:      { alignItems: 'center', paddingVertical: 20, backgroundColor: '#fff', borderRadius: 16, marginBottom: 20 },
-  logo:             { width: 200, height: 110, marginBottom: 8 },
-  tagline:          { fontSize: 13, color: '#6b6b6b', fontStyle: 'italic' },
-  philosophyHeader: { backgroundColor: RED, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center' },
-  philosophyTitle:  { fontSize: 16, fontWeight: '900', color: '#fff', letterSpacing: 2 },
-  body:             { fontSize: 13, color: '#1a1612', lineHeight: 22, marginBottom: 14, backgroundColor: '#fff', borderRadius: 10, padding: 14 },
-  quote:            { fontSize: 14, color: RED, fontStyle: 'italic', fontWeight: '700', textAlign: 'center', lineHeight: 22, marginVertical: 10, padding: 14, backgroundColor: '#fff', borderRadius: 10 },
-  divider:          { height: 1, backgroundColor: '#FFD544', marginVertical: 16 },
-  sectionTitle:     { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 10 },
-  socialRow:        { flexDirection: 'row', gap: 12, marginBottom: 4 },
-  socialBtn:        { flex: 1, backgroundColor: RED, borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 6 },
-  socialLabel:      { fontSize: 12, fontWeight: '600', color: '#fff' },
-  linkRow:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
-  linkText:         { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
-  footerWrap:       { alignItems: 'center', paddingVertical: 20, marginTop: 10 },
-  footerLogo:       { width: 60, height: 34, marginBottom: 4 },
-  footerText:       { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
+  container:       { flex: 1, backgroundColor: YELLOW },
+  header:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
+  backBtn:         { flexDirection: 'row', alignItems: 'center', gap: 4, width: 70 },
+  backText:        { fontSize: 15, fontWeight: '700', color: '#1a1612' },
+  headerTitle:     { flex: 1, fontSize: 20, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
+  content:         { padding: 20 },
+  logoSection:     { alignItems: 'center', paddingVertical: 20, marginBottom: 16 },
+  logo:            { width: 220, height: 120 },
+  philosophyTitle: { fontSize: 18, fontWeight: '900', color: RED, letterSpacing: 2, marginBottom: 6, borderBottomWidth: 2, borderBottomColor: RED, paddingBottom: 6, alignSelf: 'flex-start' },
+  body:            { fontSize: 13, color: '#1a1612', lineHeight: 22, marginBottom: 14 },
+  quote:           { fontSize: 14, color: RED, fontStyle: 'italic', fontWeight: '700', textAlign: 'center', lineHeight: 22, marginVertical: 10 },
+  divider:         { height: 1, backgroundColor: '#fff', marginVertical: 16 },
+  sectionTitle:    { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 10 },
+  socialRow:       { flexDirection: 'row', gap: 12, marginBottom: 4 },
+  socialBtn:       { flex: 1, backgroundColor: RED, borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 6 },
+  socialLabel:     { fontSize: 12, fontWeight: '600', color: '#fff' },
+  linkRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
+  linkText:        { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
+  footer:          { backgroundColor: '#fff', alignItems: 'center', paddingVertical: 20, marginTop: 20, borderRadius: 16 },
+  footerLogo:      { width: 60, height: 34, marginBottom: 4 },
+  footerText:      { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
 });

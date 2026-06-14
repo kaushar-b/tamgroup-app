@@ -20,9 +20,9 @@ const CAROUSEL_IMAGES = [
 
 // Manually set your 3 images + names here
 const DISHES_FROM_WORLD = [
-  { id: '1', name: 'Barcelona, Spain', image: require('../../assets/images/Barcelona, Spain.jpeg') },
-  { id: '2', name: 'Lisbon, Portugal', image: require('../../assets/images/Lisbon, Portugal.jpeg') },
-  { id: '3', name: 'Marseille, France', image: require('../../assets/images/Marseille, France.jpeg') },
+  { id: '1', name: 'Beef Bourguignon - France', image: require('../../assets/images/products/Beef Bourguignon2.jpeg') },
+  { id: '2', name: 'Seafood Stew - Spain', image: require('../../assets/images/products/Seafood Stew1.jpeg') },
+  { id: '3', name: 'Tomato & Basil Bruschetta - Italy', image: require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg') },
 ];
 
 const ITEM_SIZE = Math.round(SW / 3);

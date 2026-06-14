@@ -43,12 +43,12 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
               {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id)}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
+                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id)}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -106,12 +106,12 @@ export default function Starters() {
                     <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
                   </View>
                   {qty === 0 ? (
-                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id)}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
+                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
                   ) : (
                     <View style={s.qtyRow}>
                       <TouchableOpacity style={s.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={16} color="#1a1612" /></TouchableOpacity>
                       <Text style={s.qtyText}>{qty}</Text>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id)}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant' })}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
                     </View>
                   )}
                 </View>

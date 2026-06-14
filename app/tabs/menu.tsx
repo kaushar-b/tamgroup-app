@@ -1,299 +1,66 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useCart, MenuItem } from '../../context/CartContext';
 import { useRouter } from 'expo-router';
 
-const { width: SW } = Dimensions.get('window');
+const RED = '#b60015';
+const YELLOW = '#FFD544';
 
-// Product images — name your files like dish1.jpeg, dish1b.jpeg, dish1c.jpeg
-// and add them to assets/images/products/
-// Then update the PRODUCT_IMAGES map below with the correct filenames.
-const PRODUCT_IMAGES: Record<string, any[]> = {
-  '1': [
-    require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
-    require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'),
-    require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg'),
-  ],
-  '2': [
-    require('../../assets/images/products/Coq au Vin1.jpeg'),
-    require('../../assets/images/products/Coq au Vin2.jpeg'),
-    require('../../assets/images/products/Coq au Vin3.jpeg'),
-    require('../../assets/images/products/Coq au Vin4.jpeg'),
-  ],
-  '3': [
-    require('../../assets/images/products/Stuffed Vegetables1.jpeg'),
-    require('../../assets/images/products/Stuffed Vegetables2.jpeg'),
-  ],
-  '4': [
-    require('../../assets/images/products/Beef Bourguignon1.jpeg'),
-    require('../../assets/images/products/Beef Bourguignon2.jpeg'),
-    require('../../assets/images/products/Beef Bourguignon3.jpeg'),
-  ],
-  '5': [
-    require('../../assets/images/products/Lamb Chops1.jpeg'),
-    require('../../assets/images/products/Lamb Chops2.jpeg'),
-  ],
-  '6': [
-    require('../../assets/images/products/Seafood Paella1.jpeg'),
-    require('../../assets/images/products/Seafood Paella2.jpeg'),
-  ],
-  '7': [
-    require('../../assets/images/products/Garlic Butter Shrimp1.jpeg'),
-    require('../../assets/images/products/Garlic Butter Shrimp2.jpeg'),
-    require('../../assets/images/products/Garlic Butter Shrimp3.jpeg'),
-    require('../../assets/images/products/Garlic Butter Shrimp4.jpeg'),
-  ],
-  '8': [
-    require('../../assets/images/products/Seafood Stew1.jpeg'),
-    require('../../assets/images/products/Seafood Stew2.jpeg'),
-    require('../../assets/images/products/Seafood Stew3.jpeg'),
-    require('../../assets/images/products/Seafood Stew4.jpeg'),
-  ],
-  '9': [
-    require('../../assets/images/products/Poached Egg1.jpeg'),
-    require('../../assets/images/products/Poached Egg2.jpeg'),
-  ],
-  '10': [
-    require('../../assets/images/products/Roasted Red1.jpeg'),
-    require('../../assets/images/products/Roasted Red2.jpeg'),
-    require('../../assets/images/products/Roasted Red3.jpeg'),
-  ],
-  '11': [
-    require('../../assets/images/products/blue cheese salad1.jpeg'),
-    require('../../assets/images/products/blue cheese salad2.jpeg'),
-  ],
-};
+const CATEGORIES = [
+  { id: 'starters', label: 'Starters', route: '/menu/starters' },
+  { id: 'paella', label: 'Paella', route: '/menu/paella' },
+  { id: 'specials', label: 'Weekly Specials', route: '/menu/specials' },
+  { id: 'aperitifs', label: 'Signature Aperitifs', route: '/menu/aperitifs' },
+  { id: 'desserts', label: 'Desserts', route: '/menu/desserts' },
+];
 
-// IMAGE SIZES (for reference when preparing your images):
-// Product card image:  width = screen width - 40px,  height = (SW - 40) * 0.6  (landscape rectangle)
-// Product popup image: same width,  height = (SW - 40) * 0.6  (matches card)
-
-const CARD_IMG_H = Math.round((SW - 40) * 0.6);
-
-function ProductModal({ item, onClose }: { item: MenuItem | null; onClose: () => void }) {
-  const { addToCart, removeFromCart, items } = useCart();
-  const [imgIdx, setImgIdx] = useState(0);
-  if (!item) return null;
-  const qty = items.find(i => i.id === item.id)?.quantity ?? 0;
-  const imgs = PRODUCT_IMAGES[item.id] || [];
-
+function FooterLogo() {
   return (
-    <Modal visible={!!item} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={modal.backdrop}>
-        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
-        <View style={modal.sheet}>
-          <TouchableOpacity style={modal.closeBtn} onPress={onClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Ionicons name="close" size={20} color="#1a1612" />
-          </TouchableOpacity>
-
-          {/* Image area — same rectangle ratio as card */}
-          <View style={modal.imageBox}>
-            {imgs.length > 0 ? (
-              <Image source={imgs[imgIdx]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-            ) : (
-              <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                <Ionicons name="restaurant" size={60} color="#CE6F79" />
-              </View>
-            )}
-            {imgs.length > 1 && (
-              <>
-                <TouchableOpacity
-                  style={[modal.navBtn, { left: 10 }]}
-                  onPress={() => setImgIdx(i => Math.max(0, i - 1))}
-                >
-                  <Ionicons name="chevron-back" size={22} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[modal.navBtn, { right: 10 }]}
-                  onPress={() => setImgIdx(i => Math.min(imgs.length - 1, i + 1))}
-                >
-                  <Ionicons name="chevron-forward" size={22} color="#fff" />
-                </TouchableOpacity>
-                <View style={modal.imgDots}>
-                  {imgs.map((_, i) => (
-                    <View key={i} style={[modal.imgDot, i === imgIdx && modal.imgDotActive]} />
-                  ))}
-                </View>
-              </>
-            )}
-          </View>
-
-          {/* Info */}
-          <ScrollView contentContainerStyle={modal.body}>
-            <Text style={modal.name}>{item.name}</Text>
-            <Text style={modal.desc}>{item.details}</Text>
-            <View style={modal.footer}>
-              <Text style={modal.price}>P {item.price}.00</Text>
-              {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(item.id)}>
-                  <Ionicons name="cart" size={20} color="#1a1612" />
-                </TouchableOpacity>
-              ) : (
-                <View style={modal.qtyRow}>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Ionicons name="remove" size={18} color="#1a1612" />
-                  </TouchableOpacity>
-                  <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Ionicons name="add" size={18} color="#1a1612" />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-export default function Menu() {
-  const [search, setSearch] = useState('');
-  const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
-  const { addToCart, items, menuItems } = useCart();
-  const router = useRouter();
-
-  const filtered = menuItems.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.description.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const getQty = (id: string) => items.find(i => i.id === id)?.quantity ?? 0;
-
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={styles.homeBtn}>
-          <Ionicons name="home-outline" size={22} color="#1a1612" />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.title}>Menu</Text>
-          <Text style={styles.subtitle}>TAM RESTAURANT GROUP</Text>
-        </View>
-        <View style={{ width: 44 }} />
-      </View>
-
-      {/* Search */}
-      <View style={styles.searchWrap}>
-        <Ionicons name="search" size={16} color="#CE6F79" style={{ marginRight: 8 }} />
-        <TextInput
-          style={styles.search}
-          placeholder="Search dishes..."
-          placeholderTextColor="#CE6F79"
-          value={search}
-          onChangeText={setSearch}
-        />
-        {search.length > 0 && (
-          <TouchableOpacity onPress={() => setSearch('')}>
-            <Ionicons name="close-circle" size={18} color="#CE6F79" />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Product list — one big card per dish */}
-      <ScrollView contentContainerStyle={styles.list}>
-        {filtered.map(item => {
-          const qty = getQty(item.id);
-          const imgs = PRODUCT_IMAGES[item.id] || [];
-          return (
-            <TouchableOpacity key={item.id} style={styles.card} onPress={() => setActiveItem(item)} activeOpacity={0.88}>
-              {/* Image */}
-              <View style={styles.cardImgWrap}>
-                {imgs.length > 0 ? (
-                  <Image source={imgs[0]} style={styles.cardImg} resizeMode="cover" />
-                ) : (
-                  <View style={[styles.cardImg, styles.cardImgPlaceholder]}>
-                    <Ionicons name="restaurant" size={48} color="#CE6F79" />
-                  </View>
-                )}
-              </View>
-
-              {/* Info box */}
-              <View style={styles.cardBody}>
-                <View style={styles.cardTop}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.cardName}>{item.name}</Text>
-                    <Text style={styles.cardDesc} numberOfLines={2}>{item.description}</Text>
-                  </View>
-                  {/* Cart / qty controls */}
-                  {qty === 0 ? (
-                    <TouchableOpacity
-                      style={styles.cartCircle}
-                      onPress={e => { e.stopPropagation?.(); addToCart(item.id); }}
-                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                    >
-                      <Ionicons name="cart" size={18} color="#1a1612" />
-                    </TouchableOpacity>
-                  ) : (
-                    <View style={styles.cardQtyRow}>
-                      <TouchableOpacity style={styles.cardQtyBtn} onPress={() => removeFromCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                        <Ionicons name="remove" size={16} color="#1a1612" />
-                      </TouchableOpacity>
-                      <Text style={styles.cardQtyText}>{qty}</Text>
-                      <TouchableOpacity style={styles.cardQtyBtn} onPress={() => addToCart(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                        <Ionicons name="add" size={16} color="#1a1612" />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-                <Text style={styles.cardPrice}>P {item.price}.00</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-        <View style={{ height: 20 }} />
-      </ScrollView>
-
-      <ProductModal item={activeItem} onClose={() => { setActiveItem(null); }} />
+    <View style={footer.wrap}>
+      <Image source={require('../../assets/logo.png')} style={footer.logo} resizeMode="contain" />
+      <Text style={footer.text}>TAM Group Company</Text>
     </View>
   );
 }
 
-const modal = StyleSheet.create({
-  backdrop:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
-  closeBtn:    { position: 'absolute', top: 14, right: 14, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' },
-  imageBox:    { width: SW, height: SW, backgroundColor: '#FADAD9', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
-  navBtn:      { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  imgDots:     { position: 'absolute', bottom: 10, left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 5 },
-  imgDot:      { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)' },
-  imgDotActive:{ width: 14, backgroundColor: '#fff' },
-  body:        { padding: 20, paddingBottom: 60 },
-  name:        { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },
-  desc:        { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 },
-  footer:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  price:       { fontSize: 22, fontWeight: '800', color: '#CE6F79' },
-  cartCircle:  { width: 48, height: 48, borderRadius: 24, backgroundColor: '#FFDD32', alignItems: 'center', justifyContent: 'center' },
-  qtyRow:      { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#F3C3C5', borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 },
-  qtyBtn:      { padding: 4 },
-  qtyText:     { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
+export default function MenuSelector() {
+  const router = useRouter();
+  return (
+    <View style={s.container}>
+      <View style={s.header}>
+        <TouchableOpacity style={s.backBtn} onPress={() => router.push('/tabs')}>
+          <Ionicons name="arrow-back" size={20} color="#1a1612" />
+          <Text style={s.backText}>Back</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView contentContainerStyle={s.content}>
+        <Text style={s.title}>Our Menu</Text>
+        <Text style={s.subtitle}>Casa Del Sol</Text>
+        {CATEGORIES.map(cat => (
+          <TouchableOpacity key={cat.id} style={s.catBtn} onPress={() => router.push(cat.route as any)}>
+            <Text style={s.catLabel}>{cat.label}</Text>
+            <Ionicons name="chevron-forward" size={22} color="#fff" />
+          </TouchableOpacity>
+        ))}
+        <FooterLogo />
+      </ScrollView>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: YELLOW },
+  header:    { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12 },
+  backBtn:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  backText:  { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  content:   { padding: 20, paddingTop: 8 },
+  title:     { fontSize: 30, fontWeight: '900', color: '#1a1612', marginBottom: 4 },
+  subtitle:  { fontSize: 14, color: RED, fontWeight: '700', marginBottom: 28, letterSpacing: 1 },
+  catBtn:    { backgroundColor: RED, borderRadius: 50, paddingVertical: 20, paddingHorizontal: 28, marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 3 },
+  catLabel:  { fontSize: 20, fontWeight: '800', color: '#fff' },
 });
 
-const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#F3C3C5' },
-  header:             { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 50, paddingBottom: 10, backgroundColor: '#fff' },
-  homeBtn:            { width: 44, height: 44, justifyContent: 'center' },
-  headerCenter:       { flex: 1, alignItems: 'center' },
-  title:              { fontSize: 22, fontWeight: '800', color: '#1a1612' },
-  subtitle:           { fontSize: 11, color: '#CE6F79', marginTop: 1, letterSpacing: 0.5 },
-  searchWrap:         { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 12, marginBottom: 12, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, borderWidth: 1, borderColor: '#F3C3C5' },
-  search:             { flex: 1, paddingVertical: 12, fontSize: 15, color: '#1a1612' },
-  list:               { paddingHorizontal: 16, paddingTop: 4 },
-  card:               { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2, shadowColor: '#CE6F79', shadowOpacity: 0.1, shadowRadius: 8 },
-  cardImgWrap:        { width: '100%', height: Math.round((SW - 40) * 0.6), overflow: 'hidden' },
-  cardImg:            { width: '100%', height: '100%' },
-  cardImgPlaceholder: { backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
-  cardBody:           { padding: 16 },
-  cardTop:            { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 10 },
-  cardName:           { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
-  cardDesc:           { fontSize: 13, color: '#6b6b6b', lineHeight: 19 },
-  cardPrice:          { fontSize: 16, fontWeight: '800', color: '#CE6F79' },
-  cartCircle:         { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFDD32', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  cartCircleActive:   { backgroundColor: '#CE6F79' },
-  cardQtyRow:         { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F3C3C5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 },
-  cardQtyBtn:         { padding: 2 },
-  cardQtyText:        { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' },
-  cartCircleQty:      { position: 'absolute', top: -4, right: -4, backgroundColor: '#1a1612', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+const footer = StyleSheet.create({
+  wrap: { alignItems: 'center', paddingVertical: 20, marginTop: 10 },
+  logo: { width: 60, height: 34, marginBottom: 4 },
+  text: { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
 });

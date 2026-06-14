@@ -2,20 +2,22 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Image } 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+const RED = '#b60015';
+const YELLOW = '#FFD544';
+
 export default function About() {
   const router = useRouter();
-
-  const openLink = (url: string) => {
-    Linking.openURL(url).catch(() => {});
-  };
+  const openLink = (url: string) => Linking.openURL(url).catch(() => {});
 
   return (
     <View style={s.container}>
       <View style={s.header}>
         <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={22} color="#1a1612" />
+          <Ionicons name="arrow-back" size={20} color="#1a1612" />
+          <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
-        <Text style={s.title}>About Us</Text>
+        <Text style={s.headerTitle}>About Us</Text>
+        <View style={{ width: 70 }} />
       </View>
 
       <ScrollView contentContainerStyle={s.content}>
@@ -24,64 +26,80 @@ export default function About() {
           <Text style={s.tagline}>Fresh & Delicious, Every Time</Text>
         </View>
 
-        <Text style={s.sectionTitle}>Who We Are</Text>
-        <Text style={s.body}>We are passionate about delivering fresh, high quality meals to our customers, whether you dine in, pickup, or order for delivery.</Text>
+        <View style={s.philosophyHeader}>
+          <Text style={s.philosophyTitle}>OUR PHILOSOPHY</Text>
+        </View>
 
-        <Text style={s.sectionTitle}>Find Us</Text>
-        <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
+        <Text style={s.body}>At CASA DEL SOL, our cuisine is built upon a simple philosophy: to bring you a unique Mediterranean experience through authentic and generous flavours.</Text>
+        <Text style={s.body}>We only use fresh, high-quality and seasonal ingredients, carefully selected from local producers.</Text>
+        <Text style={s.body}>Our vegetables are carefully selected for their natural quality and freshness, accompanied by premium Italian olive oils chosen with great care.</Text>
+        <Text style={s.body}>All our sauces are homemade, prepared daily with passion using traditional recipes and natural ingredients.</Text>
+        <Text style={s.body}>Our cuisine is inspired by the true Mediterranean art of living: generous portions, rich flavours and sharing around the table.</Text>
+        <Text style={s.quote}>"At CASA DEL SOL, we don't just serve you a meal, we offer you a moment of sunshine and culinary pleasure."</Text>
 
         <View style={s.divider} />
 
         <Text style={s.sectionTitle}>Follow Us</Text>
         <View style={s.socialRow}>
           <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.instagram.com/tamgrouprestaurant.bw/')}>
-            <Ionicons name="logo-instagram" size={28} color="#CE6F79" />
+            <Ionicons name="logo-instagram" size={28} color="#fff" />
             <Text style={s.socialLabel}>Instagram</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.tiktok.com/@tam.restaurant.group?_r=1&_t=ZS-9740GrZwjhg')}>
-            <Ionicons name="logo-tiktok" size={28} color="#CE6F79" />
+          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.tiktok.com/@tam.restaurant.group')}>
+            <Ionicons name="logo-tiktok" size={28} color="#fff" />
             <Text style={s.socialLabel}>TikTok</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.facebook.com')}>
-            <Ionicons name="logo-facebook" size={28} color="#CE6F79" />
+            <Ionicons name="logo-facebook" size={28} color="#fff" />
             <Text style={s.socialLabel}>Facebook</Text>
           </TouchableOpacity>
         </View>
-        <Text style={s.reminderNote}>Reminder: update the Facebook link with the real page URL when available.</Text>
 
         <View style={s.divider} />
 
         <Text style={s.sectionTitle}>Check Out Our Site</Text>
-        <TouchableOpacity style={s.linkRow} onPress={() => openLink('https://tamgroup-restaurant.co.bw')}>
-          <Ionicons name="globe-outline" size={20} color="#CE6F79" />
-          <Text style={s.linkText}>tamgroup-restaurant.co.bw</Text>
+        <TouchableOpacity style={s.linkRow} onPress={() => openLink('https://casadelsol.co.bw')}>
+          <Ionicons name="globe-outline" size={20} color={RED} />
+          <Text style={s.linkText}>casadelsol.co.bw</Text>
           <Ionicons name="open-outline" size={16} color="#aaa" />
         </TouchableOpacity>
 
-        <View style={{ height: 40 }} />
+        <View style={s.divider} />
+
+        <Text style={s.sectionTitle}>Find Us</Text>
+        <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
+
+        <View style={s.footerWrap}>
+          <Image source={require('../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
+          <Text style={s.footerText}>TAM Group Company</Text>
+        </View>
       </ScrollView>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  container:    { flex: 1, backgroundColor: '#fff' },
-  header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: '#F3C3C5' },
-  backBtn:      { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FADAD9', alignItems: 'center', justifyContent: 'center' },
-  title:        { fontSize: 22, fontWeight: '800', color: '#1a1612' },
-  content:      { padding: 24 },
-  logoSection:  { alignItems: 'center', paddingVertical: 24 },
-  logo:         { width: 220, height: 120, marginBottom: 8 },
-  tagline:      { fontSize: 13, color: '#6b6b6b', fontStyle: 'italic' },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#1a1612', marginTop: 20, marginBottom: 8 },
-  body:         { fontSize: 13, color: '#6b6b6b', lineHeight: 21 },
-  divider:      { height: 1, backgroundColor: '#F3C3C5', marginVertical: 20 },
-  linkRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FADAD9', borderRadius: 12, padding: 14 },
-  linkText:     { flex: 1, fontSize: 14, fontWeight: '600', color: '#CE6F79' },
-  socialRow:    { flexDirection: 'row', gap: 12, marginTop: 4 },
-  socialBtn:    { flex: 1, backgroundColor: '#FADAD9', borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 6 },
-  socialLabel:  { fontSize: 12, fontWeight: '600', color: '#1a1612' },
-  reminderNote: { fontSize: 11, color: '#aaa', marginTop: 12, fontStyle: 'italic', textAlign: 'center' },
+  container:        { flex: 1, backgroundColor: YELLOW },
+  header:           { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 16, backgroundColor: '#fff' },
+  backBtn:          { flexDirection: 'row', alignItems: 'center', gap: 4, width: 70 },
+  backText:         { fontSize: 15, fontWeight: '700', color: '#1a1612' },
+  headerTitle:      { flex: 1, fontSize: 20, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
+  content:          { padding: 20 },
+  logoSection:      { alignItems: 'center', paddingVertical: 20, backgroundColor: '#fff', borderRadius: 16, marginBottom: 20 },
+  logo:             { width: 200, height: 110, marginBottom: 8 },
+  tagline:          { fontSize: 13, color: '#6b6b6b', fontStyle: 'italic' },
+  philosophyHeader: { backgroundColor: RED, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center' },
+  philosophyTitle:  { fontSize: 16, fontWeight: '900', color: '#fff', letterSpacing: 2 },
+  body:             { fontSize: 13, color: '#1a1612', lineHeight: 22, marginBottom: 14, backgroundColor: '#fff', borderRadius: 10, padding: 14 },
+  quote:            { fontSize: 14, color: RED, fontStyle: 'italic', fontWeight: '700', textAlign: 'center', lineHeight: 22, marginVertical: 10, padding: 14, backgroundColor: '#fff', borderRadius: 10 },
+  divider:          { height: 1, backgroundColor: '#FFD544', marginVertical: 16 },
+  sectionTitle:     { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 10 },
+  socialRow:        { flexDirection: 'row', gap: 12, marginBottom: 4 },
+  socialBtn:        { flex: 1, backgroundColor: RED, borderRadius: 14, paddingVertical: 18, alignItems: 'center', gap: 6 },
+  socialLabel:      { fontSize: 12, fontWeight: '600', color: '#fff' },
+  linkRow:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
+  linkText:         { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
+  footerWrap:       { alignItems: 'center', paddingVertical: 20, marginTop: 10 },
+  footerLogo:       { width: 60, height: 34, marginBottom: 4 },
+  footerText:       { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.5 },
 });

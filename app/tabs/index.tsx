@@ -75,7 +75,7 @@ export default function Home() {
 
         {/* Full screen hero image */}
         <View style={styles.heroWrap}>
-          <Image source={require('../../assets/logo.png')} style={styles.heroImg} resizeMode="cover" />
+          <Image source={require('../../assets/casadelsol.logo.png')} style={styles.heroImg} resizeMode="cover" />
         </View>
 
         {/* Slow auto-sliding carousel */}

@@ -19,6 +19,7 @@ const DISHES = [
     details: 'Spanish rice dish with shrimp/prawns, mussels, lemon slices, and saffron.',
     price: 225,
     images: [
+      require('../../assets/images/products/Seafood paella1.jpeg'),
       require('../../assets/images/products/Seafood Paella1.jpeg'),
       require('../../assets/images/products/Seafood Paella2.jpeg'),
     ],
@@ -30,7 +31,7 @@ const DISHES = [
     details: 'Paella de chorizo — Spanish rice dish cooked with chicken, tender beef, saffron, peppers, onions, and olive oil.',
     price: 175,
     images: [
-      require('../../assets/images/products/dish3.jpeg'),
+      require('../../assets/images/products/chorizo paella1.jpeg'),
     ],
   },
   {
@@ -40,7 +41,8 @@ const DISHES = [
     details: 'Paella vegetariana — colorful rice dish cooked with saffron, peppers, onions, tomatoes, green beans, and olive oil.',
     price: 95,
     images: [
-      require('../../assets/images/products/dish4.jpeg'),
+      require('../../assets/images/products/vegetarian paella1.jpeg'),
+      require('../../assets/images/products/vegetarian paella2.jpeg'),
     ],
   },
 ];

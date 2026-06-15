@@ -38,7 +38,7 @@ export default function About() {
 
         <Text style={s.sectionTitle}>Follow Us</Text>
         <View style={s.socialRow}>
-          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.instagram.com/tamgrouprestaurant.bw/')}>
+          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.instagram.com/casadelsol.bw?igsh=MXR4ZmNnMHpmbTRxMA==')}>
             <Ionicons name="logo-instagram" size={28} color="#fff" />
             <Text style={s.socialLabel}>Instagram</Text>
           </TouchableOpacity>
@@ -46,7 +46,7 @@ export default function About() {
             <Ionicons name="logo-tiktok" size={28} color="#fff" />
             <Text style={s.socialLabel}>TikTok</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.facebook.com')}>
+          <TouchableOpacity style={s.socialBtn} onPress={() => openLink('https://www.facebook.com/share/1EDPymPAzL/')}>
             <Ionicons name="logo-facebook" size={28} color="#fff" />
             <Text style={s.socialLabel}>Facebook</Text>
           </TouchableOpacity>
@@ -103,7 +103,7 @@ const s = StyleSheet.create({
   socialLabel:     { fontSize: 12, fontWeight: '600', color: '#fff' },
   linkRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
   linkText:        { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
-  footer:          { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, marginHorizontal: -20 },
+  footer:          { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingTop: 20, paddingBottom: 50, marginHorizontal: -20 },
   footerLogo:      { width: 44, height: 28 },
   footerText:      { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

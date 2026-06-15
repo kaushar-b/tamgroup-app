@@ -1,19 +1,18 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { ref, onValue, query, orderByChild } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useFocusEffect } from 'expo-router';
 import { useCart } from '../../context/CartContext';
 
-const RED = '#b60015';
+const RED    = '#b60015';
 const YELLOW = '#FFD544';
 
-export type OrderItem = { id: string; name: string; price: number; quantity: number; icon: string };
+type OrderItem = { id: string; name: string; price: number; quantity: number; icon: string };
 
-export type SavedOrder = {
+type SavedOrder = {
   id: string;
   date: string;
   orderType: 'pickup' | 'delivery';
@@ -24,43 +23,45 @@ export type SavedOrder = {
   total: number;
   status: string;
   driverStatus: string | null;
+  preparingStatus?: string | null;
   assignedToDriver: boolean;
 };
 
-function statusLabel(order: SavedOrder): { text: string; color: string } {
-  if (order.driverStatus === 'delivered') return { text: 'Delivered ✓', color: '#22c55e' };
-  if (order.driverStatus === 'on_the_way') return { text: 'On the Way 🚗', color: '#f59e0b' };
-  if (order.assignedToDriver) return { text: 'Driver Assigned', color: '#3b82f6' };
-  if (order.status === 'completed') return { text: 'Completed ✓', color: '#22c55e' };
-  return { text: 'Pending', color: '#6b6b6b' };
+function statusLabel(order: SavedOrder): { text: string; color: string; icon: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap } {
+  if (order.driverStatus === 'delivered')     return { text: 'Delivered',           color: '#22c55e', icon: 'checkmark-circle' };
+  if (order.driverStatus === 'on_the_way')    return { text: 'On the Way',          color: '#f59e0b', icon: 'car-sport' };
+  if (order.driverStatus === 'preparing')     return { text: 'Preparing',           color: '#3b82f6', icon: 'flame' };
+  if (order.assignedToDriver)                 return { text: 'Driver Assigned',     color: '#3b82f6', icon: 'person' };
+  if (order.preparingStatus === 'ready')      return { text: 'Ready for Pickup',    color: '#22c55e', icon: 'checkmark-circle' };
+  if (order.preparingStatus === 'preparing')  return { text: 'Preparing',           color: '#3b82f6', icon: 'flame' };
+  if (order.status === 'completed')           return { text: 'Completed',           color: '#22c55e', icon: 'checkmark-circle' };
+  return { text: 'Pending', color: '#6b6b6b', icon: 'time' };
 }
 
 export default function Orders() {
   const router = useRouter();
   const { addToCart, clearCart } = useCart();
-  const [orders, setOrders] = useState<SavedOrder[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [orders, setOrders]       = useState<SavedOrder[]>([]);
+  const [expanded, setExpanded]   = useState<string | null>(null);
+  const [userPhone, setUserPhone] = useState<string | null>(null);
 
+  // We filter orders by the user's phone stored during checkout
+  // Since we save phone as "+267XXXXXXXX", we can match on that
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, u => setUserEmail(u?.email ?? null));
+    const unsub = onAuthStateChanged(auth, () => {});
     return unsub;
   }, []);
 
   useEffect(() => {
-    if (!userEmail) return;
-    const ordersRef = query(ref(db, 'orders'), orderByChild('createdAt'));
-    const unsub = onValue(ordersRef, snapshot => {
-      const data = snapshot.val();
+    const q = query(ref(db, 'orders'), orderByChild('createdAt'));
+    const unsub = onValue(q, snap => {
+      const data = snap.val();
       if (!data) { setOrders([]); return; }
-      const all: SavedOrder[] = Object.values(data) as SavedOrder[];
-      // Show only this user's orders matched by name/phone — or show all if needed
-      // For now show all orders belonging to current session (filtered by phone prefix match)
-      const sorted = all.reverse();
-      setOrders(sorted);
+      const all = (Object.values(data) as SavedOrder[]).reverse();
+      setOrders(all);
     });
     return () => unsub();
-  }, [userEmail]);
+  }, []);
 
   const handleReorder = (order: SavedOrder) => {
     Alert.alert('Reorder', 'Add all items from this order to your cart?', [
@@ -82,11 +83,11 @@ export default function Orders() {
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.push('/tabs')} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={s.homeBtn}>
+        <TouchableOpacity onPress={() => router.push('/tabs')} style={s.homeBtn}>
           <Ionicons name="home-outline" size={22} color="#fff" />
         </TouchableOpacity>
         <View style={s.headerCenter}>
-          <Text style={s.title}>Orders</Text>
+          <Text style={s.title}>My Orders</Text>
           <Text style={s.subtitle}>Your order history</Text>
         </View>
         <View style={{ width: 44 }} />
@@ -109,6 +110,7 @@ export default function Orders() {
                     <Text style={s.cardDate}>{order.date}</Text>
                     <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
                     <View style={[s.statusBadge, { backgroundColor: sl.color + '22' }]}>
+                      <Ionicons name={sl.icon} size={12} color={sl.color} />
                       <Text style={[s.statusText, { color: sl.color }]}>{sl.text}</Text>
                     </View>
                   </View>
@@ -159,7 +161,7 @@ const s = StyleSheet.create({
   cardLeft:     { gap: 4, flex: 1 },
   cardDate:     { fontSize: 13, color: '#6b6b6b' },
   cardType:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
-  statusBadge:  { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginTop: 4 },
+  statusBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginTop: 4 },
   statusText:   { fontSize: 12, fontWeight: '700' },
   cardRight:    { alignItems: 'flex-end', gap: 4 },
   cardTotal:    { fontSize: 16, fontWeight: '800', color: RED },

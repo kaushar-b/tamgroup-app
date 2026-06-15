@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   heroWrap:      { width: SW, height: SW * 0.72, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8, paddingTop: 0 },
   heroImg:       { width: '100%', height: '100%' },
   divider:       { height: 1, backgroundColor: '#1a1612', marginHorizontal: 16 },
-  carouselWrap:  { marginTop: 6, marginBottom: 6, paddingTop: 6 },
+  carouselWrap:  { marginTop: 2, marginBottom: 6, paddingTop: 2 },
   carouselItem:  { width: ITEM_SIZE, height: ITEM_SIZE, marginRight: 8, borderRadius: 12, overflow: 'hidden' },
   carouselImg:   { width: '100%', height: '100%' },
   actionsRow:    { flexDirection: 'row', gap: 14, marginHorizontal: 16, marginTop: 14, marginBottom: 20 },

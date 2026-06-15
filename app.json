@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FFF9D6"
+      "backgroundColor": "#FFD544"
     },
     "ios": {
       "supportsTablet": true,
@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FADAD9"
+        "backgroundColor": "#FFD544"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.starkey18.tamgroup",

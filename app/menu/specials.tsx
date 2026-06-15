@@ -7,6 +7,7 @@ import { useState } from 'react';
 const { width: SW } = Dimensions.get('window');
 const RED = '#b60015';
 const YELLOW = '#FFD544';
+const GREEN  = '#22c55e';
 
 // ─────────────────────────────────────────────
 // WEEKLY SPECIALS — edit name/description/price/images/day here
@@ -109,6 +110,8 @@ export default function Specials() {
   const router = useRouter();
   const { addToCart, removeFromCart, items } = useCart();
   const [activeDish, setActiveDish] = useState<typeof SPECIALS[0] | null>(null);
+  const [cardStates, setCardStates] = useState<Record<string, 'idle'|'confirming'|'added'>>({});
+  const setCardState = (id: string, state: 'idle'|'confirming'|'added') => setCardStates(prev => ({ ...prev, [id]: state }));
 
   const dayOfWeek = new Date().getDay(); // 0=Sun
   const isSunday = dayOfWeek === 0;
@@ -120,7 +123,7 @@ export default function Specials() {
     <View style={s.container}>
       <View style={s.header}>
         <TouchableOpacity style={s.backBtn} onPress={() => router.push('/tabs/menu')}>
-          <Ionicons name="arrow-back" size={20} color="#1a1612" /><Text style={s.backText}>Back</Text>
+          <Ionicons name="arrow-back" size={24} color="#1a1612" /><Text style={s.backText}>Back</Text>
         </TouchableOpacity>
         <View style={s.headerCenter}>
           <Text style={s.title}>Weekly Specials</Text>
@@ -134,6 +137,7 @@ export default function Specials() {
 
         {todayDishes.map(dish => {
           const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
+          const cs  = cardStates[dish.id] ?? 'idle';
           return (
             <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
               <View style={s.cardImgWrap}><Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" /></View>
@@ -143,17 +147,40 @@ export default function Specials() {
                     <Text style={s.cardName}>{dish.name}</Text>
                     <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
                   </View>
-                  {qty === 0 ? (
-                    <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
-                  ) : (
+                  {cs === 'idle' && (
+                    <TouchableOpacity style={s.cartCircle} onPress={(e) => { e.stopPropagation(); addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] }); setCardState(dish.id, 'confirming'); }}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
+                  )}
+                  {(cs === 'confirming' || cs === 'added') && (
                     <View style={s.qtyRow}>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={16} color="#1a1612" /></TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={(e) => { e.stopPropagation(); removeFromCart(dish.id); if (qty <= 1) setCardState(dish.id, 'idle'); }}><Ionicons name="remove" size={16} color="#1a1612" /></TouchableOpacity>
                       <Text style={s.qtyText}>{qty}</Text>
-                      <TouchableOpacity style={s.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
+                      <TouchableOpacity style={s.qtyBtn} onPress={(e) => { e.stopPropagation(); addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] }); }}><Ionicons name="add" size={16} color="#1a1612" /></TouchableOpacity>
                     </View>
                   )}
                 </View>
                 <Text style={s.cardPrice}>P {dish.price}.00</Text>
+                {cs === 'confirming' && (
+                  <View style={s.actionRow}>
+                    <TouchableOpacity style={s.cancelBtn} onPress={(e) => { e.stopPropagation(); removeFromCart(dish.id); setCardState(dish.id, 'idle'); }}>
+                      <Text style={s.cancelTxt}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={s.addBtn} onPress={(e) => { e.stopPropagation(); setCardState(dish.id, 'added'); }}>
+                      <Ionicons name="cart" size={16} color="#1a1612" />
+                      <Text style={s.addTxt}>Add to Cart</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {cs === 'added' && (
+                  <View style={s.actionRow}>
+                    <TouchableOpacity style={s.removeBtn} onPress={(e) => { e.stopPropagation(); removeFromCart(dish.id); setCardState(dish.id, 'idle'); }}>
+                      <Text style={s.cancelTxt}>Remove</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={s.addedBtn} disabled>
+                      <Ionicons name="checkmark-circle" size={16} color="#fff" />
+                      <Text style={[s.addTxt, { color: '#fff' }]}>Added to Cart</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -180,8 +207,8 @@ export default function Specials() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: YELLOW }, header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' }, backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, width: 60 }, backText: { fontSize: 15, fontWeight: '700', color: '#1a1612' }, headerCenter: { flex: 1, alignItems: 'center' }, title: { fontSize: 18, fontWeight: '800', color: '#1a1612', textAlign: 'center' }, subtitle: { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' }, content: { padding: 16 }, dayLabel: { fontSize: 20, fontWeight: '800', color: RED, marginBottom: 16, textAlign: 'center' }, card: { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 }, cardImgWrap: { width: '100%', height: Math.round((SW - 40) * 0.6) }, cardImg: { width: '100%', height: '100%' }, cardBody: { padding: 16 }, cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 10 }, cardName: { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 }, cardDesc: { fontSize: 13, color: '#6b6b6b', lineHeight: 19 }, cardPrice: { fontSize: 16, fontWeight: '800', color: RED }, cartCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: YELLOW, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 }, qtyBtn: { padding: 2 }, qtyText: { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' }, tableWrap: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginTop: 8 }, tableTitle: { fontSize: 16, fontWeight: '800', color: RED, marginBottom: 12, textAlign: 'center' }, tableRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: YELLOW }, tableDay: { fontSize: 14, fontWeight: '700', color: '#1a1612' }, tableDish: { fontSize: 14, color: '#6b6b6b', flex: 1, textAlign: 'right' },
+  container: { flex: 1, backgroundColor: YELLOW }, header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' }, backBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, width: 70 }, backText: { fontSize: 16, fontWeight: '700', color: '#1a1612' }, headerCenter: { flex: 1, alignItems: 'center' }, title: { fontSize: 18, fontWeight: '800', color: '#1a1612', textAlign: 'center' }, subtitle: { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' }, content: { padding: 16 }, dayLabel: { fontSize: 20, fontWeight: '800', color: RED, marginBottom: 16, textAlign: 'center' }, card: { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 }, cardImgWrap: { width: '100%', height: Math.round((SW - 40) * 0.6) }, cardImg: { width: '100%', height: '100%' }, cardBody: { padding: 16, paddingBottom: 8 }, cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 10 }, cardName: { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 }, cardDesc: { fontSize: 13, color: '#6b6b6b', lineHeight: 19 }, cardPrice: { fontSize: 16, fontWeight: '800', color: RED }, cartCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: YELLOW, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6, flexShrink: 0 }, qtyBtn: { padding: 2 }, qtyText: { fontSize: 14, fontWeight: '800', color: '#1a1612', minWidth: 18, textAlign: 'center' }, tableWrap: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginTop: 8 }, tableTitle: { fontSize: 16, fontWeight: '800', color: RED, marginBottom: 12, textAlign: 'center' }, tableRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: YELLOW }, tableDay: { fontSize: 14, fontWeight: '700', color: '#1a1612' }, tableDish: { fontSize: 14, color: '#6b6b6b', flex: 1, textAlign: 'right' },
 });
 const modal = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }, sheet: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' }, imageBox: { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' }, navBtn: { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }, backBtn: { position: 'absolute', top: 50, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 50, paddingHorizontal: 14, paddingVertical: 10, elevation: 5, zIndex: 10 }, backBtnText: { fontSize: 14, fontWeight: '700', color: '#1a1612' }, body: { padding: 20, paddingBottom: 60 }, name: { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 }, desc: { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 }, footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, price: { fontSize: 22, fontWeight: '800', color: RED }, cartCircle: { width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: YELLOW, borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 }, qtyBtn: { padding: 4 }, qtyText: { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }, sheet: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' }, imageBox: { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' }, navBtn: { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }, backBtn: { position: 'absolute', top: 14, right: 14, backgroundColor: '#fff', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center', elevation: 6, zIndex: 10 }, body: { padding: 20, paddingBottom: 60 }, name: { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 }, desc: { fontSize: 14, color: '#6b6b6b', lineHeight: 22, marginBottom: 20 }, footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, price: { fontSize: 22, fontWeight: '800', color: RED }, cartCircle: { width: 48, height: 48, borderRadius: 24, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center' }, qtyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: YELLOW, borderRadius: 24, paddingHorizontal: 12, paddingVertical: 8 }, qtyBtn: { padding: 4 }, qtyText: { fontSize: 16, fontWeight: '800', color: '#1a1612', minWidth: 20, textAlign: 'center' },
 });

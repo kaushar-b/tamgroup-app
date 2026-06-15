@@ -83,6 +83,7 @@ export default function Home() {
           <Image source={require('../../assets/casadelsol.logo.png')} style={styles.heroImg} resizeMode="contain" />
         </View>
 
+        <View style={{ height: 8 }} />
         <View style={styles.divider} />
 
         {/* Carousel */}
@@ -118,7 +119,7 @@ export default function Home() {
 
         {/* Dishes from around the world - single rotating square image */}
         <View style={styles.sectionWrap}>
-          <Text style={styles.sectionTitle}>Dishes from around the world</Text>
+          <Text style={styles.sectionTitle}>Dishes from Around the World</Text>
           <TouchableOpacity style={styles.worldWrap} onPress={() => router.push('/tabs/menu')} activeOpacity={0.9}>
             <Image source={DISHES_FROM_WORLD[worldIdx].image} style={styles.worldImg} resizeMode="cover" />
             <Text style={styles.worldLabel}>{DISHES_FROM_WORLD[worldIdx].name}</Text>
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
   actionImgBtn:  { flex: 1 },
   actionImg:     { width: '100%', height: undefined, aspectRatio: 1024 / 512, borderRadius: 16 },
   sectionWrap:   { marginBottom: 20 },
-  sectionTitle:  { fontSize: 16, fontWeight: '800', color: '#1a1612', marginBottom: 12, paddingHorizontal: 16 },
+  sectionTitle:  { fontSize: 18, fontWeight: '800', color: '#1a1612', marginBottom: 12, paddingHorizontal: 16 },
   worldWrap:     { marginHorizontal: 16, borderRadius: 16, overflow: 'hidden', backgroundColor: '#fff', elevation: 2 },
   worldImg:      { width: '100%', height: SW - 32, aspectRatio: 1 },
   worldLabel:    { fontSize: 14, fontWeight: '700', color: '#1a1612', padding: 12, textAlign: 'center' },
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
   infoTitle:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:      { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
   infoDivider:   { height: 1, backgroundColor: YELLOW, marginVertical: 12 },
-  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingVertical: 14, width: '100%' },
+  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingTop: 14, paddingBottom: 40, width: '100%' },
   footerLogo:    { width: 44, height: 28 },
   footerText:    { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

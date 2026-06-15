@@ -91,17 +91,9 @@ export default function MenuSelector() {
         <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/specials')}>
           <Image source={require('../../assets/images/buttons/weekly btn.png')} style={s.catImg} resizeMode="contain" />
         </TouchableOpacity>
-        <TouchableOpacity style={s.catImgBtn} onPress={() => router.push('/menu/aperitifs')}>
-          <Image source={require('../../assets/images/buttons/signature btn.png')} style={s.catImg} resizeMode="contain" />
-        </TouchableOpacity>
 
-        <View style={{ height: 100 }} />
 
-        {/* Footer */}
-        <View style={s.footer}>
-          <Image source={require('../../assets/logo.png')} style={s.footerLogo} resizeMode="contain" />
-          <Text style={s.footerText}>TAM Group Company</Text>
-        </View>
+
       </ScrollView>
     </View>
   );

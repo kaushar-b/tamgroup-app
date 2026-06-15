@@ -63,6 +63,14 @@ export default function About() {
 
         <View style={s.divider} />
 
+        <Text style={s.sectionTitle}>Contact Us</Text>
+        <View style={s.linkRow}>
+          <Ionicons name="call-outline" size={20} color={RED} />
+          <Text style={s.linkText}>74 794 929</Text>
+        </View>
+
+        <View style={s.divider} />
+
         <Text style={s.sectionTitle}>Find Us</Text>
         <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
@@ -85,7 +93,7 @@ const s = StyleSheet.create({
   content:         { padding: 20 },
   logoSection:     { alignItems: 'center', paddingVertical: 20, marginBottom: 16 },
   logo:            { width: 220, height: 120 },
-  philosophyTitle: { fontSize: 18, fontWeight: '900', color: RED, letterSpacing: 2, marginBottom: 6, borderBottomWidth: 2, borderBottomColor: RED, paddingBottom: 6, alignSelf: 'flex-start' },
+  philosophyTitle: { fontSize: 18, fontWeight: '900', color: RED, letterSpacing: 2, marginBottom: 6, borderBottomWidth: 2, borderBottomColor: RED, paddingBottom: 6, alignSelf: 'center', textAlign: 'center' },
   body:            { fontSize: 13, color: '#1a1612', lineHeight: 22, marginBottom: 14 },
   quote:           { fontSize: 14, color: RED, fontStyle: 'italic', fontWeight: '700', textAlign: 'center', lineHeight: 22, marginVertical: 10 },
   divider:         { height: 1, backgroundColor: '#fff', marginVertical: 16 },

@@ -8,20 +8,118 @@ const { width: SW } = Dimensions.get('window');
 const RED = '#b60015';
 const YELLOW = '#FFD544';
 
+// ─────────────────────────────────────────────
+// STARTERS DISHES — edit name/description/price/images/category here
+// category: 'All' shows in both tabs; 'Signature Salads' shows only in that tab
+// ─────────────────────────────────────────────
 const DISHES = [
-  { id: 's1', name: 'Tomato & Basil Bruschetta', category: 'Mediterranean', description: 'Toasted bread topped with fresh tomato and basil.', details: 'Crostini - Toasted bread topped with roasted cherry tomatoes, garlic, ricotta/cream cheese, and fresh basil.', price: 400, images: [require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'), require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'), require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg')] },
-  { id: 's2', name: 'Roasted Red Pepper', category: 'Mediterranean', description: 'Slow roasted red peppers with herbs.', details: 'Marinated/roasted red peppers in olive oil with garlic, thyme, and balsamic.', price: 400, images: [require('../../assets/images/products/Roasted Red1.jpeg'), require('../../assets/images/products/Roasted Red2.jpeg'), require('../../assets/images/products/Roasted Red3.jpeg')] },
-  { id: 's3', name: 'Poached Egg', category: 'Mediterranean', description: 'Perfectly poached egg on a bed of greens.', details: 'Toasted bread with grilled mushrooms, tomato, poached eggs, herbs, and a side green salad.', price: 400, images: [require('../../assets/images/products/Poached Egg1.jpeg'), require('../../assets/images/products/Poached Egg2.jpeg')] },
-  { id: 's4', name: 'Chicory Blue Cheese Salad', category: 'Signature Salads', description: 'Endive, Apple, Roquefort and Walnut Salad.', details: 'Salade d\'endives aux pommes - Endive, Apple, Roquefort/Blue Cheese, and Walnut Salad.', price: 400, images: [require('../../assets/images/products/blue cheese salad1.jpeg'), require('../../assets/images/products/blue cheese salad2.jpeg')] },
+  {
+    id: 's1',
+    name: 'Assorted Stuffed Vegetables',
+    category: 'All',
+    description: 'Mixed stuffed tomatoes, zucchini, eggplant...',
+    details: 'Mixed stuffed tomatoes, zucchini, eggplant, and onion with premium minced meat filling, garnished with herbs.',
+    price: 220,
+    images: [
+      require('../../assets/images/products/Stuffed Vegetables1.jpeg'),
+      require('../../assets/images/products/Stuffed Vegetables2.jpeg'),
+    ],
+  },
+  {
+    id: 's2',
+    name: 'Tomato & Basil Bruschetta',
+    category: 'All',
+    description: 'Toasted bread topped with roasted cherry tomatoes...',
+    details: 'Toasted bread topped with roasted cherry tomatoes, garlic, ricotta/cream cheese, and fresh basil.',
+    price: 0,
+    images: [
+      require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
+      require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'),
+      require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg'),
+    ],
+  },
+  {
+    id: 's3',
+    name: 'Seafood Stew',
+    category: 'All',
+    description: 'Mixed fish, mussels, clams in a tomato-based broth...',
+    details: 'Mixed fish, mussels, clams in a tomato-based broth with lemon and herbs.',
+    price: 0,
+    images: [
+      require('../../assets/images/products/Seafood Stew1.jpeg'),
+      require('../../assets/images/products/Seafood Stew2.jpeg'),
+      require('../../assets/images/products/Seafood Stew3.jpeg'),
+    ],
+  },
+  {
+    id: 's4',
+    name: 'Poached Egg — Breakfast Sandwich',
+    category: 'All',
+    description: 'Toasted bread with grilled mushrooms, tomato...',
+    details: 'Toasted bread with grilled mushrooms, tomato, poached eggs, herbs, and a side green salad.',
+    price: 0,
+    images: [
+      require('../../assets/images/products/Poached Egg1.jpeg'),
+      require('../../assets/images/products/Poached Egg2.jpeg'),
+    ],
+  },
+  {
+    id: 's5',
+    name: 'Marinated Bell Peppers',
+    category: 'Signature Salads',
+    description: 'Olive oil with garlic, thyme, and balsamic...',
+    details: 'Olive oil with garlic, thyme, and balsamic — "Peperoni Arrostiti".',
+    price: 49,
+    images: [
+      require('../../assets/images/products/Roasted Red1.jpeg'),
+      require('../../assets/images/products/Roasted Red2.jpeg'),
+      require('../../assets/images/products/Roasted Red3.jpeg'),
+    ],
+  },
+  {
+    id: 's6',
+    name: 'Roquefort Walnut Salad',
+    category: 'Signature Salads',
+    description: 'Roquefort et noix — Endive, Roquefort/Blue Cheese...',
+    details: 'Roquefort et noix — Endive, Roquefort/Blue Cheese, and Walnut Salad.',
+    price: 69,
+    images: [
+      require('../../assets/images/products/blue cheese salad1.jpeg'),
+      require('../../assets/images/products/blue cheese salad2.jpeg'),
+    ],
+  },
+  {
+    id: 's7',
+    name: 'Batata and Onion Omelette',
+    category: 'All',
+    description: 'Spanish tortilla de patatas, golden omelette made with...',
+    details: 'Tortilla de patatas — golden omelette made with potatoes, onions, eggs, and olive oil.',
+    price: 50,
+    images: [
+      require('../../assets/images/products/dish1.jpeg'),
+    ],
+  },
+  {
+    id: 's8',
+    name: 'Tomato Garlic Bruschetta Skewers',
+    category: 'All',
+    description: 'Italian bruschetta spiedini, bite-sized skewers made with...',
+    details: 'Italian bruschetta spiedini — bite-sized skewers made with toasted bread cubes, fresh tomato, garlic, olive oil, and basil.',
+    price: 45,
+    images: [
+      require('../../assets/images/products/dish2.jpeg'),
+    ],
+  },
 ];
 
-const STARTER_CATS = ['All', 'Signature Salads', 'Mediterranean'];
+const STARTER_CATS = ['All', 'Signature Salads'];
 
 function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: () => void }) {
   const { addToCart, removeFromCart, items } = useCart();
   const [imgIdx, setImgIdx] = useState(0);
   if (!dish) return null;
   const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
+  const priceLabel = dish.price === 0 ? 'Market Price' : `P ${dish.price}.00`;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={modal.backdrop}>
@@ -41,8 +139,8 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
             <Text style={modal.name}>{dish.name}</Text>
             <Text style={modal.desc}>{dish.details}</Text>
             <View style={modal.footer}>
-              <Text style={modal.price}>P {dish.price}.00</Text>
-              {qty === 0 ? (
+              <Text style={modal.price}>{priceLabel}</Text>
+              {dish.price === 0 ? null : qty === 0 ? (
                 <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
@@ -99,6 +197,7 @@ export default function Starters() {
       <ScrollView contentContainerStyle={s.list}>
         {filtered.map(dish => {
           const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
+          const priceLabel = dish.price === 0 ? 'Market Price' : `P ${dish.price}.00`;
           return (
             <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
               <View style={s.cardImgWrap}><Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" /></View>
@@ -108,7 +207,7 @@ export default function Starters() {
                     <Text style={s.cardName}>{dish.name}</Text>
                     <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
                   </View>
-                  {qty === 0 ? (
+                  {dish.price === 0 ? null : qty === 0 ? (
                     <TouchableOpacity style={s.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={18} color="#1a1612" /></TouchableOpacity>
                   ) : (
                     <View style={s.qtyRow}>
@@ -118,7 +217,7 @@ export default function Starters() {
                     </View>
                   )}
                 </View>
-                <Text style={s.cardPrice}>P {dish.price}.00</Text>
+                <Text style={s.cardPrice}>{priceLabel}</Text>
               </View>
             </TouchableOpacity>
           );

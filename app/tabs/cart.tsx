@@ -92,7 +92,7 @@ const s = StyleSheet.create({
   title:            { fontSize: 24, fontWeight: '800', color: '#fff' },
   subtitle:         { fontSize: 13, color: '#fff', opacity: 0.85, marginTop: 2 },
   emptyWrap:        { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  emptyIcon:        { width: 96, height: 96, borderRadius: 48, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  emptyIcon:        { width: 96, height: 96, borderRadius: 48, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   emptyTitle:       { fontSize: 20, fontWeight: '700', color: '#1a1612' },
   emptyText:        { fontSize: 14, color: '#6b6b6b' },
   card:             { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, padding: 12, elevation: 1 },

@@ -21,6 +21,7 @@ const DISHES = [
     details: 'Mixed stuffed tomatoes, zucchini, eggplant, and onion with premium minced meat filling, garnished with herbs.',
     price: 220,
     images: [
+      require('../../assets/images/products/Stuffed vegetables1.jpeg'),
       require('../../assets/images/products/Stuffed Vegetables1.jpeg'),
       require('../../assets/images/products/Stuffed Vegetables2.jpeg'),
     ],
@@ -36,6 +37,7 @@ const DISHES = [
       require('../../assets/images/products/Tomato & Basil Bruschetta1.jpeg'),
       require('../../assets/images/products/Tomato & Basil Bruschetta2.jpeg'),
       require('../../assets/images/products/Tomato & Basil Bruschetta3.jpeg'),
+      require('../../assets/images/products/Bruschetta Tomato1.jpeg'),
     ],
   },
   {
@@ -67,10 +69,11 @@ const DISHES = [
     id: 's5',
     name: 'Marinated Bell Peppers',
     category: 'Signature Salads',
-    description: 'Olive oil with garlic, thyme, and balsamic...',
+    description: 'Olive oil with garlic, thyme, and balsamic...', 
     details: 'Olive oil with garlic, thyme, and balsamic — "Peperoni Arrostiti".',
     price: 49,
     images: [
+      require('../../assets/images/products/bell pepper salad1.jpeg'),
       require('../../assets/images/products/Roasted Red1.jpeg'),
       require('../../assets/images/products/Roasted Red2.jpeg'),
       require('../../assets/images/products/Roasted Red3.jpeg'),
@@ -84,6 +87,8 @@ const DISHES = [
     details: 'Roquefort et noix — Endive, Roquefort/Blue Cheese, and Walnut Salad.',
     price: 69,
     images: [
+      require('../../assets/images/products/Roquefort salad1.jpeg'),
+      require('../../assets/images/products/Roquefort salad2.jpeg'),
       require('../../assets/images/products/blue cheese salad1.jpeg'),
       require('../../assets/images/products/blue cheese salad2.jpeg'),
     ],
@@ -96,7 +101,8 @@ const DISHES = [
     details: 'Tortilla de patatas — golden omelette made with potatoes, onions, eggs, and olive oil.',
     price: 50,
     images: [
-      require('../../assets/images/products/dish1.jpeg'),
+      require('../../assets/images/products/batata onion omelette1.jpeg'),
+      require('../../assets/images/products/batata onion omelette2.jpeg'),
     ],
   },
   {
@@ -107,7 +113,7 @@ const DISHES = [
     details: 'Italian bruschetta spiedini — bite-sized skewers made with toasted bread cubes, fresh tomato, garlic, olive oil, and basil.',
     price: 45,
     images: [
-      require('../../assets/images/products/dish2.jpeg'),
+      require('../../assets/images/products/bruschetta skewers1.jpeg'),
     ],
   },
 ];

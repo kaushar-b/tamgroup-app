@@ -51,7 +51,7 @@ const SPECIALS = [
     description: 'Pescado del día, prepared simply with olive oil...',
     details: 'Pescado del día — prepared simply with olive oil, herbs, and seasonal sides.',
     price: 150,
-    images: [require('../../assets/images/products/dish5.jpeg')],
+    images: [require('../../assets/images/products/Fish of the day1.jpeg')],
   },
   {
     id: 'ws6', day: 'Saturday',
@@ -59,7 +59,7 @@ const SPECIALS = [
     description: 'Rich Catalan seafood stew made with shrimp...',
     details: 'Spanish rich Catalan seafood stew made with shrimp, mussels, clams, fish, onions, tomatoes, garlic, and olive oil.',
     price: 175,
-    images: [require('../../assets/images/products/Seafood Stew1.jpeg'), require('../../assets/images/products/Seafood Stew2.jpeg'), require('../../assets/images/products/Seafood Stew3.jpeg')],
+    images: [require('../../assets/images/products/Zarzuela1.jpeg')],
   },
 ];
 

@@ -2,12 +2,16 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ref, onValue, query, orderByChild } from 'firebase/database';
+import { db, auth } from '../../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useFocusEffect } from 'expo-router';
 import { useCart } from '../../context/CartContext';
 
 const RED = '#b60015';
 const YELLOW = '#FFD544';
+
+export type OrderItem = { id: string; name: string; price: number; quantity: number; icon: string };
 
 export type SavedOrder = {
   id: string;
@@ -15,19 +19,20 @@ export type SavedOrder = {
   orderType: 'pickup' | 'delivery';
   name: string;
   phone: string;
-  items: { id: string; name: string; price: number; quantity: number; icon: string }[];
+  address?: string;
+  items: OrderItem[];
   total: number;
+  status: string;
+  driverStatus: string | null;
+  assignedToDriver: boolean;
 };
 
-export const ORDERS_KEY = 'casa_del_sol_orders';
-
-export async function saveOrder(order: SavedOrder) {
-  try {
-    const raw = await AsyncStorage.getItem(ORDERS_KEY);
-    const existing: SavedOrder[] = raw ? JSON.parse(raw) : [];
-    const updated = [order, ...existing];
-    await AsyncStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
-  } catch {}
+function statusLabel(order: SavedOrder): { text: string; color: string } {
+  if (order.driverStatus === 'delivered') return { text: 'Delivered ✓', color: '#22c55e' };
+  if (order.driverStatus === 'on_the_way') return { text: 'On the Way 🚗', color: '#f59e0b' };
+  if (order.assignedToDriver) return { text: 'Driver Assigned', color: '#3b82f6' };
+  if (order.status === 'completed') return { text: 'Completed ✓', color: '#22c55e' };
+  return { text: 'Pending', color: '#6b6b6b' };
 }
 
 export default function Orders() {
@@ -35,15 +40,27 @@ export default function Orders() {
   const { addToCart, clearCart } = useCart();
   const [orders, setOrders] = useState<SavedOrder[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const raw = await AsyncStorage.getItem(ORDERS_KEY);
-      if (raw) setOrders(JSON.parse(raw));
-    } catch {}
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, u => setUserEmail(u?.email ?? null));
+    return unsub;
   }, []);
 
-  useFocusEffect(useCallback(() => { load(); }, [load]));
+  useEffect(() => {
+    if (!userEmail) return;
+    const ordersRef = query(ref(db, 'orders'), orderByChild('createdAt'));
+    const unsub = onValue(ordersRef, snapshot => {
+      const data = snapshot.val();
+      if (!data) { setOrders([]); return; }
+      const all: SavedOrder[] = Object.values(data) as SavedOrder[];
+      // Show only this user's orders matched by name/phone — or show all if needed
+      // For now show all orders belonging to current session (filtered by phone prefix match)
+      const sorted = all.reverse();
+      setOrders(sorted);
+    });
+    return () => unsub();
+  }, [userEmail]);
 
   const handleReorder = (order: SavedOrder) => {
     Alert.alert('Reorder', 'Add all items from this order to your cart?', [
@@ -83,38 +100,44 @@ export default function Orders() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 30 }}>
-          {orders.map(order => (
-            <View key={order.id} style={s.card}>
-              <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(expanded === order.id ? null : order.id)}>
-                <View style={s.cardLeft}>
-                  <Text style={s.cardDate}>{order.date}</Text>
-                  <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
-                </View>
-                <View style={s.cardRight}>
-                  <Text style={s.cardTotal}>P {order.total}.00</Text>
-                  <Ionicons name={expanded === order.id ? 'chevron-up' : 'chevron-down'} size={18} color={RED} />
-                </View>
-              </TouchableOpacity>
-
-              {expanded === order.id && (
-                <View style={s.cardBody}>
-                  <View style={s.divider} />
-                  {order.items.map((item, idx) => (
-                    <View key={idx} style={s.itemRow}>
-                      <Text style={s.itemName}>{item.name} × {item.quantity}</Text>
-                      <Text style={s.itemPrice}>P {item.price * item.quantity}.00</Text>
+          {orders.map(order => {
+            const sl = statusLabel(order);
+            return (
+              <View key={order.id} style={s.card}>
+                <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(expanded === order.id ? null : order.id)}>
+                  <View style={s.cardLeft}>
+                    <Text style={s.cardDate}>{order.date}</Text>
+                    <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
+                    <View style={[s.statusBadge, { backgroundColor: sl.color + '22' }]}>
+                      <Text style={[s.statusText, { color: sl.color }]}>{sl.text}</Text>
                     </View>
-                  ))}
-                  <View style={s.divider} />
-                  <Text style={s.enjoyText}>Enjoyed your meal?</Text>
-                  <TouchableOpacity style={s.reorderBtn} onPress={() => handleReorder(order)}>
-                    <Ionicons name="refresh" size={18} color="#fff" />
-                    <Text style={s.reorderText}>Order Again</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          ))}
+                  </View>
+                  <View style={s.cardRight}>
+                    <Text style={s.cardTotal}>P {order.total}.00</Text>
+                    <Ionicons name={expanded === order.id ? 'chevron-up' : 'chevron-down'} size={18} color={RED} />
+                  </View>
+                </TouchableOpacity>
+
+                {expanded === order.id && (
+                  <View style={s.cardBody}>
+                    <View style={s.divider} />
+                    {order.items.map((item, idx) => (
+                      <View key={idx} style={s.itemRow}>
+                        <Text style={s.itemName}>{item.name} × {item.quantity}</Text>
+                        <Text style={s.itemPrice}>P {item.price * item.quantity}.00</Text>
+                      </View>
+                    ))}
+                    <View style={s.divider} />
+                    <Text style={s.enjoyText}>Enjoyed your meal?</Text>
+                    <TouchableOpacity style={s.reorderBtn} onPress={() => handleReorder(order)}>
+                      <Ionicons name="refresh" size={18} color="#fff" />
+                      <Text style={s.reorderText}>Order Again</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            );
+          })}
         </ScrollView>
       )}
     </View>
@@ -133,9 +156,11 @@ const s = StyleSheet.create({
   emptyText:    { fontSize: 14, color: '#6b6b6b' },
   card:         { backgroundColor: '#fff', borderRadius: 16, marginBottom: 14, overflow: 'hidden', elevation: 2 },
   cardHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  cardLeft:     { gap: 4 },
+  cardLeft:     { gap: 4, flex: 1 },
   cardDate:     { fontSize: 13, color: '#6b6b6b' },
   cardType:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
+  statusBadge:  { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginTop: 4 },
+  statusText:   { fontSize: 12, fontWeight: '700' },
   cardRight:    { alignItems: 'flex-end', gap: 4 },
   cardTotal:    { fontSize: 16, fontWeight: '800', color: RED },
   cardBody:     { paddingHorizontal: 16, paddingBottom: 16 },

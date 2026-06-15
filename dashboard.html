@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Casa Del Sol — Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  :root { --red: #b60015; --yellow: #FFD544; --dark: #1a1612; }
+  body { background: var(--yellow); min-height: 100vh; }
+
+  /* LOGIN SCREEN */
+  #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .login-logo { font-size: 28px; font-weight: 900; color: var(--dark); margin-bottom: 8px; }
+  .login-sub { font-size: 14px; color: #6b6b6b; margin-bottom: 32px; }
+  .role-row { display: flex; gap: 12px; margin-bottom: 24px; width: 100%; max-width: 400px; }
+  .role-btn { flex: 1; padding: 16px; border-radius: 12px; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 15px; font-weight: 700; color: var(--dark); transition: all 0.15s; }
+  .role-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+  .login-card { background: #fff; border-radius: 20px; padding: 28px; width: 100%; max-width: 400px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+  .login-card h2 { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+  .inp { width: 100%; padding: 14px; border-radius: 10px; border: 1.5px solid #eee; font-size: 15px; margin-bottom: 12px; background: #fafafa; }
+  .inp:focus { outline: none; border-color: var(--red); }
+  .login-btn { width: 100%; padding: 16px; background: var(--red); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+  .login-btn:hover { opacity: 0.9; }
+  .err { color: var(--red); font-size: 13px; margin-bottom: 10px; display: none; }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+  .topbar { background: var(--red); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .topbar-title { color: #fff; font-size: 20px; font-weight: 800; }
+  .topbar-role { color: rgba(255,255,255,0.8); font-size: 13px; }
+  .signout-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+  /* TABS */
+  .tabs { display: flex; background: var(--dark); padding: 8px 12px; gap: 8px; }
+  .tab { flex: 1; padding: 10px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: #aaa; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .tab.active { background: var(--red); color: #fff; }
+
+  /* CONTENT */
+  .content { padding: 16px; max-width: 800px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ORDER CARDS */
+  .order-card { background: #fff; border-radius: 16px; margin-bottom: 12px; overflow: hidden; border: 1.5px solid #eee; }
+  .order-card.assigned { border-color: #3b82f6; }
+  .order-card.on-the-way { border-color: #f59e0b; }
+  .order-card.delivered { border-color: #22c55e; }
+  .order-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+  .type-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff; }
+  .type-delivery { background: var(--red); }
+  .type-pickup { background: var(--dark); }
+  .order-info { flex: 1; }
+  .order-name { font-size: 15px; font-weight: 700; color: var(--dark); }
+  .order-meta { font-size: 12px; color: #6b6b6b; margin-top: 2px; }
+  .order-total { font-size: 16px; font-weight: 800; color: var(--red); }
+  .chevron { color: #6b6b6b; transition: transform 0.2s; font-size: 18px; }
+  .order-body { padding: 0 16px 16px; border-top: 1px solid var(--yellow); display: none; }
+  .order-body.open { display: block; }
+  .item-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: #6b6b6b; }
+  .divider { height: 1px; background: var(--yellow); margin: 10px 0; }
+  .total-row { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: var(--dark); }
+  .info-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; color: #6b6b6b; }
+
+  /* STATUS BADGE */
+  .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 6px; }
+  .status-pending { background: #f3f4f6; color: #6b6b6b; }
+  .status-assigned { background: #dbeafe; color: #1d4ed8; }
+  .status-on_the_way { background: #fef3c7; color: #d97706; }
+  .status-delivered { background: #dcfce7; color: #16a34a; }
+  .status-completed { background: #dcfce7; color: #16a34a; }
+
+  /* ACTION BUTTONS */
+  .action-btn { width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-assign { background: #3b82f6; color: #fff; }
+  .btn-assign:hover { background: #2563eb; }
+  .btn-on-way { background: #f59e0b; color: #fff; }
+  .btn-on-way:hover { background: #d97706; }
+  .btn-delivered { background: #22c55e; color: #fff; }
+  .btn-delivered:hover { background: #16a34a; }
+  .btn-complete { background: #f5f5f5; color: var(--dark); border: 1.5px solid #eee; }
+  .btn-complete.done { background: #22c55e; color: #fff; border-color: #22c55e; }
+
+  /* COMPLETED TAB */
+  .section-title { font-size: 17px; font-weight: 800; color: var(--dark); margin-bottom: 12px; }
+  .empty-state { text-align: center; padding: 60px 20px; color: #6b6b6b; }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 16px; font-weight: 600; }
+
+  .new-badge { background: var(--red); color: #fff; border-radius: 10px; font-size: 10px; font-weight: 800; padding: 2px 6px; margin-left: 6px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-logo">🍽️ Casa Del Sol</div>
+  <div class="login-sub">Staff Dashboard</div>
+  <div class="role-row">
+    <button class="role-btn active" onclick="selectRole('manager')" id="role-manager">👔 Manager</button>
+    <button class="role-btn" onclick="selectRole('driver')" id="role-driver">🚗 Driver</button>
+  </div>
+  <div class="login-card">
+    <h2 id="login-title">Manager Sign In</h2>
+    <div class="err" id="login-err">Incorrect password. Try again.</div>
+    <input class="inp" type="password" id="login-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Casa Del Sol</div>
+      <div class="topbar-role" id="topbar-role">Manager Dashboard</div>
+    </div>
+    <button class="signout-btn" onclick="signOut()">Sign Out</button>
+  </div>
+
+  <!-- MANAGER TABS -->
+  <div class="tabs" id="manager-tabs">
+    <button class="tab active" onclick="showTab('live')" id="tab-live">🔴 Live Orders</button>
+    <button class="tab" onclick="showTab('completed')" id="tab-completed">✅ Completed</button>
+  </div>
+
+  <!-- DRIVER TABS -->
+  <div class="tabs" id="driver-tabs" style="display:none">
+    <button class="tab active" onclick="showTab('driver-orders')" id="tab-driver-orders">📦 My Orders</button>
+  </div>
+
+  <div class="content">
+    <!-- LIVE ORDERS (Manager) -->
+    <div class="tab-panel active" id="panel-live">
+      <div id="live-orders-list"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No live orders yet</div></div></div>
+    </div>
+
+    <!-- COMPLETED (Manager) -->
+    <div class="tab-panel" id="panel-completed">
+      <div id="completed-orders-list"><div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No completed orders yet</div></div></div>
+    </div>
+
+    <!-- DRIVER ORDERS -->
+    <div class="tab-panel" id="panel-driver-orders">
+      <div id="driver-orders-list"><div class="empty-state"><div class="empty-icon">🚗</div><div class="empty-text">No orders assigned yet</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+  import { getDatabase, ref, onValue, update, query, orderByChild } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOva0jMXCvt55nKHXEiS2BGlRo5niWiOM",
+    authDomain: "tam-app-2674c.firebaseapp.com",
+    projectId: "tam-app-2674c",
+    storageBucket: "tam-app-2674c.firebasestorage.app",
+    messagingSenderId: "900257883854",
+    appId: "1:900257883854:web:008e757ee27cb5365ed29f",
+    databaseURL: "https://tam-app-2674c-default-rtdb.firebaseio.com",
+  };
+
+  // PASSWORDS — change these to whatever you want
+  const MANAGER_PASSWORD = "manager123";
+  const DRIVER_PASSWORD  = "driver123";
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  let currentRole = 'manager';
+  let allOrders   = {};
+  let expandedIds = new Set();
+
+  // ── AUTH ──────────────────────────────────────────
+  window.selectRole = (role) => {
+    currentRole = role;
+    document.getElementById('role-manager').classList.toggle('active', role === 'manager');
+    document.getElementById('role-driver').classList.toggle('active', role === 'driver');
+    document.getElementById('login-title').textContent = role === 'manager' ? 'Manager Sign In' : 'Driver Sign In';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-err').style.display = 'none';
+  };
+
+  window.doLogin = () => {
+    const pass = document.getElementById('login-pass').value;
+    const ok = currentRole === 'manager' ? pass === MANAGER_PASSWORD : pass === DRIVER_PASSWORD;
+    if (!ok) { document.getElementById('login-err').style.display = 'block'; return; }
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('topbar-role').textContent = currentRole === 'manager' ? 'Manager Dashboard' : 'Driver Dashboard';
+    document.getElementById('manager-tabs').style.display = currentRole === 'manager' ? 'flex' : 'none';
+    document.getElementById('driver-tabs').style.display  = currentRole === 'driver'  ? 'flex' : 'none';
+    if (currentRole === 'driver') showTab('driver-orders');
+    startListening();
+  };
+
+  window.signOut = () => {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-pass').value = '';
+  };
+
+  // ── FIREBASE LISTENER ─────────────────────────────
+  function startListening() {
+    const ordersRef = query(ref(db, 'orders'), orderByChild('createdAt'));
+    onValue(ordersRef, snapshot => {
+      const data = snapshot.val() || {};
+      allOrders = data;
+      renderAll();
+    });
+  }
+
+  // ── RENDER ────────────────────────────────────────
+  function renderAll() {
+    const orders = Object.values(allOrders).reverse();
+    if (currentRole === 'manager') {
+      renderManagerLive(orders.filter(o => o.driverStatus !== 'delivered' && o.status !== 'completed'));
+      renderManagerCompleted(orders.filter(o => o.driverStatus === 'delivered' || o.status === 'completed'));
+    } else {
+      renderDriverOrders(orders.filter(o => o.assignedToDriver && o.driverStatus !== 'delivered'));
+    }
+  }
+
+  function statusBadge(order) {
+    if (order.driverStatus === 'delivered')   return '<span class="status-badge status-delivered">Delivered ✓</span>';
+    if (order.driverStatus === 'on_the_way')  return '<span class="status-badge status-on_the_way">On the Way 🚗</span>';
+    if (order.assignedToDriver)               return '<span class="status-badge status-assigned">Driver Assigned</span>';
+    if (order.status === 'completed')         return '<span class="status-badge status-completed">Completed ✓</span>';
+    return '<span class="status-badge status-pending">Pending</span>';
+  }
+
+  function orderCardHTML(order, actions) {
+    const isOpen = expandedIds.has(order.id);
+    const itemRows = (order.items || []).map(i =>
+      `<div class="item-row"><span>${i.name} × ${i.quantity}</span><span>P ${i.price * i.quantity}.00</span></div>`
+    ).join('');
+    const typeClass = order.orderType === 'delivery' ? 'type-delivery' : 'type-pickup';
+    const typeLabel = order.orderType === 'delivery' ? '🚗 Delivery' : '🏪 Pick Up';
+    let borderClass = '';
+    if (order.driverStatus === 'delivered') borderClass = 'delivered';
+    else if (order.driverStatus === 'on_the_way') borderClass = 'on-the-way';
+    else if (order.assignedToDriver) borderClass = 'assigned';
+
+    return `
+      <div class="order-card ${borderClass}" id="card-${order.id}">
+        <div class="order-header" onclick="toggleExpand('${order.id}')">
+          <span class="type-badge ${typeClass}">${typeLabel}</span>
+          <div class="order-info">
+            <div class="order-name">${order.name}</div>
+            <div class="order-meta">${order.date} · ${order.phone}</div>
+            ${statusBadge(order)}
+          </div>
+          <div class="order-total">P ${order.total}.00</div>
+          <span class="chevron" id="chev-${order.id}">${isOpen ? '▲' : '▼'}</span>
+        </div>
+        <div class="order-body ${isOpen ? 'open' : ''}" id="body-${order.id}">
+          ${itemRows}
+          <div class="divider"></div>
+          <div class="total-row"><span>Total</span><span>P ${order.total}.00</span></div>
+          ${order.orderType === 'delivery' ? `<div class="info-row">📍 ${order.address || 'No address'}</div>` : ''}
+          ${order.paymentMethod ? `<div class="info-row">💳 ${order.paymentMethod === 'online' ? 'Pay Online' : 'Pay on Delivery'}</div>` : ''}
+          ${order.tip ? `<div class="info-row">🤝 Tip: P${order.tip}.00</div>` : ''}
+          ${actions}
+        </div>
+      </div>`;
+  }
+
+  function renderManagerLive(orders) {
+    const el = document.getElementById('live-orders-list');
+    if (!orders.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No live orders</div></div>'; return; }
+    el.innerHTML = orders.map(order => {
+      let actions = '';
+      if (order.orderType === 'delivery' && !order.assignedToDriver) {
+        actions = `<button class="action-btn btn-assign" onclick="assignDriver('${order.id}')">🚗 Assign to Driver</button>`;
+      } else if (order.orderType === 'delivery' && order.assignedToDriver) {
+        actions = `<div class="info-row" style="color:#3b82f6;font-weight:700;">✓ Sent to driver dashboard</div>`;
+        if (order.driverStatus === 'on_the_way') actions += `<div class="info-row" style="color:#f59e0b;font-weight:700;">🚗 Driver is on the way!</div>`;
+      }
+      if (order.orderType === 'pickup') {
+        const done = order.status === 'completed';
+        actions = `<button class="action-btn btn-complete ${done ? 'done' : ''}" onclick="markComplete('${order.id}', ${done})">${done ? '✓ Order Completed' : 'Mark as Complete'}</button>`;
+      }
+      return orderCardHTML(order, actions);
+    }).join('');
+  }
+
+  function renderManagerCompleted(orders) {
+    const el = document.getElementById('completed-orders-list');
+    if (!orders.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No completed orders yet</div></div>'; return; }
+    el.innerHTML = orders.map(order => orderCardHTML(order, '')).join('');
+  }
+
+  function renderDriverOrders(orders) {
+    const el = document.getElementById('driver-orders-list');
+    if (!orders.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🚗</div><div class="empty-text">No orders assigned yet</div></div>'; return; }
+    el.innerHTML = orders.map(order => {
+      let actions = '';
+      if (!order.driverStatus || order.driverStatus === null) {
+        actions = `<button class="action-btn btn-on-way" onclick="setDriverStatus('${order.id}', 'on_the_way')">🚗 On the Way</button>`;
+      } else if (order.driverStatus === 'on_the_way') {
+        actions = `
+          <div class="info-row" style="color:#f59e0b;font-weight:700;">🚗 You are on the way</div>
+          <button class="action-btn btn-delivered" onclick="setDriverStatus('${order.id}', 'delivered')">✓ Order Delivered</button>`;
+      }
+      return orderCardHTML(order, actions);
+    }).join('');
+  }
+
+  // ── ACTIONS ───────────────────────────────────────
+  window.toggleExpand = (id) => {
+    if (expandedIds.has(id)) expandedIds.delete(id);
+    else expandedIds.add(id);
+    const body = document.getElementById(`body-${id}`);
+    const chev = document.getElementById(`chev-${id}`);
+    if (body) body.classList.toggle('open', expandedIds.has(id));
+    if (chev) chev.textContent = expandedIds.has(id) ? '▲' : '▼';
+  };
+
+  window.assignDriver = (id) => {
+    update(ref(db, `orders/${id}`), { assignedToDriver: true }).catch(console.error);
+  };
+
+  window.markComplete = (id, isDone) => {
+    update(ref(db, `orders/${id}`), { status: isDone ? 'pending' : 'completed' }).catch(console.error);
+  };
+
+  window.setDriverStatus = (id, status) => {
+    const updates = { driverStatus: status };
+    if (status === 'delivered') updates.status = 'completed';
+    update(ref(db, `orders/${id}`), updates).catch(console.error);
+  };
+
+  // ── TAB SWITCHING ─────────────────────────────────
+  window.showTab = (tabId) => {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`panel-${tabId}`)?.classList.add('active');
+    document.getElementById(`tab-${tabId}`)?.classList.add('active');
+  };
+</script>
+</body>
+</html>

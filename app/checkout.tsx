@@ -3,25 +3,11 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../context/CartContext';
 import { useRouter } from 'expo-router';
-import { saveOrder } from './tabs/orders';
+import { ref, push, set } from 'firebase/database';
+import { db } from '../lib/firebase';
 
 const RED = '#b60015';
 const YELLOW = '#FFD544';
-
-// ── PASTE YOUR TELEGRAM DETAILS HERE ──
-const TELEGRAM_BOT_TOKEN = '8534438785:AAF1R4b49XktyN2TtDezeYt8EqyMV14zfCc';
-const TELEGRAM_CHAT_ID = '8944268822';
-
-async function sendTelegram(message: string) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-  try {
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message }),
-    });
-  } catch {}
-}
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -37,6 +23,7 @@ export default function Checkout() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
+  const [placedOrderId, setPlacedOrderId] = useState<string>('');
 
   const deliveryFee = orderType === 'delivery' ? 30 : 0;
   const grandTotal = total + deliveryFee + (tip ?? 0);
@@ -56,40 +43,50 @@ export default function Checkout() {
     if (!validate()) return;
     setPlacing(true);
 
-    const itemLines = items.map(i => `• ${i.name} x${i.quantity} = P${i.price * i.quantity}.00`).join('\n');
-    const addressLine = orderType === 'delivery'
-      ? `\nAddress: ${address1}${address2 ? ', ' + address2 : ''}${city ? ', ' + city : ''}`
-      : '';
-    const payLine = orderType === 'delivery'
-      ? `\nPayment: ${paymentMethod === 'online' ? 'Pay Online' : 'Pay on Delivery'}`
-      : '';
-    const tipLine = tip ? `\nDriver Tip: P${tip}.00` : '';
+    try {
+      const ordersRef = ref(db, 'orders');
+      const newOrderRef = push(ordersRef);
+      const orderId = newOrderRef.key!;
 
-    const telegramMsg =
-`🍽️ NEW ORDER — Casa Del Sol
-Name: ${name}
-Phone: +267${phone}
-Type: ${orderType === 'pickup' ? 'Pick Up' : 'Delivery'}${addressLine}${payLine}${tipLine}
------------------------
-${itemLines}
------------------------
-TOTAL: P${grandTotal}.00`;
+      const orderData = {
+        id: orderId,
+        date: new Date().toLocaleDateString('en-GB', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        }),
+        orderType: orderType!,
+        name,
+        phone: `+267${phone}`,
+        address: orderType === 'delivery'
+          ? `${address1}${address2 ? ', ' + address2 : ''}${city ? ', ' + city : ''}`
+          : '',
+        paymentMethod: orderType === 'delivery' ? paymentMethod : null,
+        tip: tip ?? 0,
+        items: items.map(i => ({
+          id: i.id,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          icon: i.icon || 'restaurant',
+        })),
+        subtotal: total,
+        deliveryFee,
+        total: grandTotal,
+        status: 'pending',
+        assignedToDriver: false,
+        driverStatus: null,
+        createdAt: Date.now(),
+      };
 
-    await sendTelegram(telegramMsg);
-
-    await saveOrder({
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      orderType: orderType!,
-      name,
-      phone,
-      items: items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, icon: i.icon })),
-      total: grandTotal,
-    });
-
-    clearCart();
-    setPlacing(false);
-    setOrderPlaced(true);
+      await set(newOrderRef, orderData);
+      setPlacedOrderId(orderId);
+      clearCart();
+      setPlacing(false);
+      setOrderPlaced(true);
+    } catch (err) {
+      setPlacing(false);
+      Alert.alert('Error', 'Could not place order. Please try again.');
+    }
   };
 
   if (orderPlaced) {
@@ -103,7 +100,7 @@ TOTAL: P${grandTotal}.00`;
           <Text style={s.confirmSub}>
             {orderType === 'pickup'
               ? 'Your order will be ready for pick up in about 20 minutes!'
-              : 'Your order will be ready for delivery in about 20 minutes!'}
+              : 'Your order will be delivered in about 20 minutes!'}
           </Text>
           <TouchableOpacity style={s.confirmBtn} onPress={() => router.replace('/tabs')}>
             <Text style={s.confirmBtnText}>Back to Home</Text>

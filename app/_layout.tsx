@@ -12,7 +12,7 @@ Appearance.setColorScheme('light');
 // To change the driver email, update DRIVER_EMAIL below.
 // Passwords are set in Firebase Authentication console.
 const MANAGER_EMAIL = 'casadelsol.bw@gmail.com';
-const DRIVER_EMAIL  = 'driver@casadelsol.bw'; // ← change this to the actual driver email
+const DRIVER_EMAIL  = 'web.expert.remote@gmail.com'; // ← change this to the actual driver email
 // ──────────────────────────────────────────────────────────────
 
 function AuthGate() {

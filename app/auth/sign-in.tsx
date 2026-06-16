@@ -49,7 +49,7 @@ export default function SignIn() {
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <TouchableOpacity onPress={handleLogoTap} activeOpacity={1}>
-        <Image source={require('../../assets/adaptive-icon.png')} style={s.logo} resizeMode="contain" />
+        <Image source={require('../../assets/splash-icon.png')} style={s.logo} resizeMode="contain" />
       </TouchableOpacity>
       <View style={s.card}>
         <Text style={s.title}>Welcome back</Text>

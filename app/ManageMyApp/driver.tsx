@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ref, onValue, update, query, orderByChild } from 'firebase/database';
+import { ref, onValue, update, set, query, orderByChild } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
+import { registerForPushToken, sendPushNotification, CHANNELS } from '../../lib/notifications';
 
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
@@ -21,6 +22,7 @@ type Order = {
   status: string;
   assignedToDriver: boolean;
   driverStatus: string | null;
+  customerPushToken?: string | null;
   createdAt: number;
 };
 
@@ -31,6 +33,24 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
     const updates: Record<string, string> = { driverStatus: status };
     if (status === 'delivered') updates.status = 'completed';
     update(ref(db, `orders/${order.id}`), updates);
+
+    if (order.customerPushToken) {
+      if (status === 'on_the_way') {
+        sendPushNotification(
+          order.customerPushToken,
+          'Delivery on the Way',
+          'Your order is on the way!',
+          CHANNELS.CUSTOMER
+        );
+      } else if (status === 'delivered') {
+        sendPushNotification(
+          order.customerPushToken,
+          'Order Delivered',
+          'Your order has been delivered. Enjoy your meal!',
+          CHANNELS.CUSTOMER
+        );
+      }
+    }
   };
 
   const ds = order.driverStatus;
@@ -84,7 +104,6 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
             <View style={c.infoRow}><Ionicons name="call-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{order.phone}</Text></View>
           ) : null}
 
-          {/* DRIVER ACTION BUTTONS */}
           {!isCompleted && (
             <View style={c.btnGroup}>
               <TouchableOpacity
@@ -131,6 +150,16 @@ export default function DriverDashboard() {
   const router = useRouter();
   const [tab, setTab]       = useState<'orders' | 'completed'>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
+
+  // Register this device's push token as the DRIVER token
+  useEffect(() => {
+    (async () => {
+      const token = await registerForPushToken();
+      if (token) {
+        await set(ref(db, 'staffTokens/driver'), token);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const q = query(ref(db, 'orders'), orderByChild('createdAt'));

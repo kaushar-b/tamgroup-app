@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { ref, push, set } from 'firebase/database';
 import { db } from '../lib/firebase';
 import { getBotswanaTime } from '../lib/getBotswanaTime';
+import { registerForPushToken } from '../lib/notifications';
 
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
@@ -79,6 +80,7 @@ export default function Checkout() {
       const ordersRef   = ref(db, 'orders');
       const newOrderRef = push(ordersRef);
       const orderId     = newOrderRef.key!;
+      const customerPushToken = await registerForPushToken();
 
       const orderData = {
         id: orderId,
@@ -106,6 +108,7 @@ export default function Checkout() {
         assignedToDriver: false,
         driverStatus: null,
         preparingStatus: null,
+        customerPushToken,
         createdAt: Date.now(),
       };
 

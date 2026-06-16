@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ref, onValue, update, query, orderByChild } from 'firebase/database';
+import { ref, onValue, update, set, get, query, orderByChild } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
+import * as Notifications from 'expo-notifications';
+import { registerForPushToken, sendPushNotification, CHANNELS } from '../../lib/notifications';
 
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
@@ -26,6 +28,7 @@ type Order = {
   assignedToDriver: boolean;
   driverStatus: string | null;
   preparingStatus?: string | null;
+  customerPushToken?: string | null;
   createdAt: number;
 };
 
@@ -47,15 +50,39 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
   const assignDriver = () => {
     Alert.alert('Assign to Driver', `Send "${order.name}"'s order to driver?`, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Assign', onPress: () => update(ref(db, `orders/${order.id}`), { assignedToDriver: true, driverStatus: 'preparing' }) }
+      {
+        text: 'Assign', onPress: async () => {
+          await update(ref(db, `orders/${order.id}`), { assignedToDriver: true, driverStatus: 'preparing' });
+
+          const driverTokenSnap = await get(ref(db, 'staffTokens/driver'));
+          const driverToken = driverTokenSnap.val();
+          if (driverToken) {
+            sendPushNotification(
+              driverToken,
+              'Time for Delivery!',
+              `New order from ${order.name} -- P ${order.total}.00`,
+              CHANNELS.DRIVER
+            );
+          }
+        }
+      }
     ]);
   };
 
   const markPickupPreparing = () =>
     update(ref(db, `orders/${order.id}`), { preparingStatus: 'preparing' });
 
-  const markPickupReady = () =>
-    update(ref(db, `orders/${order.id}`), { preparingStatus: 'ready', status: 'completed' });
+  const markPickupReady = async () => {
+    await update(ref(db, `orders/${order.id}`), { preparingStatus: 'ready', status: 'completed' });
+    if (order.customerPushToken) {
+      sendPushNotification(
+        order.customerPushToken,
+        'Order Ready',
+        'Your order is ready for pickup!',
+        CHANNELS.CUSTOMER
+      );
+    }
+  };
 
   return (
     <View style={[
@@ -142,13 +169,46 @@ export default function ManagerDashboard() {
   const router = useRouter();
   const [tab, setTab]       = useState<'live' | 'sent' | 'completed'>('live');
   const [orders, setOrders] = useState<Order[]>([]);
+  const knownOrderIds = useRef<Set<string>>(new Set());
+  const isFirstLoad    = useRef(true);
 
+  // Register this device's push token as the MANAGER token
+  useEffect(() => {
+    (async () => {
+      const token = await registerForPushToken();
+      if (token) {
+        await set(ref(db, 'staffTokens/manager'), token);
+      }
+    })();
+  }, []);
+
+  // Listen for orders + fire a LOCAL notification when a brand-new order arrives
   useEffect(() => {
     const q = query(ref(db, 'orders'), orderByChild('createdAt'));
     return onValue(q, snap => {
       const data = snap.val();
       if (!data) { setOrders([]); return; }
-      setOrders((Object.values(data) as Order[]).reverse());
+      const list = (Object.values(data) as Order[]);
+
+      if (isFirstLoad.current) {
+        list.forEach(o => knownOrderIds.current.add(o.id));
+        isFirstLoad.current = false;
+      } else {
+        const newOnes = list.filter(o => !knownOrderIds.current.has(o.id));
+        newOnes.forEach(o => {
+          knownOrderIds.current.add(o.id);
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'New Order!',
+              body: `${o.name} placed an order -- P ${o.total}.00`,
+              sound: 'default',
+            },
+            trigger: null,
+          });
+        });
+      }
+
+      setOrders(list.reverse());
     });
   }, []);
 
@@ -173,7 +233,6 @@ export default function ManagerDashboard() {
 
   return (
     <View style={s.container}>
-      {/* Header */}
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Manager Dashboard</Text>
@@ -184,7 +243,6 @@ export default function ManagerDashboard() {
         </TouchableOpacity>
       </View>
 
-      {/* Tab Bar */}
       <View style={s.tabBar}>
         {TABS.map(t => (
           <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabActive]} onPress={() => setTab(t.key)}>
@@ -198,7 +256,6 @@ export default function ManagerDashboard() {
         ))}
       </View>
 
-      {/* Orders */}
       {shown.length === 0 ? (
         <View style={s.empty}>
           <Ionicons name="receipt-outline" size={56} color={RED} />

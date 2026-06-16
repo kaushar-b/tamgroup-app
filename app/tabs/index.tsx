@@ -76,7 +76,7 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
 
         {/* Hero image */}
         <View style={styles.heroWrap}>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   infoTitle:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:      { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
   infoDivider:   { height: 1, backgroundColor: YELLOW, marginVertical: 12 },
-  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'flex-end', flexDirection: 'row', gap: 10, paddingTop: 6, paddingBottom: 52, width: '100%', justifyContent: 'center' },
+  footer:        { backgroundColor: '#fff', alignItems: 'center', flexDirection: 'row', gap: 10, paddingTop: 10, paddingBottom: 18, width: '100%', justifyContent: 'center' },
   footerLogo:    { width: 44, height: 28 },
   footerText:    { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

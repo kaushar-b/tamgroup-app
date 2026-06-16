@@ -51,7 +51,8 @@ export default function Checkout() {
     if (!name.trim()) e.name = 'Full name is required';
     if (!phone.trim()) e.phone = 'Phone number is required';
     if (phone.length !== 8) e.phone = 'Phone number must be 8 digits';
-    if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address is required for delivery';
+    if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address line 1 is required';
+    if (orderType === 'delivery' && !address2.trim()) e.address2 = 'Address line 2 is required';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -247,8 +248,9 @@ export default function Checkout() {
                   {errors.address1 ? <Text style={s.fieldError}>{errors.address1}</Text> : null}
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>
-                  <Text style={s.inputLabel}>Address Line 2</Text>
-                  <TextInput style={s.input} value={address2} onChangeText={setAddress2}
+                  <Text style={s.inputLabel}>Address Line 2 *</Text>
+                  {errors.address2 ? <Text style={s.fieldError}>{errors.address2}</Text> : null}
+                  <TextInput style={[s.input, errors.address2 && s.inputError]} value={address2} onChangeText={v => { setAddress2(v); setErrors(e => ({ ...e, address2: '' })); }}
                     placeholder="Area / Suburb (optional)" placeholderTextColor="#aaa" />
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>

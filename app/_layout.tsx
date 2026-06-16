@@ -5,15 +5,45 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { CartProvider } from '../context/CartContext';
 import { Appearance } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as TaskManager from 'expo-task-manager';
+
 Appearance.setColorScheme('light');
 
 // ─── STAFF ACCOUNTS ───────────────────────────────────────────
-// To change the manager email, update MANAGER_EMAIL below.
-// To change the driver email, update DRIVER_EMAIL below.
-// Passwords are set in Firebase Authentication console.
 const MANAGER_EMAIL = 'casadelsol.bw@gmail.com';
-const DRIVER_EMAIL  = 'web.expert.remote@gmail.com'; // ← change this to the actual driver email
+const DRIVER_EMAIL  = 'web.expert.remote@gmail.com'; // ← change to actual driver email
 // ──────────────────────────────────────────────────────────────
+
+// ─── BACKGROUND NOTIFICATION TASK ─────────────────────────────
+// This lets the app receive and display notifications even when
+// it has been fully killed / cleared from recent apps on Android.
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error }) => {
+  if (error) {
+    console.error('Background notification task error:', error);
+    return;
+  }
+  // The notification was already delivered by the OS at this point.
+  // No extra action needed — expo-notifications handles display automatically.
+});
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK).catch(() => {
+  // Silently ignore if already registered or not supported
+});
+// ──────────────────────────────────────────────────────────────
+
+// Foreground notification handler — show alerts when app is open
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 function AuthGate() {
   const [user, setUser] = useState<User | null>(null);
@@ -31,8 +61,8 @@ function AuthGate() {
 
   useEffect(() => {
     if (!loaded) return;
-    const inAuth    = segments[0] === 'auth';
-    const inManage  = segments[0] === 'ManageMyApp';
+    const inAuth   = segments[0] === 'auth';
+    const inManage = segments[0] === 'ManageMyApp';
 
     if (!user && !inAuth && !inManage) {
       router.replace('/auth/sign-in');
@@ -51,7 +81,6 @@ function AuthGate() {
       return;
     }
 
-    // If staff lands on /tabs, redirect them to their dashboard
     if (user && segments[0] === 'tabs') {
       const email = user.email ?? '';
       if (email === MANAGER_EMAIL) {

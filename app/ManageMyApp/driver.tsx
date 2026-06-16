@@ -28,56 +28,61 @@ type Order = {
 
 function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: boolean }) {
   const [open, setOpen] = useState(false);
+  const ds = order.driverStatus;
 
-  const setStatus = (status: string) => {
-    const updates: Record<string, string> = { driverStatus: status };
-    if (status === 'delivered') updates.status = 'completed';
-    update(ref(db, `orders/${order.id}`), updates);
+  const confirmStatus = (newStatus: 'on_the_way' | 'delivered') => {
+    const label = newStatus === 'on_the_way' ? 'mark this order as On the Way' : 'mark this order as Delivered';
+    Alert.alert(
+      'Confirm',
+      `Are you sure you want to ${label}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: () => {
+            const updates: Record<string, string> = { driverStatus: newStatus };
+            if (newStatus === 'delivered') updates.status = 'completed';
+            update(ref(db, `orders/${order.id}`), updates);
 
-    if (order.customerPushToken) {
-      if (status === 'on_the_way') {
-        sendPushNotification(
-          order.customerPushToken,
-          'Delivery on the Way',
-          'Your order is on the way!',
-          CHANNELS.CUSTOMER
-        );
-      } else if (status === 'delivered') {
-        sendPushNotification(
-          order.customerPushToken,
-          'Order Delivered',
-          'Your order has been delivered. Enjoy your meal!',
-          CHANNELS.CUSTOMER
-        );
-      }
-    }
+            if (order.customerPushToken) {
+              if (newStatus === 'on_the_way') {
+                sendPushNotification(
+                  order.customerPushToken,
+                  'Delivery on the Way',
+                  'Your order is on the way!',
+                  CHANNELS.CUSTOMER
+                );
+              } else {
+                sendPushNotification(
+                  order.customerPushToken,
+                  'Order Delivered',
+                  'Your order has been delivered. Enjoy your meal!',
+                  CHANNELS.CUSTOMER
+                );
+              }
+            }
+          }
+        }
+      ]
+    );
   };
 
-  const ds = order.driverStatus;
+  const statusColor = ds === 'delivered' ? '#22c55e' : ds === 'on_the_way' ? '#f59e0b' : '#3b82f6';
+  const statusText  = ds === 'delivered' ? 'Delivered' : ds === 'on_the_way' ? 'On the Way' : 'Assigned';
 
   return (
     <View style={[
       c.card,
       ds === 'delivered' ? c.cardDone :
-      ds === 'on_the_way' ? c.cardOnWay : c.cardPreparing
+      ds === 'on_the_way' ? c.cardOnWay : c.cardAssigned
     ]}>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={c.cardInfo}>
           <Text style={c.cardName}>{order.name}</Text>
           <Text style={c.cardMeta}>{order.date}</Text>
           <Text style={c.cardAddr} numberOfLines={1}>{order.address || 'No address'}</Text>
-          <View style={[c.statusBadge, {
-            backgroundColor:
-              ds === 'delivered' ? '#dcfce7' :
-              ds === 'on_the_way' ? '#fef3c7' : '#dbeafe'
-          }]}>
-            <Text style={[c.statusTxt, {
-              color:
-                ds === 'delivered' ? '#16a34a' :
-                ds === 'on_the_way' ? '#d97706' : '#1d4ed8'
-            }]}>
-              {ds === 'delivered' ? 'Delivered' : ds === 'on_the_way' ? 'On the Way' : 'Preparing'}
-            </Text>
+          <View style={[c.statusBadge, { backgroundColor: statusColor + '22' }]}>
+            <Text style={[c.statusTxt, { color: statusColor }]}>{statusText}</Text>
           </View>
         </View>
         <View style={c.cardRight}>
@@ -96,44 +101,56 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
             </View>
           ))}
           <View style={c.divider} />
-          <View style={c.row}><Text style={c.rowTotal2}>Total</Text><Text style={c.rowTotalAmt}>P {order.total}.00</Text></View>
+          <View style={c.row}>
+            <Text style={c.rowTotal2}>Total</Text>
+            <Text style={c.rowTotalAmt}>P {order.total}.00</Text>
+          </View>
           {order.address ? (
-            <View style={c.infoRow}><Ionicons name="location-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{order.address}</Text></View>
+            <View style={c.infoRow}>
+              <Ionicons name="location-outline" size={14} color="#6b6b6b" />
+              <Text style={c.infoTxt}>{order.address}</Text>
+            </View>
           ) : null}
           {order.phone ? (
-            <View style={c.infoRow}><Ionicons name="call-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{order.phone}</Text></View>
+            <View style={c.infoRow}>
+              <Ionicons name="call-outline" size={14} color="#6b6b6b" />
+              <Text style={c.infoTxt}>{order.phone}</Text>
+            </View>
           ) : null}
 
           {!isCompleted && (
             <View style={c.btnGroup}>
+              {/* ON THE WAY button — only show if not yet on_the_way or delivered */}
               <TouchableOpacity
-                style={[c.driverBtn, ds === 'preparing' ? c.btnActive : c.btnDone]}
-                onPress={() => ds === 'preparing' && setStatus('on_the_way')}
-                disabled={ds !== 'preparing'}
-              >
-                <Ionicons name="flame" size={16} color="#fff" />
-                <Text style={c.driverBtnTxt}>Preparing</Text>
-                {ds !== 'preparing' && <Ionicons name="checkmark-circle" size={16} color="#fff" />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[c.driverBtn,
-                  ds === 'on_the_way' ? c.btnOnWay :
-                  ds === 'delivered' ? c.btnDone : c.btnDisabled
+                style={[
+                  c.driverBtn,
+                  ds === 'on_the_way' || ds === 'delivered' ? c.btnDone : c.btnOnWay
                 ]}
-                onPress={() => ds === 'on_the_way' && setStatus('delivered')}
-                disabled={ds !== 'on_the_way'}
+                onPress={() => {
+                  if (ds !== 'on_the_way' && ds !== 'delivered') {
+                    confirmStatus('on_the_way');
+                  }
+                }}
+                disabled={ds === 'on_the_way' || ds === 'delivered'}
               >
                 <Ionicons name="car-sport" size={16} color="#fff" />
                 <Text style={c.driverBtnTxt}>On the Way</Text>
-                {ds === 'delivered' && <Ionicons name="checkmark-circle" size={16} color="#fff" />}
+                {(ds === 'on_the_way' || ds === 'delivered') && (
+                  <Ionicons name="checkmark-circle" size={16} color="#fff" />
+                )}
               </TouchableOpacity>
 
+              {/* DELIVERED button — only enabled after on_the_way */}
               <TouchableOpacity
-                style={[c.driverBtn,
-                  ds === 'delivered' ? c.btnDelivered : c.btnDisabled
+                style={[
+                  c.driverBtn,
+                  ds === 'delivered' ? c.btnDelivered :
+                  ds === 'on_the_way' ? c.btnDeliverReady : c.btnDisabled
                 ]}
-                disabled
+                onPress={() => {
+                  if (ds === 'on_the_way') confirmStatus('delivered');
+                }}
+                disabled={ds !== 'on_the_way'}
               >
                 <Ionicons name="checkmark-circle" size={16} color="#fff" />
                 <Text style={c.driverBtnTxt}>Delivered</Text>
@@ -151,7 +168,6 @@ export default function DriverDashboard() {
   const [tab, setTab]       = useState<'orders' | 'completed'>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Register this device's push token as the DRIVER token
   useEffect(() => {
     (async () => {
       const token = await registerForPushToken();
@@ -196,10 +212,14 @@ export default function DriverDashboard() {
 
       <View style={s.tabBar}>
         {([
-          { key: 'orders' as const,    label: 'My Orders',         count: activeOrders.length },
-          { key: 'completed' as const, label: 'Completed Orders',  count: 0 },
+          { key: 'orders' as const,    label: 'My Orders',        count: activeOrders.length },
+          { key: 'completed' as const, label: 'Completed',        count: 0 },
         ]).map(t => (
-          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabActive]} onPress={() => setTab(t.key)}>
+          <TouchableOpacity
+            key={t.key}
+            style={[s.tabBtn, tab === t.key && s.tabActive]}
+            onPress={() => setTab(t.key)}
+          >
             <Ionicons
               name={t.key === 'orders' ? 'car-sport' : 'checkmark-circle'}
               size={14}
@@ -217,12 +237,20 @@ export default function DriverDashboard() {
 
       {shown.length === 0 ? (
         <View style={s.empty}>
-          <Ionicons name={tab === 'orders' ? 'car-sport-outline' : 'checkmark-circle-outline'} size={56} color={RED} />
-          <Text style={s.emptyTxt}>{tab === 'orders' ? 'No orders assigned yet' : 'No completed deliveries'}</Text>
+          <Ionicons
+            name={tab === 'orders' ? 'car-sport-outline' : 'checkmark-circle-outline'}
+            size={56}
+            color={RED}
+          />
+          <Text style={s.emptyTxt}>
+            {tab === 'orders' ? 'No orders assigned yet' : 'No completed deliveries'}
+          </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-          {shown.map(o => <DriverOrderCard key={o.id} order={o} isCompleted={tab === 'completed'} />)}
+          {shown.map(o => (
+            <DriverOrderCard key={o.id} order={o} isCompleted={tab === 'completed'} />
+          ))}
         </ScrollView>
       )}
     </View>
@@ -230,53 +258,53 @@ export default function DriverDashboard() {
 }
 
 const s = StyleSheet.create({
-  container:      { flex: 1, backgroundColor: YELLOW },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
-  headerTitle:    { fontSize: 20, fontWeight: '900', color: '#fff' },
-  headerSub:      { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  signOutBtn:     { padding: 8 },
-  tabBar:         { flexDirection: 'row', backgroundColor: '#1a1612', padding: 10, gap: 8 },
-  tabBtn:         { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.1)' },
-  tabActive:      { backgroundColor: RED },
-  tabTxt:         { fontSize: 12, fontWeight: '700', color: '#aaa' },
-  tabTxtActive:   { color: '#fff' },
-  tabBadge:       { backgroundColor: YELLOW, borderRadius: 8, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
-  tabBadgeActive: { backgroundColor: '#fff' },
-  tabBadgeTxt:    { fontSize: 10, fontWeight: '800', color: '#1a1612' },
+  container:         { flex: 1, backgroundColor: YELLOW },
+  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
+  headerTitle:       { fontSize: 20, fontWeight: '900', color: '#fff' },
+  headerSub:         { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
+  signOutBtn:        { padding: 8 },
+  tabBar:            { flexDirection: 'row', backgroundColor: '#1a1612', padding: 10, gap: 8 },
+  tabBtn:            { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.1)' },
+  tabActive:         { backgroundColor: RED },
+  tabTxt:            { fontSize: 12, fontWeight: '700', color: '#aaa' },
+  tabTxtActive:      { color: '#fff' },
+  tabBadge:          { backgroundColor: YELLOW, borderRadius: 8, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+  tabBadgeActive:    { backgroundColor: '#fff' },
+  tabBadgeTxt:       { fontSize: 10, fontWeight: '800', color: '#1a1612' },
   tabBadgeTxtActive: { color: RED },
-  empty:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  emptyTxt:       { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  empty:             { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  emptyTxt:          { fontSize: 16, fontWeight: '700', color: '#1a1612' },
 });
 
 const c = StyleSheet.create({
-  card:          { backgroundColor: '#fff', borderRadius: 16, marginBottom: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: '#eee', elevation: 2 },
-  cardDone:      { borderColor: '#22c55e' },
-  cardOnWay:     { borderColor: '#f59e0b' },
-  cardPreparing: { borderColor: '#3b82f6' },
-  cardHead:      { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
-  cardInfo:      { flex: 1 },
-  cardName:      { fontSize: 15, fontWeight: '800', color: '#1a1612' },
-  cardMeta:      { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
-  cardAddr:      { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
-  statusBadge:   { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, marginTop: 5 },
-  statusTxt:     { fontSize: 11, fontWeight: '700' },
-  cardRight:     { alignItems: 'flex-end', gap: 4 },
-  cardTotal:     { fontSize: 16, fontWeight: '800', color: RED },
-  cardBody:      { paddingHorizontal: 14, paddingBottom: 14 },
-  divider:       { height: 1, backgroundColor: YELLOW, marginVertical: 10 },
-  row:           { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  rowItem:       { fontSize: 13, color: '#6b6b6b', flex: 1, paddingRight: 8 },
-  rowPrice:      { fontSize: 13, fontWeight: '600', color: '#1a1612' },
-  rowTotal2:     { fontSize: 15, fontWeight: '800', color: '#1a1612' },
-  rowTotalAmt:   { fontSize: 15, fontWeight: '800', color: RED },
-  infoRow:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
-  infoTxt:       { fontSize: 13, color: '#6b6b6b', flex: 1 },
-  btnGroup:      { flexDirection: 'row', gap: 8, marginTop: 14 },
-  driverBtn:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 12, borderRadius: 12 },
-  btnActive:     { backgroundColor: '#3b82f6' },
-  btnOnWay:      { backgroundColor: '#f59e0b' },
-  btnDelivered:  { backgroundColor: '#22c55e' },
-  btnDone:       { backgroundColor: '#22c55e' },
-  btnDisabled:   { backgroundColor: '#d1d5db' },
-  driverBtnTxt:  { fontSize: 11, fontWeight: '800', color: '#fff' },
+  card:           { backgroundColor: '#fff', borderRadius: 16, marginBottom: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: '#eee', elevation: 2 },
+  cardDone:       { borderColor: '#22c55e' },
+  cardOnWay:      { borderColor: '#f59e0b' },
+  cardAssigned:   { borderColor: '#3b82f6' },
+  cardHead:       { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
+  cardInfo:       { flex: 1 },
+  cardName:       { fontSize: 15, fontWeight: '800', color: '#1a1612' },
+  cardMeta:       { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
+  cardAddr:       { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
+  statusBadge:    { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, marginTop: 5 },
+  statusTxt:      { fontSize: 11, fontWeight: '700' },
+  cardRight:      { alignItems: 'flex-end', gap: 4 },
+  cardTotal:      { fontSize: 16, fontWeight: '800', color: RED },
+  cardBody:       { paddingHorizontal: 14, paddingBottom: 14 },
+  divider:        { height: 1, backgroundColor: YELLOW, marginVertical: 10 },
+  row:            { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  rowItem:        { fontSize: 13, color: '#6b6b6b', flex: 1, paddingRight: 8 },
+  rowPrice:       { fontSize: 13, fontWeight: '600', color: '#1a1612' },
+  rowTotal2:      { fontSize: 15, fontWeight: '800', color: '#1a1612' },
+  rowTotalAmt:    { fontSize: 15, fontWeight: '800', color: RED },
+  infoRow:        { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
+  infoTxt:        { fontSize: 13, color: '#6b6b6b', flex: 1 },
+  btnGroup:       { flexDirection: 'row', gap: 10, marginTop: 14 },
+  driverBtn:      { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 14, borderRadius: 12 },
+  btnOnWay:       { backgroundColor: '#f59e0b' },
+  btnDeliverReady:{ backgroundColor: RED },
+  btnDelivered:   { backgroundColor: '#22c55e' },
+  btnDone:        { backgroundColor: '#22c55e' },
+  btnDisabled:    { backgroundColor: '#d1d5db' },
+  driverBtnTxt:   { fontSize: 12, fontWeight: '800', color: '#fff' },
 });

@@ -12,10 +12,10 @@ const YELLOW = '#FFD544';
 // Current placeholders use existing dish images.
 // ─────────────────────────────────────────────────────────────
 const DESSERT_IMAGES = [
-  require('../../assets/images/products/dish1.jpeg'),
-  require('../../assets/images/products/dish2.jpeg'),
-  require('../../assets/images/products/dish3.jpeg'),
-  require('../../assets/images/products/dish4.jpeg'),
+  require('../../assets/images/products/dessert1.jpeg'),
+  require('../../assets/images/products/dessert2.jpeg'),
+  require('../../assets/images/products/dessert4.jpeg'),
+  require('../../assets/images/products/dessert3.jpeg'),
 ];
 
 export default function Desserts() {

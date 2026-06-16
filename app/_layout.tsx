@@ -11,45 +11,52 @@ import * as TaskManager from 'expo-task-manager';
 Appearance.setColorScheme('light');
 
 // ─── STAFF ACCOUNTS ───────────────────────────────────────────
+// To change manager email: update MANAGER_EMAIL below
+// To change driver email:  update DRIVER_EMAIL below
+// Passwords are managed in Firebase Authentication console
 const MANAGER_EMAIL = 'casadelsol.bw@gmail.com';
-const DRIVER_EMAIL  = 'web.expert.remote@gmail.com'; // ← change to actual driver email
+const DRIVER_EMAIL  = 'web.expert.remote@gmail.com';
 // ──────────────────────────────────────────────────────────────
 
 // ─── BACKGROUND NOTIFICATION TASK ─────────────────────────────
-// This lets the app receive and display notifications even when
-// it has been fully killed / cleared from recent apps on Android.
+// Defined at module level (required by TaskManager before app renders)
+// This allows the OS to wake the app and show notifications even when
+// the app has been fully killed / cleared from recent apps.
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error }) => {
-  if (error) {
-    console.error('Background notification task error:', error);
-    return;
-  }
-  // The notification was already delivered by the OS at this point.
-  // No extra action needed — expo-notifications handles display automatically.
-});
-
-Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK).catch(() => {
-  // Silently ignore if already registered or not supported
-});
+if (!TaskManager.isTaskDefined(BACKGROUND_NOTIFICATION_TASK)) {
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ error }) => {
+    if (error) {
+      console.error('BG notification task error:', error);
+    }
+    // Expo handles display automatically — nothing else needed here
+  });
+}
 // ──────────────────────────────────────────────────────────────
 
-// Foreground notification handler — show alerts when app is open
+// Foreground handler — show banners when app is open
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldShowAlert:  true,
+    shouldPlaySound:  true,
+    shouldSetBadge:   false,
     shouldShowBanner: true,
-    shouldShowList: true,
+    shouldShowList:   true,
   }),
 });
 
 function AuthGate() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser]     = useState<User | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const segments = useSegments();
-  const router = useRouter();
+  const segments            = useSegments();
+  const router              = useRouter();
+
+  // Register background task once on mount
+  useEffect(() => {
+    Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK).catch(() => {
+      // Already registered or unsupported — safe to ignore
+    });
+  }, []);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {

@@ -40,7 +40,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/splash-icon.png",
+          "icon": "./assets/casadelsol-whatsapp.jpeg",
           "color": "#b60015"
         }
       ]

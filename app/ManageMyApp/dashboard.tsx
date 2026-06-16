@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router';
 import { ref, onValue, update, set, get, query, orderByChild } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
-import * as Notifications from 'expo-notifications';
 import { registerForPushToken, sendPushNotification, CHANNELS } from '../../lib/notifications';
 
 const RED    = '#b60015';
@@ -43,7 +42,7 @@ function statusInfo(order: Order): { text: string; color: string } {
   return { text: 'Pending', color: '#6b6b6b' };
 }
 
-function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'completed' }) {
+function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'completed' | 'pickup' }) {
   const [open, setOpen] = useState(false);
   const si = statusInfo(order);
 
@@ -167,7 +166,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
 
 export default function ManagerDashboard() {
   const router = useRouter();
-  const [tab, setTab]       = useState<'live' | 'sent' | 'completed'>('live');
+  const [tab, setTab]       = useState<'live' | 'sent' | 'completed' | 'pickup'>('live');
   const [orders, setOrders] = useState<Order[]>([]);
   const knownOrderIds = useRef<Set<string>>(new Set());
   const isFirstLoad    = useRef(true);
@@ -194,18 +193,10 @@ export default function ManagerDashboard() {
         list.forEach(o => knownOrderIds.current.add(o.id));
         isFirstLoad.current = false;
       } else {
+        // New order push now comes from the customer's device at checkout
+        // (works even when this dashboard is killed — see checkout.tsx)
         const newOnes = list.filter(o => !knownOrderIds.current.has(o.id));
-        newOnes.forEach(o => {
-          knownOrderIds.current.add(o.id);
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: 'New Order!',
-              body: `${o.name} placed an order -- P ${o.total}.00`,
-              sound: 'default',
-            },
-            trigger: null,
-          });
-        });
+        newOnes.forEach(o => knownOrderIds.current.add(o.id));
       }
 
       setOrders(list.reverse());
@@ -213,6 +204,7 @@ export default function ManagerDashboard() {
   }, []);
 
   const liveOrders      = orders.filter(o => o.status !== 'completed' && o.driverStatus !== 'delivered' && !o.assignedToDriver);
+  const pickupOrders    = orders.filter(o => o.orderType === 'pickup' && o.preparingStatus === 'ready');
   const sentOrders      = orders.filter(o => o.assignedToDriver && o.driverStatus !== 'delivered');
   const completedOrders = orders.filter(o => o.status === 'completed' || o.driverStatus === 'delivered');
 
@@ -227,9 +219,10 @@ export default function ManagerDashboard() {
     { key: 'live',      label: 'Live Orders',         count: liveOrders.length },
     { key: 'sent',      label: 'Sent for Delivery',   count: sentOrders.length },
     { key: 'completed', label: 'Completed',            count: completedOrders.length },
+    { key: 'pickup',    label: 'Ready Pickups',         count: pickupOrders.length },
   ];
 
-  const shown = tab === 'live' ? liveOrders : tab === 'sent' ? sentOrders : completedOrders;
+  const shown = tab === 'live' ? liveOrders : tab === 'sent' ? sentOrders : tab === 'pickup' ? pickupOrders : completedOrders;
 
   return (
     <View style={s.container}>
@@ -260,12 +253,12 @@ export default function ManagerDashboard() {
         <View style={s.empty}>
           <Ionicons name="receipt-outline" size={56} color={RED} />
           <Text style={s.emptyTxt}>
-            {tab === 'live' ? 'No live orders yet' : tab === 'sent' ? 'No orders with driver' : 'No completed orders'}
+            {tab === 'live' ? 'No live orders yet' : tab === 'sent' ? 'No orders with driver' : tab === 'pickup' ? 'No ready pickups' : 'No completed orders'}
           </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-          {shown.map(o => <OrderCard key={o.id} order={o} role={tab} />)}
+          {shown.map(o => <OrderCard key={o.id} order={o} role={tab as 'live' | 'sent' | 'completed' | 'pickup'} />)}
         </ScrollView>
       )}
     </View>

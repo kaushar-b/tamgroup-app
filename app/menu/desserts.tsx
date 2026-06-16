@@ -36,7 +36,7 @@ export default function Desserts() {
 
       <ScrollView contentContainerStyle={s.content}>
         <View style={s.comingSoonBadge}>
-          <Ionicons name="ice-cream" size={22} color={RED} />
+          <Ionicons name="time-outline" size={22} color="#fff" />
           <Text style={s.comingSoonText}>Coming Soon</Text>
         </View>
         <Text style={s.sub}>Our desserts menu is being prepared.{'\n'}Check back soon!</Text>

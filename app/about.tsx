@@ -103,7 +103,7 @@ const s = StyleSheet.create({
   socialLabel:     { fontSize: 12, fontWeight: '600', color: '#fff' },
   linkRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 4 },
   linkText:        { flex: 1, fontSize: 14, fontWeight: '600', color: RED },
-  footer:          { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingTop: 20, paddingBottom: 50, marginHorizontal: -20 },
+  footer:          { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingTop: 14, paddingBottom: 28, marginHorizontal: -20 },
   footerLogo:      { width: 44, height: 28 },
   footerText:      { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

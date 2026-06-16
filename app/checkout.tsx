@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../context/CartContext';
 import { useRouter } from 'expo-router';
-import { ref, push, set } from 'firebase/database';
+import { ref, push, set, get } from 'firebase/database';
 import { db } from '../lib/firebase';
 import { getBotswanaTime } from '../lib/getBotswanaTime';
-import { registerForPushToken } from '../lib/notifications';
+import { registerForPushToken, sendPushNotification, CHANNELS } from '../lib/notifications';
 
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
@@ -114,6 +114,23 @@ export default function Checkout() {
       };
 
       await set(newOrderRef, orderData);
+
+      // ── Push notification to manager (works even if manager app is killed) ──
+      try {
+        const managerTokenSnap = await get(ref(db, 'staffTokens/manager'));
+        const managerToken = managerTokenSnap.val();
+        if (managerToken) {
+          await sendPushNotification(
+            managerToken,
+            'New Order Received!',
+            `${name} placed a ${orderType} order — P ${grandTotal}.00`,
+            CHANNELS.MANAGER
+          );
+        }
+      } catch {
+        // Push failure must never block order placement
+      }
+
       setOrderType2(orderType);
       clearCart();
       setPlacing(false);

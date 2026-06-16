@@ -141,7 +141,7 @@ export default function Home() {
           <Text style={styles.infoText}>Mon – Sun: 7:00 AM – 10:00 PM</Text>
         </View>
 
-        <View style={{ height: 80 }} />
+        <View style={{ height: 20 }} />
 
         {/* Footer */}
         <View style={styles.footer}>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   infoTitle:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   infoText:      { fontSize: 13, color: '#6b6b6b', marginLeft: 24 },
   infoDivider:   { height: 1, backgroundColor: YELLOW, marginVertical: 12 },
-  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, paddingTop: 14, paddingBottom: 40, width: '100%' },
+  footer:        { backgroundColor: '#fff', alignItems: 'center', justifyContent: 'flex-end', flexDirection: 'row', gap: 10, paddingTop: 6, paddingBottom: 52, width: '100%', justifyContent: 'center' },
   footerLogo:    { width: 44, height: 28 },
   footerText:    { fontSize: 11, color: '#1a1612', fontWeight: '600', opacity: 0.6 },
 });

@@ -2,7 +2,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, Dim
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../context/CartContext';
-import { useState } from 'react';
+import { getBotswanaTime, BotswanaTime } from '../../lib/getBotswanaTime';
+import { useState, useEffect } from 'react';
 
 const { width: SW } = Dimensions.get('window');
 const RED = '#b60015';
@@ -64,11 +65,10 @@ const SPECIALS = [
   },
 ];
 
-function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose: () => void }) {
-  const { addToCart, removeFromCart, items } = useCart();
+function DishModal({ dish, onClose, cs, setCs, addToCart: addFn, removeFromCart: removeFn, items: cartItems }: { dish: typeof SPECIALS[0] | null; onClose: () => void; cs: string; setCs: (s: 'idle'|'confirming'|'added') => void; addToCart: (id:string,item?:any)=>void; removeFromCart:(id:string)=>void; items: any[] }) {
   const [imgIdx, setImgIdx] = useState(0);
   if (!dish) return null;
-  const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
+  const qty = cartItems.find((i:any) => i.id === dish.id)?.quantity ?? 0;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={modal.backdrop}>
@@ -90,12 +90,12 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
               {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
+                <TouchableOpacity style={modal.cartCircle} onPress={() => addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFn(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -113,11 +113,16 @@ export default function Specials() {
   const [cardStates, setCardStates] = useState<Record<string, 'idle'|'confirming'|'added'>>({});
   const setCardState = (id: string, state: 'idle'|'confirming'|'added') => setCardStates(prev => ({ ...prev, [id]: state }));
 
-  const dayOfWeek = new Date().getDay(); // 0=Sun
-  const isSunday = dayOfWeek === 0;
-  const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const today = DAY_NAMES[dayOfWeek];
+  const [bwTime, setBwTime] = useState<BotswanaTime | null>(null);
+
+  useEffect(() => {
+    getBotswanaTime().then(setBwTime);
+  }, []);
+
+  const isSunday    = bwTime?.isSunday ?? false;
+  const today       = bwTime?.dayName  ?? '';
   const todayDishes = isSunday ? SPECIALS : SPECIALS.filter(s => s.day === today);
+  const loading     = bwTime === null;
 
   return (
     <View style={s.container}>
@@ -133,7 +138,7 @@ export default function Specials() {
       </View>
 
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.dayLabel}>{isSunday ? 'Sunday — All Specials!' : `Today: ${today}`}</Text>
+        <Text style={s.dayLabel}>{loading ? 'Loading...' : isSunday ? 'Sunday — All Specials!' : `Today: ${today}`}</Text>
 
         {todayDishes.map(dish => {
           const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
@@ -201,7 +206,15 @@ export default function Specials() {
         </View>
         <View style={{ height: 60 }} />
       </ScrollView>
-      <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
+      <DishModal
+          dish={activeDish}
+          onClose={() => setActiveDish(null)}
+          cs={activeDish ? (cardStates[activeDish.id] ?? 'idle') : 'idle'}
+          setCs={(state) => activeDish && setCardState(activeDish.id, state)}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          items={items}
+        />
     </View>
   );
 }

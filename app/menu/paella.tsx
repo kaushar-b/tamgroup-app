@@ -48,11 +48,10 @@ const DISHES = [
   },
 ];
 
-function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: () => void }) {
-  const { addToCart, removeFromCart, items } = useCart();
+function DishModal({ dish, onClose, cs, setCs, addToCart: addFn, removeFromCart: removeFn, items: cartItems }: { dish: typeof DISHES[0] | null; onClose: () => void; cs: string; setCs: (s: 'idle'|'confirming'|'added') => void; addToCart: (id:string,item?:any)=>void; removeFromCart:(id:string)=>void; items: any[] }) {
   const [imgIdx, setImgIdx] = useState(0);
   if (!dish) return null;
-  const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
+  const qty = cartItems.find((i:any) => i.id === dish.id)?.quantity ?? 0;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={modal.backdrop}>
@@ -74,12 +73,12 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
               {qty === 0 ? (
-                <TouchableOpacity style={modal.cartCircle} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
+                <TouchableOpacity style={modal.cartCircle} onPress={() => addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="cart" size={20} color="#1a1612" /></TouchableOpacity>
               ) : (
                 <View style={modal.qtyRow}>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFn(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -158,7 +157,15 @@ export default function Paella() {
         })}
         <View style={{ height: 60 }} />
       </ScrollView>
-      <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
+      <DishModal
+          dish={activeDish}
+          onClose={() => setActiveDish(null)}
+          cs={activeDish ? (cardStates[activeDish.id] ?? 'idle') : 'idle'}
+          setCs={(state) => activeDish && setCardState(activeDish.id, state)}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          items={items}
+        />
     </View>
   );
 }

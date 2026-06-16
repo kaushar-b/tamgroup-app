@@ -92,29 +92,28 @@ const STARTER_CATS = ['All', 'Signature Salads'];
 // ── Cart action state per dish id ──
 type CardState = 'idle' | 'confirming' | 'added';
 
-function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: () => void }) {
-  const { addToCart, removeFromCart, items } = useCart();
+function DishModal({ dish, onClose, cs, setCs, addToCart: addFn, removeFromCart: removeFn, items: cartItems }: { dish: typeof DISHES[0] | null; onClose: () => void; cs: string; setCs: (s: 'idle'|'confirming'|'added') => void; addToCart: (id:string,item?:any)=>void; removeFromCart:(id:string)=>void; items: any[] }) {
   const [imgIdx, setImgIdx]     = useState(0);
   const [cardState, setCardState] = useState<CardState>('idle');
   if (!dish) return null;
   const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
 
   const handleCartPress = () => {
-    if (cardState === 'idle') {
-      addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] });
-      setCardState('confirming');
+    if (cs === 'idle') {
+      addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] });
+      setCs('confirming');
     }
   };
   const handleAdd = () => {
-    setCardState('added');
+    setCs('added');
   };
   const handleCancel = () => {
-    if (cardState === 'added') {
-      removeFromCart(dish.id);
-      setCardState('idle');
+    if (cs === 'added') {
+      removeFn(dish.id);
+      setCs('idle');
     } else {
-      removeFromCart(dish.id);
-      setCardState('idle');
+      removeFn(dish.id);
+      setCs('idle');
     }
   };
 
@@ -139,32 +138,32 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
             <Text style={modal.desc}>{dish.details}</Text>
             <View style={modal.footer}>
               <Text style={modal.price}>P {dish.price}.00</Text>
-              {cardState === 'idle' ? (
+              {cs === 'idle' ? (
                 <TouchableOpacity style={modal.cartCircle} onPress={handleCartPress}>
                   <Ionicons name="cart" size={22} color="#1a1612" />
                 </TouchableOpacity>
-              ) : cardState === 'confirming' ? (
+              ) : cs === 'confirming' ? (
                 <View style={modal.qtyRow}>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFn(dish.id)}><Ionicons name="remove" size={18} color="#1a1612" /></TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addFn(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}><Ionicons name="add" size={18} color="#1a1612" /></TouchableOpacity>
                 </View>
               ) : null}
             </View>
             {cardState !== 'idle' && (
               <View style={modal.actionRow}>
                 <TouchableOpacity
-                  style={[modal.cancelBtn, cardState === 'added' && modal.removeBtn]}
+                  style={[modal.cancelBtn, cs === 'added' && modal.removeBtn]}
                   onPress={handleCancel}
                 >
-                  <Text style={modal.cancelTxt}>{cardState === 'added' ? 'Remove' : 'Cancel'}</Text>
+                  <Text style={modal.cancelTxt}>{cs === 'added' ? 'Remove' : 'Cancel'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[modal.addBtn, cardState === 'added' && modal.addedBtn]}
+                  style={[modal.addBtn, cs === 'added' && modal.addedBtn]}
                   onPress={handleAdd}
-                  disabled={cardState === 'added'}
+                  disabled={cs === 'added'}
                 >
-                  {cardState === 'added'
+                  {cs === 'added'
                     ? <><Ionicons name="checkmark-circle" size={18} color="#fff" /><Text style={modal.addTxt}>Added to Cart</Text></>
                     : <><Ionicons name="cart" size={18} color="#1a1612" /><Text style={[modal.addTxt, { color: '#1a1612' }]}>Add to Cart</Text></>
                   }
@@ -291,7 +290,15 @@ export default function Starters() {
         })}
         <View style={{ height: 60 }} />
       </ScrollView>
-      <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
+      <DishModal
+          dish={activeDish}
+          onClose={() => setActiveDish(null)}
+          cs={activeDish ? (cardStates[activeDish.id] ?? 'idle') : 'idle'}
+          setCs={(state) => activeDish && setCardState(activeDish.id, state)}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          items={items}
+        />
     </View>
   );
 }

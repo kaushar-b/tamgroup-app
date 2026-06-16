@@ -5,10 +5,23 @@ import { useCart } from '../context/CartContext';
 import { useRouter } from 'expo-router';
 import { ref, push, set } from 'firebase/database';
 import { db } from '../lib/firebase';
+import { getBotswanaTime } from '../lib/getBotswanaTime';
 
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
 const VAT_RATE = 0.14;
+
+// ─────────────────────────────────────────────────────────────
+// RESTAURANT HOURS — change these if opening/closing times change
+// Uses real Gaborone time fetched from internet (spoof-proof).
+const OPEN_HOUR  = 7;   // 7:00 AM
+const CLOSE_HOUR = 22;  // 10:00 PM  ← change this number to adjust closing time
+// ─────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────
+// DELIVERY FEE — change this number to adjust
+const DELIVERY_FEE = 30;
+// ─────────────────────────────────────────────
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -24,8 +37,9 @@ export default function Checkout() {
   const [errors, setErrors]               = useState<Record<string, string>>({});
   const [orderPlaced, setOrderPlaced]     = useState(false);
   const [placing, setPlacing]             = useState(false);
+  const [orderType2, setOrderType2]       = useState<'pickup' | 'delivery' | null>(null);
 
-  const deliveryFee = orderType === 'delivery' ? 30 : 0;
+  const deliveryFee = orderType === 'delivery' ? DELIVERY_FEE : 0;
   const vatAmount   = Math.round(total * VAT_RATE);
   const grandTotal  = total + deliveryFee + vatAmount + (tip ?? 0);
 
@@ -44,6 +58,23 @@ export default function Checkout() {
   const handlePlaceOrder = async () => {
     if (!validate()) return;
     setPlacing(true);
+
+    // ── Check real Gaborone time before allowing order ──
+    try {
+      const bwTime = await getBotswanaTime();
+      if (bwTime.hour < OPEN_HOUR || bwTime.hour >= CLOSE_HOUR) {
+        setPlacing(false);
+        Alert.alert(
+          'We\'re Closed for the Night',
+          `Sorry, we're not taking orders right now.\n\nWe're open daily from 7:00 AM to 10:00 PM.\n\nCome back tomorrow — we'd love to serve you! 😊`,
+          [{ text: 'Got it', style: 'cancel' }]
+        );
+        return;
+      }
+    } catch {
+      // If time check fails entirely, allow the order through
+    }
+
     try {
       const ordersRef   = ref(db, 'orders');
       const newOrderRef = push(ordersRef);
@@ -79,6 +110,7 @@ export default function Checkout() {
       };
 
       await set(newOrderRef, orderData);
+      setOrderType2(orderType);
       clearCart();
       setPlacing(false);
       setOrderPlaced(true);
@@ -88,6 +120,14 @@ export default function Checkout() {
     }
   };
 
+  // ─────────────────────────────────────────────────────────────
+  // ORDER CONFIRMED SCREEN
+  // "Track Your Order" button leads to the orders page.
+  // The message below can be edited here:
+  const pickupMessage  = 'Your order will be ready for pick up shortly!';
+  const deliveryMessage = 'Your order will be delivered shortly!';
+  // ─────────────────────────────────────────────────────────────
+
   if (orderPlaced) {
     return (
       <View style={s.confirmContainer}>
@@ -95,15 +135,14 @@ export default function Checkout() {
           <Ionicons name="checkmark-circle" size={72} color={RED} />
           <Text style={s.confirmTitle}>Order Placed!</Text>
           <Text style={s.confirmSub}>
-            {orderType === 'pickup'
-              ? 'Your order will be ready for pick up shortly!'
-              : 'Your order will be delivered shortly!'}
+            {orderType2 === 'pickup' ? pickupMessage : deliveryMessage}
           </Text>
           <TouchableOpacity style={s.confirmBtn} onPress={() => router.replace('/tabs')}>
             <Text style={s.confirmBtnText}>Back to Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={s.ordersBtn} onPress={() => router.replace('/tabs/orders')}>
-            <Text style={s.ordersBtnText}>View My Orders</Text>
+            <Ionicons name="navigate" size={16} color={RED} />
+            <Text style={s.ordersBtnText}>Track Your Order</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -136,7 +175,7 @@ export default function Checkout() {
               onPress={() => { setOrderType('delivery'); setErrors(e => ({ ...e, orderType: '' })); }}>
               <Ionicons name="car-sport" size={28} color={orderType === 'delivery' ? '#fff' : RED} />
               <Text style={[s.toggleTitle, orderType === 'delivery' && s.toggleTitleActive]}>Delivery</Text>
-              <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P30 delivery fee</Text>
+              <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P{DELIVERY_FEE} delivery fee</Text>
             </TouchableOpacity>
           </View>
 
@@ -323,9 +362,9 @@ const s = StyleSheet.create({
   confirmContainer:  { flex: 1, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', padding: 24 },
   confirmBox:        { backgroundColor: '#fff', borderRadius: 24, padding: 32, alignItems: 'center', width: '100%', elevation: 4, gap: 12 },
   confirmTitle:      { fontSize: 28, fontWeight: '900', color: '#1a1612', textAlign: 'center' },
-  confirmSub:        { fontSize: 15, color: '#6b6b6b', textAlign: 'center', lineHeight: 22, marginBottom: 16 },
+  confirmSub:        { fontSize: 15, color: '#6b6b6b', textAlign: 'center', lineHeight: 22, marginBottom: 8 },
   confirmBtn:        { backgroundColor: RED, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 40, width: '100%', alignItems: 'center' },
   confirmBtnText:    { fontSize: 16, fontWeight: '700', color: '#fff' },
-  ordersBtn:         { borderWidth: 2, borderColor: RED, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 40, width: '100%', alignItems: 'center' },
+  ordersBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 2, borderColor: RED, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 40, width: '100%' },
   ordersBtnText:     { fontSize: 15, fontWeight: '700', color: RED },
 });

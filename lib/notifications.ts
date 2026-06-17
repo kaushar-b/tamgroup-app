@@ -29,21 +29,21 @@ export async function setupNotificationChannels() {
   await Notifications.setNotificationChannelAsync(CHANNELS.MANAGER, {
     name: 'Manager Orders',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'default', // ← change to 'manager-ping.wav' once custom file is added
+    sound: 'manager-ping.wav',
     vibrationPattern: [0, 250, 250, 250],
   });
 
   await Notifications.setNotificationChannelAsync(CHANNELS.DRIVER, {
     name: 'Driver Orders',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'default', // ← change to 'driver-ping.wav' once custom file is added
+    sound: 'driver-ping.wav',
     vibrationPattern: [0, 250, 250, 250],
   });
 
   await Notifications.setNotificationChannelAsync(CHANNELS.CUSTOMER, {
     name: 'Order Updates',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'default', // ← change to 'customer-ping.wav' once custom file is added
+    sound: 'manager-ping.wav', // same Ping! sound as manager, per request
     vibrationPattern: [0, 250, 250, 250],
   });
 }
@@ -99,6 +99,10 @@ export async function sendPushNotification(
   body: string,
   channelId: string
 ): Promise<void> {
+  // Match the push payload sound to the channel's actual sound file
+  const soundFile =
+    channelId === CHANNELS.DRIVER ? 'driver-ping.wav' : 'manager-ping.wav';
+
   try {
     await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
@@ -111,7 +115,7 @@ export async function sendPushNotification(
         to,
         title,
         body,
-        sound: 'default',
+        sound: soundFile,
         channelId,
         priority: 'high',
       }),

@@ -63,30 +63,43 @@ Notifications.setNotificationHandler({
  * Returns null if permission denied or running on a simulator/web.
  */
 export async function registerForPushToken(): Promise<string | null> {
-  if (!Device.isDevice) return null;
+  console.log('[PUSH] registerForPushToken called');
+  console.log('[PUSH] isDevice:', Device.isDevice);
+  if (!Device.isDevice) {
+    console.log('[PUSH] Not a real device — returning null');
+    return null;
+  }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  console.log('[PUSH] existing permission status:', existingStatus);
   let finalStatus = existingStatus;
 
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
+    console.log('[PUSH] requested permission, new status:', finalStatus);
   }
 
-  if (finalStatus !== 'granted') return null;
+  if (finalStatus !== 'granted') {
+    console.log('[PUSH] Permission not granted — returning null');
+    return null;
+  }
 
   await setupNotificationChannels();
 
   const projectId =
     Constants.expoConfig?.extra?.eas?.projectId ??
     Constants.easConfig?.projectId ??
-    'c84c3e07-ea75-473c-8cc2-559656440c71'; // fallback: hardcoded from eas.json
+    'c84c3e07-ea75-473c-8cc2-559656440c71';
+
+  console.log('[PUSH] projectId being used:', projectId);
 
   try {
     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+    console.log('[PUSH] Got token:', tokenData.data);
     return tokenData.data;
   } catch (err) {
-    console.warn('Push token error:', err);
+    console.warn('[PUSH] getExpoPushTokenAsync failed:', err);
     return null;
   }
 }

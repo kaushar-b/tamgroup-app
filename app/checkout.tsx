@@ -268,7 +268,7 @@ export default function Checkout() {
                   <Text style={s.inputLabel}>Address Line 2 *</Text>
                   {errors.address2 ? <Text style={s.fieldError}>{errors.address2}</Text> : null}
                   <TextInput style={[s.input, errors.address2 && s.inputError]} value={address2} onChangeText={v => { setAddress2(v); setErrors(e => ({ ...e, address2: '' })); }}
-                    placeholder="Area / Suburb (optional)" placeholderTextColor="#aaa" />
+                    placeholder="Area / Suburb" placeholderTextColor="#aaa" />
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>
                   <Text style={s.inputLabel}>City</Text>

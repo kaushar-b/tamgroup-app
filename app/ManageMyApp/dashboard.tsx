@@ -174,14 +174,21 @@ export default function ManagerDashboard() {
   // Register this device's push token as the MANAGER token
   useEffect(() => {
     (async () => {
-      console.log('[DASHBOARD] Starting push token registration...');
-      const token = await registerForPushToken();
-      console.log('[DASHBOARD] Token received:', token);
-      if (token) {
-        await set(ref(db, 'staffTokens/manager'), token);
-        console.log('[DASHBOARD] Token saved to Firebase successfully');
-      } else {
-        console.log('[DASHBOARD] No token — nothing saved to Firebase');
+      try {
+        const token = await registerForPushToken();
+        if (token) {
+          await set(ref(db, 'staffTokens/manager'), token);
+        }
+        await set(ref(db, 'debug/managerTokenAttempt'), {
+          token: token ?? 'NULL',
+          timestamp: Date.now(),
+        });
+      } catch (err: any) {
+        await set(ref(db, 'debug/managerTokenAttempt'), {
+          token: 'ERROR',
+          error: err?.message ?? String(err),
+          timestamp: Date.now(),
+        });
       }
     })();
   }, []);

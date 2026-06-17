@@ -96,10 +96,17 @@ export async function registerForPushToken(): Promise<string | null> {
 
   try {
     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
-    console.log('[PUSH] Got token:', tokenData.data);
     return tokenData.data;
-  } catch (err) {
-    console.warn('[PUSH] getExpoPushTokenAsync failed:', err);
+  } catch (err: any) {
+    try {
+      const { ref: dbRef, set: dbSet } = await import('firebase/database');
+      const { db } = await import('./firebase');
+      await dbSet(dbRef(db, 'debug/pushTokenError'), {
+        error: err?.message ?? String(err),
+        projectId,
+        timestamp: Date.now(),
+      });
+    } catch {}
     return null;
   }
 }

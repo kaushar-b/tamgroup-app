@@ -27,6 +27,7 @@ const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 if (!TaskManager.isTaskDefined(BACKGROUND_NOTIFICATION_TASK)) {
   TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ error }: any) => {
     if (error) {
+      
       console.error('BG notification task error:', error);
     }
     // Expo handles display automatically — nothing else needed here

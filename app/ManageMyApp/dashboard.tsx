@@ -237,16 +237,30 @@ export default function ManagerDashboard() {
       </View>
 
       <View style={s.tabBar}>
-        {TABS.map(t => (
-          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabActive]} onPress={() => setTab(t.key)}>
-            <Text style={[s.tabTxt, tab === t.key && s.tabTxtActive]}>{t.label}</Text>
-            {t.count > 0 && (
-              <View style={[s.tabBadge, tab === t.key && s.tabBadgeActive]}>
-                <Text style={[s.tabBadgeTxt, tab === t.key && s.tabBadgeTxtActive]}>{t.count}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
+        <View style={s.tabRow}>
+          {TABS.slice(0, 2).map(t => (
+            <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabActive]} onPress={() => setTab(t.key)}>
+              <Text style={[s.tabTxt, tab === t.key && s.tabTxtActive]}>{t.label}</Text>
+              {t.count > 0 && (
+                <View style={[s.tabBadge, tab === t.key && s.tabBadgeActive]}>
+                  <Text style={[s.tabBadgeTxt, tab === t.key && s.tabBadgeTxtActive]}>{t.count}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={s.tabRow}>
+          {TABS.slice(2, 4).map(t => (
+            <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabActive]} onPress={() => setTab(t.key)}>
+              <Text style={[s.tabTxt, tab === t.key && s.tabTxtActive]}>{t.label}</Text>
+              {t.count > 0 && (
+                <View style={[s.tabBadge, tab === t.key && s.tabBadgeActive]}>
+                  <Text style={[s.tabBadgeTxt, tab === t.key && s.tabBadgeTxtActive]}>{t.count}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       {shown.length === 0 ? (
@@ -271,7 +285,8 @@ const s = StyleSheet.create({
   headerTitle:    { fontSize: 20, fontWeight: '900', color: '#fff' },
   headerSub:      { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
   signOutBtn:     { padding: 8 },
-  tabBar:         { flexDirection: 'row', backgroundColor: '#1a1612', padding: 10, gap: 8 },
+  tabBar:         { backgroundColor: '#1a1612', padding: 10, gap: 8 },
+  tabRow:         { flexDirection: 'row', gap: 8 },
   tabBtn:         { flex: 1, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:      { backgroundColor: RED },
   tabTxt:         { fontSize: 11, fontWeight: '700', color: '#aaa' },

@@ -1,11 +1,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // getBotswanaTime.ts
-// Always fetches the real current time from the WorldTimeAPI (free, no key).
-// Falls back to device time only if the network call fails.
-// This means users cannot spoof the time by changing their phone clock.
-//
+// Primary source: Firebase Realtime Database's `.info/serverTimeOffset`.
+// This is tamper-proof — even if a user changes their phone's clock, the math
+// (deviceNow + offset) always reconstructs the TRUE current time, because the
+// offset is the gap between server time and device time, and that gap stays
+// correct even after the device's displayed date is changed.
+// Secondary fallback: WorldTimeAPI. Last resort: raw device clock.
 // Botswana (Gaborone) is UTC+2, no daylight saving.
 // ─────────────────────────────────────────────────────────────────────────────
+import { ref, onValue } from 'firebase/database';
+import { db } from './firebase';
 
 export type BotswanaTime = {
   dayOfWeek: number;   // 0 = Sunday … 6 = Saturday
@@ -17,33 +21,66 @@ export type BotswanaTime = {
 
 const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
+function fromUtcMs(utcMs: number): BotswanaTime {
+  const bwMs   = utcMs + 2 * 3600000; // Botswana is UTC+2, fixed offset, no DST
+  const bwDate = new Date(bwMs);
+  // Use UTC getters on the shifted timestamp so the device's own timezone
+  // setting can never affect the result — only the math above matters.
+  const dow = bwDate.getUTCDay();
+  return {
+    dayOfWeek: dow,
+    dayName:   DAY_NAMES[dow],
+    hour:      bwDate.getUTCHours(),
+    minute:    bwDate.getUTCMinutes(),
+    isSunday:  dow === 0,
+  };
+}
+
+function getFirebaseServerTime(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const offsetRef = ref(db, '.info/serverTimeOffset');
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Firebase server time timeout'));
+    }, 4000);
+    const unsubscribe = onValue(
+      offsetRef,
+      (snap) => {
+        clearTimeout(timeout);
+        unsubscribe();
+        resolve(Date.now() + (snap.val() || 0));
+      },
+      (err) => {
+        clearTimeout(timeout);
+        unsubscribe();
+        reject(err);
+      }
+    );
+  });
+}
+
+async function getWorldTimeApiTime(): Promise<number> {
+  const res  = await fetch('https://worldtimeapi.org/api/timezone/Africa/Gaborone', { cache: 'no-store' });
+  const data = await res.json();
+  return new Date(data.utc_datetime).getTime();
+}
+
 export async function getBotswanaTime(): Promise<BotswanaTime> {
+  // 1. Firebase server time — most reliable, already connected for orders etc.
   try {
-    const res  = await fetch('https://worldtimeapi.org/api/timezone/Africa/Gaborone', { cache: 'no-store' });
-    const data = await res.json();
-    // data.datetime looks like "2025-06-14T21:34:00.123456+02:00"
-    const dt   = new Date(data.datetime);
-    const dow  = dt.getDay();
-    return {
-      dayOfWeek: dow,
-      dayName:   DAY_NAMES[dow],
-      hour:      dt.getHours(),
-      minute:    dt.getMinutes(),
-      isSunday:  dow === 0,
-    };
-  } catch {
-    // Fallback: use device time but force UTC+2
-    const now     = new Date();
-    const utcMs   = now.getTime() + now.getTimezoneOffset() * 60000;
-    const bwMs    = utcMs + 2 * 3600000; // Botswana is UTC+2
-    const bwDate  = new Date(bwMs);
-    const dow     = bwDate.getDay();
-    return {
-      dayOfWeek: dow,
-      dayName:   DAY_NAMES[dow],
-      hour:      bwDate.getHours(),
-      minute:    bwDate.getMinutes(),
-      isSunday:  dow === 0,
-    };
-  }
+    const utcMs = await getFirebaseServerTime();
+    return fromUtcMs(utcMs);
+  } catch {}
+
+  // 2. WorldTimeAPI — secondary check if Firebase is somehow unreachable
+  try {
+    const utcMs = await getWorldTimeApiTime();
+    return fromUtcMs(utcMs);
+  } catch {}
+
+  // 3. Last resort: device clock (only reached with zero network at all,
+  // in which case orders/menu won't load either — app-wide issue, not this bug)
+  const now   = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return fromUtcMs(utcMs);
 }

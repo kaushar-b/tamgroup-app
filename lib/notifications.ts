@@ -77,13 +77,16 @@ export async function registerForPushToken(): Promise<string | null> {
 
   await setupNotificationChannels();
 
-  const projectId = Constants.expoConfig?.extra?.eas?.projectId;
-  if (!projectId) return null;
+  const projectId =
+    Constants.expoConfig?.extra?.eas?.projectId ??
+    Constants.easConfig?.projectId ??
+    'c84c3e07-ea75-473c-8cc2-559656440c71'; // fallback: hardcoded from eas.json
 
   try {
     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
     return tokenData.data;
-  } catch {
+  } catch (err) {
+    console.warn('Push token error:', err);
     return null;
   }
 }

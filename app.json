@@ -24,7 +24,8 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.starkey18.tamgroup",
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

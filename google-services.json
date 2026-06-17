@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "900257883854",
+    "firebase_url": "https://tam-app-2674c-default-rtdb.firebaseio.com",
+    "project_id": "tam-app-2674c",
+    "storage_bucket": "tam-app-2674c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900257883854:android:148cb6932a38ecea5ed29f",
+        "android_client_info": {
+          "package_name": "com.starkey18.tamgroup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_6ZExW9MXpkvTZsUPCBZGpKYuYIPSI7Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

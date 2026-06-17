@@ -8,12 +8,12 @@ import Constants from 'expo-constants';
 // To use a CUSTOM sound file later:
 //   1. Create folder: assets/sounds/
 //   2. Drop your files in, e.g.:
-//        assets/sounds/manager-ping.wav
-//        assets/sounds/driver-ping.wav
+//        assets/sounds/manager_ping.wav
+//        assets/sounds/driver_ping.wav
 //        assets/sounds/customer-ping.wav
 //   3. In app.json, inside the expo-notifications plugin block, add:
-//        "sounds": ["./assets/sounds/manager-ping.wav", "./assets/sounds/driver-ping.wav", "./assets/sounds/customer-ping.wav"]
-//   4. Below, change sound: 'default' to sound: 'manager-ping.wav' (etc) for each channel
+//        "sounds": ["./assets/sounds/manager_ping.wav", "./assets/sounds/driver_ping.wav", "./assets/sounds/customer-ping.wav"]
+//   4. Below, change sound: 'default' to sound: 'manager_ping.wav' (etc) for each channel
 //   5. Rebuild the app (sounds are native, need a new EAS build)
 // Right now all 3 channels use the DEFAULT system sound.
 // ─────────────────────────────────────────────────────────────────────────
@@ -29,21 +29,21 @@ export async function setupNotificationChannels() {
   await Notifications.setNotificationChannelAsync(CHANNELS.MANAGER, {
     name: 'Manager Orders',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'manager-ping.wav',
+    sound: 'manager_ping.wav',
     vibrationPattern: [0, 250, 250, 250],
   });
 
   await Notifications.setNotificationChannelAsync(CHANNELS.DRIVER, {
     name: 'Driver Orders',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'driver-ping.wav',
+    sound: 'driver_ping.wav',
     vibrationPattern: [0, 250, 250, 250],
   });
 
   await Notifications.setNotificationChannelAsync(CHANNELS.CUSTOMER, {
     name: 'Order Updates',
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'manager-ping.wav', // same Ping! sound as manager, per request
+    sound: 'manager_ping.wav', // same Ping! sound as manager, per request
     vibrationPattern: [0, 250, 250, 250],
   });
 }
@@ -101,7 +101,7 @@ export async function sendPushNotification(
 ): Promise<void> {
   // Match the push payload sound to the channel's actual sound file
   const soundFile =
-    channelId === CHANNELS.DRIVER ? 'driver-ping.wav' : 'manager-ping.wav';
+    channelId === CHANNELS.DRIVER ? 'driver_ping.wav' : 'manager_ping.wav';
 
   try {
     await fetch('https://exp.host/--/api/v2/push/send', {

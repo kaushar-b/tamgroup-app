@@ -43,8 +43,8 @@
           "icon": "./assets/casadelsol-whatsapp.png",
           "color": "#b60015",
           "sounds": [
-            "./assets/sounds/manager-ping.wav",
-            "./assets/sounds/driver-ping.wav"
+            "./assets/sounds/manager_ping.wav",
+            "./assets/sounds/driver_ping.wav"
           ]
         }
       ]

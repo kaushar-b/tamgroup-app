@@ -38,24 +38,41 @@ function fromUtcMs(utcMs: number): BotswanaTime {
 
 function getFirebaseServerTime(): Promise<number> {
   return new Promise((resolve, reject) => {
-    const offsetRef = ref(db, '.info/serverTimeOffset');
+    let settled = false;
+    let unsubscribe: (() => void) | null = null;
+
     const timeout = setTimeout(() => {
-      unsubscribe();
+      if (settled) return;
+      settled = true;
+      try { unsubscribe?.(); } catch {}
       reject(new Error('Firebase server time timeout'));
     }, 4000);
-    const unsubscribe = onValue(
-      offsetRef,
-      (snap) => {
-        clearTimeout(timeout);
-        unsubscribe();
-        resolve(Date.now() + (snap.val() || 0));
-      },
-      (err) => {
-        clearTimeout(timeout);
-        unsubscribe();
-        reject(err);
-      }
-    );
+
+    try {
+      const offsetRef = ref(db, '.info/serverTimeOffset');
+      unsubscribe = onValue(
+        offsetRef,
+        (snap) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          try { unsubscribe?.(); } catch {}
+          resolve(Date.now() + (snap.val() || 0));
+        },
+        (err) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          try { unsubscribe?.(); } catch {}
+          reject(err);
+        }
+      );
+    } catch (err) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      reject(err);
+    }
   });
 }
 

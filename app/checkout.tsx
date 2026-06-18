@@ -63,7 +63,10 @@ export default function Checkout() {
 
     // ── Check real Gaborone time before allowing order ──
     try {
-      const bwTime = await getBotswanaTime();
+      const bwTime = await Promise.race([
+        getBotswanaTime(),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+      ]);
       if (bwTime.hour < OPEN_HOUR || bwTime.hour >= CLOSE_HOUR) {
         setPlacing(false);
         Alert.alert(
@@ -74,7 +77,7 @@ export default function Checkout() {
         return;
       }
     } catch {
-      // If time check fails entirely, allow the order through
+      // If time check fails or times out, allow the order through
     }
 
     try {

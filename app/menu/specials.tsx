@@ -180,21 +180,29 @@ function WeeklySpecialsInner() {
   const [activeDish, setActiveDish] = useState<typeof SPECIALS[0] | null>(null);
   const [bwTime, setBwTime]         = useState<BotswanaTime | null>(null);
   const [loading, setLoading]       = useState(true);
+  const mountedRef = useRef(true);
 
-  // Fetch real Botswana time — retries up to 3 times so phone clock spoofing doesn't work
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   const fetchTime = useCallback(async () => {
+    if (!mountedRef.current) return;
     setLoading(true);
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const t = await getBotswanaTime();
+        if (!mountedRef.current) return;
         setBwTime(t);
         setLoading(false);
         return;
       } catch {
+        if (!mountedRef.current) return;
         await new Promise(r => setTimeout(r, 500));
       }
     }
-    setLoading(false);
+    if (mountedRef.current) setLoading(false);
   }, []);
 
   useEffect(() => { fetchTime(); }, [fetchTime]);
@@ -227,29 +235,62 @@ function WeeklySpecialsInner() {
         </TouchableOpacity>
       </View>
 
-      {!loading && todayDishes.length === 0 ? (
-        <View style={s.emptyWrap}>
-          <Ionicons name="moon-outline" size={48} color={RED} />
-          <Text style={s.emptyText}>No specials today. Check back tomorrow!</Text>
+      <ScrollView contentContainerStyle={s.list}>
+        {/* ── FULL WEEK CALENDAR ── */}
+        <Text style={s.weekTitle}>This Week's Menu</Text>
+        <View style={s.weekGrid}>
+          {SPECIALS.map(dish => {
+            const isToday = !isSunday && dish.day === today;
+            return (
+              <TouchableOpacity
+                key={dish.id}
+                style={[s.weekCard, isToday && s.weekCardActive]}
+                onPress={() => setActiveDish(dish)}
+                activeOpacity={0.85}
+              >
+                <Text style={[s.weekDay, isToday && s.weekDayActive]}>{dish.day.slice(0, 3).toUpperCase()}</Text>
+                <Image source={dish.images[0]} style={s.weekImg} resizeMode="cover" />
+                <Text style={[s.weekName, isToday && s.weekNameActive]} numberOfLines={2}>{dish.name}</Text>
+                <Text style={[s.weekPrice, isToday && s.weekPriceActive]}>P {dish.price}</Text>
+                {isToday && (
+                  <View style={s.todayBadge}>
+                    <Text style={s.todayBadgeTxt}>TODAY</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
-      ) : (
-        <ScrollView contentContainerStyle={s.list}>
-          {todayDishes.map(dish => (
-            <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
-              <View style={s.cardImgWrap}>
-                <Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" />
-              </View>
-              <View style={s.cardBody}>
-                <Text style={s.cardDay}>{dish.day}</Text>
-                <Text style={s.cardName}>{dish.name}</Text>
-                <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
-                <Text style={s.cardPrice}>P {dish.price}.00</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-          <View style={{ height: 60 }} />
-        </ScrollView>
-      )}
+
+        {/* ── TODAY'S FEATURED DISH ── */}
+        {!loading && todayDishes.length > 0 && (
+          <>
+            <Text style={s.featuredTitle}>
+              {isSunday ? 'All Specials' : `Today's Special`}
+            </Text>
+            {todayDishes.map(dish => (
+              <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
+                <View style={s.cardImgWrap}>
+                  <Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" />
+                </View>
+                <View style={s.cardBody}>
+                  <Text style={s.cardDay}>{dish.day}</Text>
+                  <Text style={s.cardName}>{dish.name}</Text>
+                  <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
+                  <Text style={s.cardPrice}>P {dish.price}.00</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+        {!loading && todayDishes.length === 0 && !isSunday && (
+          <View style={s.emptyWrap}>
+            <Ionicons name="moon-outline" size={48} color={RED} />
+            <Text style={s.emptyText}>No specials today. Check back tomorrow!</Text>
+          </View>
+        )}
+        <View style={{ height: 60 }} />
+      </ScrollView>
 
       <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
     </View>
@@ -267,8 +308,22 @@ const s = StyleSheet.create({
   dayBanner:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, marginBottom: 4, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1, borderColor: YELLOW },
   dayLabel:     { flex: 1, fontSize: 14, fontWeight: '700', color: '#1a1612' },
   refreshBtn:   { padding: 4 },
-  emptyWrap:    { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+  emptyWrap:    { alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24, paddingVertical: 32 },
   emptyText:    { fontSize: 15, fontWeight: '600', color: '#1a1612', textAlign: 'center' },
+  weekTitle:    { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 4 },
+  featuredTitle:{ fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 8 },
+  weekGrid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
+  weekCard:     { width: '30%', backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', alignItems: 'center', paddingBottom: 10, elevation: 2 },
+  weekCardActive:{ borderWidth: 2, borderColor: RED },
+  weekImg:      { width: '100%', height: 64, marginBottom: 6 },
+  weekDay:      { fontSize: 9, fontWeight: '900', color: '#aaa', letterSpacing: 1, marginTop: 8, marginBottom: 2 },
+  weekDayActive:{ color: RED },
+  weekName:     { fontSize: 11, fontWeight: '700', color: '#1a1612', textAlign: 'center', paddingHorizontal: 6, lineHeight: 15 },
+  weekNameActive:{ color: RED },
+  weekPrice:    { fontSize: 12, fontWeight: '800', color: '#888', marginTop: 4 },
+  weekPriceActive:{ color: RED },
+  todayBadge:   { position: 'absolute', top: 6, right: 6, backgroundColor: RED, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 },
+  todayBadgeTxt:{ fontSize: 8, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
   list:         { paddingHorizontal: 16, paddingTop: 12 },
   card:         { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 },
   cardImgWrap:  { width: '100%', height: Math.round((SW - 40) * 0.6) },

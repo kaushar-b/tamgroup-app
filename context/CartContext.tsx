@@ -83,7 +83,7 @@ export function useCart() {
 }
 
 const toastStyles = StyleSheet.create({
-  wrap: { position: 'absolute', bottom: 110, left: 0, right: 0, alignItems: 'center', zIndex: 999 },
+  wrap: { position: 'absolute', bottom: 110, left: 0, right: 0, alignItems: 'center', zIndex: 9999, elevation: 9999 },
   pill: { backgroundColor: '#1a1612', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 30, borderWidth: 1, borderColor: RED },
   text: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });

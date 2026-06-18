@@ -72,7 +72,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
     Alert.alert('Delete Order', 'Permanently delete this order?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: async () => {
-        await remove(ref(db, \`orders/\${order.id}\`));
+        await remove(ref(db, `orders/${order.id}`));
       }},
     ]);
   };

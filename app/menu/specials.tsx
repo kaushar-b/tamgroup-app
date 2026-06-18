@@ -190,7 +190,7 @@ function WeeklySpecialsInner() {
   const fetchTime = useCallback(async () => {
     if (!mountedRef.current) return;
     setLoading(true);
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 8; attempt++) {
       try {
         const t = await getBotswanaTime();
         if (!mountedRef.current) return;
@@ -199,7 +199,9 @@ function WeeklySpecialsInner() {
         return;
       } catch {
         if (!mountedRef.current) return;
-        await new Promise(r => setTimeout(r, 500));
+        // Wait longer between each retry (500ms, 1s, 2s, 2s...)
+        const delay = attempt < 2 ? 500 : attempt < 4 ? 1000 : 2000;
+        await new Promise(r => setTimeout(r, delay));
       }
     }
     if (mountedRef.current) setLoading(false);

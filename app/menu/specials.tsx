@@ -1,9 +1,44 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../context/CartContext';
 import { getBotswanaTime, BotswanaTime } from '../../lib/getBotswanaTime';
+import { ref as dbRef, set as dbSet } from 'firebase/database';
+import { db } from '../../lib/firebase';
+
+class SpecialsErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message: string }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, message: '' };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, message: error?.message ?? String(error) };
+  }
+  componentDidCatch(error: any, info: any) {
+    try {
+      dbSet(dbRef(db, 'debug/specialsCrash'), {
+        message: error?.message ?? String(error),
+        stack: error?.stack ? String(error.stack).slice(0, 1500) : 'no stack',
+        componentStack: info?.componentStack ? String(info.componentStack).slice(0, 1500) : 'no component stack',
+        timestamp: Date.now(),
+      });
+    } catch {}
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, backgroundColor: '#FFD544', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#b60015', textAlign: 'center', marginBottom: 12 }}>
+            Something went wrong loading Specials
+          </Text>
+          <Text style={{ fontSize: 12, color: '#1a1612', textAlign: 'center' }}>{this.state.message}</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const { width: SW } = Dimensions.get('window');
 const RED    = '#b60015';
@@ -140,7 +175,7 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
   );
 }
 
-export default function WeeklySpecials() {
+function WeeklySpecialsInner() {
   const router = useRouter();
   const [activeDish, setActiveDish] = useState<typeof SPECIALS[0] | null>(null);
   const [bwTime, setBwTime]         = useState<BotswanaTime | null>(null);
@@ -266,3 +301,11 @@ const modal = StyleSheet.create({
   qtyBtn:       { padding: 4 },
   qtyText:      { fontSize: 18, fontWeight: '800', color: '#1a1612', minWidth: 24, textAlign: 'center' },
 });
+
+export default function WeeklySpecials() {
+  return (
+    <SpecialsErrorBoundary>
+      <WeeklySpecialsInner />
+    </SpecialsErrorBoundary>
+  );
+}

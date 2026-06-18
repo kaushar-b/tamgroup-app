@@ -52,7 +52,6 @@ export default function Checkout() {
     if (!phone.trim()) e.phone = 'Phone number is required';
     if (phone.length !== 8) e.phone = 'Phone number must be 8 digits';
     if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address line 1 is required';
-    if (orderType === 'delivery' && !address2.trim()) e.address2 = 'Address line 2 is required';
     setErrors(e);
     return Object.keys(e).length === 0;
   };

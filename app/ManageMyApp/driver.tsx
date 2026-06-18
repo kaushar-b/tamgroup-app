@@ -17,6 +17,8 @@ type Order = {
   phone: string;
   orderType: 'pickup' | 'delivery';
   address?: string;
+  paymentMethod?: string | null;
+  tip?: number;
   items: { name: string; price: number; quantity: number }[];
   total: number;
   status: string;
@@ -115,6 +117,18 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
             <View style={c.infoRow}>
               <Ionicons name="call-outline" size={14} color="#6b6b6b" />
               <Text style={c.infoTxt}>{order.phone}</Text>
+            </View>
+          ) : null}
+          {order.paymentMethod ? (
+            <View style={c.infoRow}>
+              <Ionicons name="card-outline" size={14} color="#6b6b6b" />
+              <Text style={c.infoTxt}>{order.paymentMethod === 'online' ? 'Pay Online' : 'Pay on Delivery'}</Text>
+            </View>
+          ) : null}
+          {order.tip ? (
+            <View style={c.infoRow}>
+              <Ionicons name="gift-outline" size={14} color={RED} />
+              <Text style={[c.infoTxt, { color: RED, fontWeight: '800' }]}>Tip: P{order.tip}.00</Text>
             </View>
           ) : null}
 

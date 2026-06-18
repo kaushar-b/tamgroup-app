@@ -107,6 +107,7 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
 
 export default function Paella() {
   const router = useRouter();
+  const { count } = useCart();
   const [search, setSearch]         = useState('');
   const [activeDish, setActiveDish] = useState<typeof DISHES[0] | null>(null);
 
@@ -123,7 +124,14 @@ export default function Paella() {
           <Text style={s.title}>Paella Menu</Text>
           <Text style={s.subtitle}>Casa Del Sol</Text>
         </View>
-        <View style={{ width: 70 }} />
+        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/checkout')}>
+          <Ionicons name="cart" size={22} color="#1a1612" />
+          {count > 0 && (
+            <View style={s.cartBadge}>
+              <Text style={s.cartBadgeTxt}>{count}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
 
       <View style={s.searchWrap}>
@@ -155,6 +163,9 @@ export default function Paella() {
 const s = StyleSheet.create({
   container:    { flex: 1, backgroundColor: YELLOW },
   header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12, backgroundColor: '#fff' },
+  cartBtn:      { padding: 8, position: 'relative', width: 44, alignItems: 'center' },
+  cartBadge:    { position: 'absolute', top: 0, right: 0, backgroundColor: RED, borderRadius: 10, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  cartBadgeTxt: { fontSize: 10, fontWeight: '900', color: '#fff', textAlign: 'center' },
   backBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6, width: 70 },
   backText:     { fontSize: 16, fontWeight: '700', color: '#1a1612' },
   headerCenter: { flex: 1, alignItems: 'center' },
@@ -175,7 +186,7 @@ const s = StyleSheet.create({
 const modal = StyleSheet.create({
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
-  imageBox:     { width: SW, height: SW * 0.75, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  imageBox:     { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
   navBtn:       { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   backBtn:      { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
   backBtnText:  { fontSize: 14, fontWeight: '700', color: '#1a1612' },

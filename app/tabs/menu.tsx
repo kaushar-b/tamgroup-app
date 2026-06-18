@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions, FlatList } from 'react-native';
+import { useCart } from '../../context/CartContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useRef, useEffect, useState } from 'react';
@@ -27,6 +28,7 @@ const CATEGORIES = [
 
 export default function MenuSelector() {
   const router = useRouter();
+  const { count } = useCart();
   const flatRef = useRef<FlatList>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
   const LOOPED = [...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES];
@@ -53,6 +55,14 @@ export default function MenuSelector() {
         <TouchableOpacity style={s.backBtn} onPress={() => router.replace('/tabs')}>
           <Ionicons name="arrow-back" size={20} color="#1a1612" />
           <Text style={s.backText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/checkout')}>
+          <Ionicons name="cart" size={22} color="#1a1612" />
+          {count > 0 && (
+            <View style={s.cartBadge}>
+              <Text style={s.cartBadgeTxt}>{count}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -101,7 +111,10 @@ export default function MenuSelector() {
 
 const s = StyleSheet.create({
   container:    { flex: 1, backgroundColor: YELLOW },
-  header:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12 },
+  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 52, paddingBottom: 12 },
+  cartBtn:      { padding: 8, position: 'relative' },
+  cartBadge:    { position: 'absolute', top: 0, right: 0, backgroundColor: RED, borderRadius: 10, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  cartBadgeTxt: { fontSize: 10, fontWeight: '900', color: '#fff', textAlign: 'center' },
   backBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
   backText:     { fontSize: 16, fontWeight: '700', color: '#1a1612' },
   content:      { padding: 20, paddingTop: 4 },

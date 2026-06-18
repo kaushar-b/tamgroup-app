@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ref, onValue, update, set, get, query, orderByChild } from 'firebase/database';
+import { ref, onValue, update, set, get, query, orderByChild, remove } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
 import { registerForPushToken, sendPushNotification, CHANNELS } from '../../lib/notifications';
@@ -65,6 +65,15 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
           }
         }
       }
+    ]);
+  };
+
+  const deleteOrder = () => {
+    Alert.alert('Delete Order', 'Permanently delete this order?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        await remove(ref(db, \`orders/\${order.id}\`));
+      }},
     ]);
   };
 
@@ -158,6 +167,12 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
               <Text style={c.sentNoteTxt}>Driver is handling this order — status updates live below.</Text>
             </View>
           )}
+          {role === 'completed' && (
+            <TouchableOpacity style={c.deleteBtn} onPress={deleteOrder}>
+              <Ionicons name="trash-outline" size={16} color="#fff" />
+              <Text style={c.deleteBtnTxt}>Delete Order</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
@@ -167,6 +182,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
 export default function ManagerDashboard() {
   const router = useRouter();
   const [tab, setTab]       = useState<'live' | 'sent' | 'completed' | 'pickup'>('live');
+  const [dateFilter, setDateFilter] = useState<string>('');  // 'YYYY-MM-DD' or ''
   const [orders, setOrders] = useState<Order[]>([]);
   const knownOrderIds = useRef<Set<string>>(new Set());
   const isFirstLoad    = useRef(true);
@@ -234,7 +250,10 @@ export default function ManagerDashboard() {
     { key: 'pickup',    label: 'Ready Pickups',         count: pickupOrders.length },
   ];
 
-  const shown = tab === 'live' ? liveOrders : tab === 'sent' ? sentOrders : tab === 'pickup' ? pickupOrders : completedOrders;
+  const filteredCompleted = dateFilter
+    ? completedOrders.filter(o => o.date.startsWith(dateFilter) || o.date.split(',')[0].trim() === dateFilter)
+    : completedOrders;
+  const shown = tab === 'live' ? liveOrders : tab === 'sent' ? sentOrders : tab === 'pickup' ? pickupOrders : filteredCompleted;
 
   return (
     <View style={s.container}>
@@ -275,6 +294,28 @@ export default function ManagerDashboard() {
         </View>
       </View>
 
+      {tab === 'completed' && (
+        <View style={s.dateFilterRow}>
+          <Text style={s.dateFilterLabel}>Filter by date:</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingRight: 16 }}>
+            <TouchableOpacity
+              style={[s.dateChip, dateFilter === '' && s.dateChipActive]}
+              onPress={() => setDateFilter('')}
+            >
+              <Text style={[s.dateChipTxt, dateFilter === '' && s.dateChipTxtActive]}>All</Text>
+            </TouchableOpacity>
+            {Array.from(new Set(completedOrders.map(o => o.date.split(',')[0].trim()))).map(d => (
+              <TouchableOpacity
+                key={d}
+                style={[s.dateChip, dateFilter === d && s.dateChipActive]}
+                onPress={() => setDateFilter(prev => prev === d ? '' : d)}
+              >
+                <Text style={[s.dateChipTxt, dateFilter === d && s.dateChipTxtActive]}>{d}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
       {shown.length === 0 ? (
         <View style={s.empty}>
           <Ionicons name="receipt-outline" size={56} color={RED} />
@@ -309,6 +350,12 @@ const s = StyleSheet.create({
   tabBadgeTxtActive: { color: RED },
   empty:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyTxt:       { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  dateFilterRow:  { backgroundColor: '#fff', paddingVertical: 10, paddingLeft: 16, borderBottomWidth: 1, borderBottomColor: YELLOW, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  dateFilterLabel:{ fontSize: 12, fontWeight: '700', color: '#1a1612', flexShrink: 0 },
+  dateChip:       { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f3f3f3', borderWidth: 1, borderColor: '#eee' },
+  dateChipActive: { backgroundColor: RED, borderColor: RED },
+  dateChipTxt:    { fontSize: 12, fontWeight: '700', color: '#6b6b6b' },
+  dateChipTxtActive:{ color: '#fff' },
 });
 
 const c = StyleSheet.create({
@@ -339,4 +386,6 @@ const c = StyleSheet.create({
   actionTxt:    { fontSize: 14, fontWeight: '800', color: '#fff' },
   sentNote:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: '#dbeafe' },
   sentNoteTxt:  { fontSize: 13, color: '#1d4ed8', flex: 1 },
+  deleteBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, padding: 12, borderRadius: 12, backgroundColor: '#6b6b6b' },
+  deleteBtnTxt: { fontSize: 13, fontWeight: '800', color: '#fff' },
 });

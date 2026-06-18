@@ -244,9 +244,9 @@ function WeeklySpecialsInner() {
             return (
               <TouchableOpacity
                 key={dish.id}
-                style={[s.weekCard, isToday && s.weekCardActive]}
-                onPress={() => setActiveDish(dish)}
-                activeOpacity={0.85}
+                style={[s.weekCard, isToday && s.weekCardActive, !isToday && !isSunday && s.weekCardDisabled]}
+                onPress={() => { if (isToday || isSunday) setActiveDish(dish); }}
+                activeOpacity={isToday || isSunday ? 0.85 : 1}
               >
                 <Text style={[s.weekDay, isToday && s.weekDayActive]}>{dish.day.slice(0, 3).toUpperCase()}</Text>
                 <Image source={dish.images[0]} style={s.weekImg} resizeMode="cover" />
@@ -315,6 +315,7 @@ const s = StyleSheet.create({
   weekGrid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   weekCard:     { width: '30%', backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', alignItems: 'center', paddingBottom: 10, elevation: 2 },
   weekCardActive:{ borderWidth: 2, borderColor: RED },
+  weekCardDisabled:{ opacity: 0.38 },
   weekImg:      { width: '100%', height: 64, marginBottom: 6 },
   weekDay:      { fontSize: 9, fontWeight: '900', color: '#aaa', letterSpacing: 1, marginTop: 8, marginBottom: 2 },
   weekDayActive:{ color: RED },
@@ -338,7 +339,7 @@ const s = StyleSheet.create({
 const modal = StyleSheet.create({
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
-  imageBox:     { width: SW, height: SW * 0.75, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  imageBox:     { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
   navBtn:       { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   backBtn:      { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
   backBtnText:  { fontSize: 14, fontWeight: '700', color: '#1a1612' },

@@ -95,9 +95,6 @@ export async function getBotswanaTime(): Promise<BotswanaTime> {
     return fromUtcMs(utcMs);
   } catch {}
 
-  // 3. Last resort: device clock (only reached with zero network at all,
-  // in which case orders/menu won't load either — app-wide issue, not this bug)
-  const now   = new Date();
-  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
-  return fromUtcMs(utcMs);
+  // 3. If both Firebase and WorldTimeAPI fail, throw so the caller can handle gracefully
+  throw new Error('Could not get verified Botswana time — please check your connection.');
 }

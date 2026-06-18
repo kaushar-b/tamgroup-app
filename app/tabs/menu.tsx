@@ -56,7 +56,7 @@ export default function MenuSelector() {
           <Ionicons name="arrow-back" size={20} color="#1a1612" />
           <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/checkout')}>
+        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/tabs/cart')}>
           <Ionicons name="cart" size={22} color="#1a1612" />
           {count > 0 && (
             <View style={s.cartBadge}>

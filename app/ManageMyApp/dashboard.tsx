@@ -92,6 +92,23 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
     }
   };
 
+  const markPickedUp = async () => {
+    Alert.alert('Confirm Pickup', 'Mark this order as picked up and move to completed?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Yes', onPress: async () => {
+        await update(ref(db, `orders/${order.id}`), { status: 'completed', preparingStatus: 'pickedup' });
+        if (order.customerPushToken) {
+          sendPushNotification(
+            order.customerPushToken,
+            'Order Picked Up',
+            'Thank you! Enjoy your meal!',
+            CHANNELS.CUSTOMER
+          );
+        }
+      }},
+    ]);
+  };
+
   return (
     <View style={[
       c.card,
@@ -160,6 +177,12 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
                 </TouchableOpacity>
               )}
             </>
+          )}
+          {role === 'pickup' && (
+            <TouchableOpacity style={[c.actionBtn, { backgroundColor: '#22c55e' }]} onPress={markPickedUp}>
+              <Ionicons name="checkmark-circle" size={18} color="#fff" />
+              <Text style={c.actionTxt}>Picked Up</Text>
+            </TouchableOpacity>
           )}
           {role === 'sent' && (
             <View style={c.sentNote}>

@@ -124,7 +124,7 @@ export default function Paella() {
           <Text style={s.title}>Paella Menu</Text>
           <Text style={s.subtitle}>Casa Del Sol</Text>
         </View>
-        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/checkout')}>
+        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/tabs/cart')}>
           <Ionicons name="cart" size={22} color="#1a1612" />
           {count > 0 && (
             <View style={s.cartBadge}>
@@ -188,7 +188,7 @@ const modal = StyleSheet.create({
   sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
   imageBox:     { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
   navBtn:       { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  backBtn:      { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
+  backBtn:      { position: 'absolute', top: 14, right: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
   backBtnText:  { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   body:         { padding: 20, paddingBottom: 40 },
   name:         { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },

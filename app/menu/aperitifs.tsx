@@ -87,7 +87,7 @@ export default function Aperitifs() {
           <Text style={s.title}>Signature Aperitifs</Text>
           <Text style={s.subtitle}>Casa Del Sol</Text>
         </View>
-        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/checkout')}>
+        <TouchableOpacity style={s.cartBtn} onPress={() => router.push('/tabs/cart')}>
           <Ionicons name="cart" size={22} color="#1a1612" />
           {count > 0 && (
             <View style={s.cartBadge}>
@@ -147,7 +147,7 @@ const modal = StyleSheet.create({
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
   imageBox:     { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
-  backBtn:      { position: 'absolute', top: 14, left: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
+  backBtn:      { position: 'absolute', top: 14, right: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
   backBtnText:  { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   body:         { padding: 20, paddingBottom: 40 },
   name:         { fontSize: 20, fontWeight: '800', color: '#1a1612', marginBottom: 8 },

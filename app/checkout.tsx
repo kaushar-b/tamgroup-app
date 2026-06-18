@@ -60,24 +60,7 @@ export default function Checkout() {
     if (!validate()) return;
     setPlacing(true);
 
-    // ── Check real Gaborone time before allowing order ──
-    try {
-      const bwTime = await Promise.race([
-        getBotswanaTime(),
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
-      ]);
-      if (bwTime.hour < OPEN_HOUR || bwTime.hour >= CLOSE_HOUR) {
-        setPlacing(false);
-        Alert.alert(
-          'We\'re Closed for the Night',
-          `Sorry, we're not taking orders right now.\n\nWe're open daily from 7:00 AM to 10:00 PM.\n\nCome back tomorrow — we'd love to serve you! 😊`,
-          [{ text: 'Got it', style: 'cancel' }]
-        );
-        return;
-      }
-    } catch {
-      // If time check fails or times out, allow the order through
-    }
+
 
     try {
       const ordersRef   = ref(db, 'orders');

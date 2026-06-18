@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, Component, ReactNode } from 'react';
+import { useState, useEffect, useCallback, useRef, Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -30,7 +30,7 @@ class SpecialsErrorBoundary extends Component<{ children: ReactNode }, { hasErro
       return (
         <View style={{ flex: 1, backgroundColor: '#FFD544', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <Text style={{ fontSize: 16, fontWeight: '700', color: '#b60015', textAlign: 'center', marginBottom: 12 }}>
-            Something went wrong loading Specials
+            Something went wrong — please go back and try again
           </Text>
           <Text style={{ fontSize: 12, color: '#1a1612', textAlign: 'center' }}>{this.state.message}</Text>
         </View>
@@ -219,7 +219,7 @@ function WeeklySpecialsInner() {
           <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
         <View style={s.headerCenter}>
-          <Text style={s.title}>Weekly Specials</Text>
+          <Text style={s.title}>Weekly Menu</Text>
           <Text style={s.subtitle}>Casa Del Sol</Text>
         </View>
         <View style={{ width: 70 }} />

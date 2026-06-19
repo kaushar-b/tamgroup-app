@@ -81,7 +81,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
     update(ref(db, `orders/${order.id}`), { preparingStatus: 'preparing' });
 
   const markPickupReady = async () => {
-    await update(ref(db, `orders/${order.id}`), { preparingStatus: 'ready', status: 'completed' });
+    await update(ref(db, `orders/${order.id}`), { preparingStatus: 'ready' });
     if (order.customerPushToken) {
       sendPushNotification(
         order.customerPushToken,

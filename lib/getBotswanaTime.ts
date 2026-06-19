@@ -97,5 +97,5 @@ export async function getBotswanaTime(): Promise<BotswanaTime> {
     return fromUtcMs(utcMs);
   } catch {}
 
-  throw new Error(\'Could not get verified Botswana time — please check your connection.\');
+  throw new Error('Could not get verified Botswana time — please check your connection.');
 }

@@ -16,7 +16,6 @@ const DISHES = [
     price: 225,
     images: [
       require('../../assets/images/products/Seafood paella1.jpeg'),
-      require('../../assets/images/products/Seafood Paella1.jpeg'),
       require('../../assets/images/products/Seafood Paella2.jpeg'),
     ],
   },

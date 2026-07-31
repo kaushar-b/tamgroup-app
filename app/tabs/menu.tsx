@@ -10,7 +10,7 @@ const YELLOW = '#FFD544';
 const ITEM_SIZE = Math.round(SW / 3);
 
 const CAROUSEL_IMAGES = [
-  require('../../assets/images/products/Seafood Paella1.jpeg'),
+  require('../../assets/images/products/Seafood paella1.jpeg'),
   require('../../assets/images/products/Coq au Vin1.jpeg'),
   require('../../assets/images/products/Beef Bourguignon1.jpeg'),
   require('../../assets/images/products/Lamb Chops1.jpeg'),

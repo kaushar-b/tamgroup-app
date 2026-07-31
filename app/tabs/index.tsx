@@ -10,7 +10,7 @@ const YELLOW = '#FFD544';
 const YELLOW_LIGHT = '#FFF394';
 
 const CAROUSEL_IMAGES = [
-  require('../../assets/images/products/Seafood Paella1.jpeg'),
+  require('../../assets/images/products/Seafood paella1.jpeg'),
   require('../../assets/images/products/Coq au Vin1.jpeg'),
   require('../../assets/images/products/Beef Bourguignon1.jpeg'),
   require('../../assets/images/products/Lamb Chops1.jpeg'),

@@ -17,7 +17,6 @@ const DISHES = [
     price: 220,
     images: [
       require('../../assets/images/products/Stuffed vegetables1.jpeg'),
-      require('../../assets/images/products/Stuffed Vegetables1.jpeg'),
       require('../../assets/images/products/Stuffed Vegetables2.jpeg'),
     ],
   },

@@ -74,14 +74,6 @@ export default function About() {
         <Text style={s.sectionTitle}>Find Us</Text>
         <Text style={s.body}>Mowana Park Mall{'\n'}Phakalane, Botswana{'\n'}Mon – Sun: 7:00 AM – 10:00 PM</Text>
 
-        <View style={s.divider} />
-
-        <TouchableOpacity style={s.linkRow} onPress={() => router.push('/privacy-policy')}>
-          <Ionicons name="document-text-outline" size={20} color={RED} />
-          <Text style={s.linkText}>Privacy Policy</Text>
-          <Ionicons name="chevron-forward" size={16} color="#aaa" />
-        </TouchableOpacity>
-
 
         <View style={{ height: 80 }} />
         <View style={s.footer}>

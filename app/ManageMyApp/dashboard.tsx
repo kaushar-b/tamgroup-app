@@ -254,7 +254,7 @@ export default function ManagerDashboard() {
     });
   }, []);
 
-  const liveOrders      = orders.filter(o => o.status !== 'completed' && o.driverStatus !== 'delivered' && !o.assignedToDriver);
+  const liveOrders      = orders.filter(o => o.status !== 'completed' && o.driverStatus !== 'delivered' && !o.assignedToDriver && o.preparingStatus !== 'ready');
   const pickupOrders    = orders.filter(o => o.orderType === 'pickup' && o.preparingStatus === 'ready');
   const sentOrders      = orders.filter(o => o.assignedToDriver && o.driverStatus !== 'delivered');
   const completedOrders = orders.filter(o => o.status === 'completed' || o.driverStatus === 'delivered');

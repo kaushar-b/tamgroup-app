@@ -21,7 +21,7 @@ const CLOSE_HOUR = 22;  // 10:00 PM  ← change this number to adjust closing ti
 
 // ─────────────────────────────────────────────
 // DELIVERY FEE — change this number to adjust
-const DELIVERY_FEE = 30;
+const DELIVERY_FEE = 0;
 // ─────────────────────────────────────────────
 
 export default function Checkout() {
@@ -181,7 +181,7 @@ export default function Checkout() {
               onPress={() => { setOrderType('delivery'); setErrors(e => ({ ...e, orderType: '' })); }}>
               <Ionicons name="car-sport" size={28} color={orderType === 'delivery' ? '#fff' : RED} />
               <Text style={[s.toggleTitle, orderType === 'delivery' && s.toggleTitleActive]}>Delivery</Text>
-              <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>+P{DELIVERY_FEE} delivery fee</Text>
+              <Text style={[s.toggleSub, orderType === 'delivery' && s.toggleSubActive]}>Free</Text>
             </TouchableOpacity>
           </View>
 
@@ -297,8 +297,8 @@ export default function Checkout() {
             </View>
             {orderType === 'delivery' && (
               <View style={s.summaryRow}>
-                <Text style={s.summaryItem}>Delivery Fee</Text>
-                <Text style={s.summaryPrice}>P {deliveryFee}.00</Text>
+                <Text style={s.summaryItem}>Delivery</Text>
+                <Text style={s.summaryPrice}>Free</Text>
               </View>
             )}
             {tip ? (

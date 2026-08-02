@@ -41,7 +41,7 @@ export default function Checkout() {
   const [orderType2, setOrderType2]       = useState<'pickup' | 'delivery' | null>(null);
 
   const deliveryFee = orderType === 'delivery' ? DELIVERY_FEE : 0;
-  const vatAmount   = Math.round(total * VAT_RATE);
+  const vatAmount   = Math.round(total - total / (1 + VAT_RATE));
   const grandTotal  = total + deliveryFee + (tip ?? 0);
 
   const validate = () => {
@@ -55,7 +55,7 @@ export default function Checkout() {
     if (orderType === 'delivery' && !address1.trim()) { e.address1 = 'Address line 1 is required'; missing.push('Enter your delivery address'); }
     setErrors(e);
     if (missing.length) {
-      Alert.alert('Missing Information', 'Please complete the following:\n\n' + missing.map(m => '•  ' + m).join('\n'));
+      Alert.alert('Missing Information', 'Please complete the following:\n\n' + missing.map(m => 'ï¿½  ' + m).join('\n'));
       return false;
     }
     return true;
@@ -71,12 +71,22 @@ export default function Checkout() {
       const ordersRef   = ref(db, 'orders');
       const newOrderRef = push(ordersRef);
       const orderId     = newOrderRef.key!;
-      const customerPushToken = await registerForPushToken();
+      let customerPushToken = null;
+      try {
+        customerPushToken = await registerForPushToken();
+      } catch (tokErr) {
+        customerPushToken = null;
+      }
 
-      // atomic global order number
-      const counterRef = ref(db, 'orderCounter');
-      const txn = await runTransaction(counterRef, (curr) => (curr || 0) + 1);
-      const orderNumber = txn.snapshot.val() || 1;
+      // atomic global order number (never block the order if this fails)
+      let orderNumber: number | null = null;
+      try {
+        const counterRef = ref(db, 'orderCounter');
+        const txn = await runTransaction(counterRef, (curr) => (curr || 0) + 1);
+        orderNumber = txn.snapshot.val();
+      } catch (ctrErr) {
+        orderNumber = null;
+      }
 
       const orderData = {
         id: orderId,
@@ -131,9 +141,9 @@ export default function Checkout() {
       clearCart();
       setPlacing(false);
       setOrderPlaced(true);
-    } catch {
+    } catch (err: any) {
       setPlacing(false);
-      Alert.alert('Error', 'Could not place order. Please try again.');
+      Alert.alert('Error', 'Could not place order: ' + (err?.message || 'Please try again'));
     }
   };
 

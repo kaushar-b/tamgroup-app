@@ -78,9 +78,13 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
       ds === 'delivered' ? c.cardDone :
       ds === 'on_the_way' ? c.cardOnWay : c.cardAssigned
     ]}>
+      <View style={c.orderBar}>
+        <Text style={c.orderBarLabel}>Order</Text>
+        <Text style={c.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
+      </View>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={c.cardInfo}>
-          <Text style={c.cardName}>{order.orderNumber ? `#${String(order.orderNumber).padStart(3, '0')}  ` : ''}{order.name}</Text>
+          <Text style={c.cardName}>{order.name}</Text>
           <Text style={c.cardMeta}>{order.date}</Text>
           <Text style={c.cardAddr} numberOfLines={1}>{order.address || 'No address'}</Text>
           <View style={[c.statusBadge, { backgroundColor: statusColor + '22' }]}>
@@ -295,6 +299,9 @@ const c = StyleSheet.create({
   cardDone:       { borderColor: '#22c55e' },
   cardOnWay:      { borderColor: '#f59e0b' },
   cardAssigned:   { borderColor: '#3b82f6' },
+  orderBar:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 14, paddingVertical: 9 },
+  orderBarLabel:  { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
+  orderBarNum:    { fontSize: 22, fontWeight: '900', color: '#fff' },
   cardHead:       { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
   cardInfo:       { flex: 1 },
   cardName:       { fontSize: 15, fontWeight: '800', color: '#1a1612' },

@@ -105,9 +105,13 @@ export default function Orders() {
             const sl = statusLabel(order);
             return (
               <View key={order.id} style={s.card}>
+                <View style={s.orderBar}>
+                  <Text style={s.orderBarLabel}>Order</Text>
+                  <Text style={s.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
+                </View>
                 <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(expanded === order.id ? null : order.id)}>
                   <View style={s.cardLeft}>
-                    {order.orderNumber ? <Text style={s.orderNum}>#{String(order.orderNumber).padStart(3, '0')}</Text> : null}
+
                     <Text style={s.cardDate}>{order.date}</Text>
                     <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
                     <View style={[s.statusBadge, { backgroundColor: sl.color + '22' }]}>
@@ -158,6 +162,9 @@ const s = StyleSheet.create({
   emptyTitle:   { fontSize: 20, fontWeight: '700', color: '#1a1612' },
   emptyText:    { fontSize: 14, color: '#6b6b6b' },
   card:         { backgroundColor: '#fff', borderRadius: 16, marginBottom: 14, overflow: 'hidden', elevation: 2 },
+  orderBar:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 16, paddingVertical: 9 },
+  orderBarLabel:{ fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
+  orderBarNum:  { fontSize: 22, fontWeight: '900', color: '#fff' },
   cardHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   cardLeft:     { gap: 4, flex: 1 },
   cardDate:     { fontSize: 13, color: '#6b6b6b' },

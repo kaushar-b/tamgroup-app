@@ -118,13 +118,17 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
       order.driverStatus === 'on_the_way' ? c.cardOnWay :
       order.assignedToDriver ? c.cardAssigned : null
     ]}>
+      <View style={c.orderBar}>
+        <Text style={c.orderBarLabel}>Order</Text>
+        <Text style={c.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
+      </View>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={[c.typeBadge, order.orderType === 'delivery' ? c.badgeDelivery : c.badgePickup]}>
           <Ionicons name={order.orderType === 'delivery' ? 'car-sport' : 'storefront'} size={12} color="#fff" />
           <Text style={c.typeTxt}>{order.orderType === 'delivery' ? 'Delivery' : 'Pick Up'}</Text>
         </View>
         <View style={c.cardInfo}>
-          <Text style={c.cardName}>{order.orderNumber ? `#${String(order.orderNumber).padStart(3, '0')}  ` : ''}{order.name}</Text>
+          <Text style={c.cardName}>{order.name}</Text>
           <Text style={c.cardMeta}>{order.date} · P {order.total}.00</Text>
           <View style={[c.statusBadge, { backgroundColor: si.color + '22' }]}>
             <Text style={[c.statusTxt, { color: si.color }]}>{si.text}</Text>
@@ -207,7 +211,8 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
 export default function ManagerDashboard() {
   const router = useRouter();
   const [tab, setTab]       = useState<'live' | 'sent' | 'completed' | 'pickup'>('live');
-  const [dateFilter, setDateFilter] = useState<string>('');  // 'YYYY-MM-DD' or ''
+  const todayLabel = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const [dateFilter, setDateFilter] = useState<string>(todayLabel);  // '' = All, else 'D Mon YYYY'
   const [orders, setOrders] = useState<Order[]>([]);
   const knownOrderIds = useRef<Set<string>>(new Set());
   const isFirstLoad    = useRef(true);
@@ -429,6 +434,9 @@ const s = StyleSheet.create({
 
 const c = StyleSheet.create({
   card:         { backgroundColor: '#fff', borderRadius: 16, marginBottom: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: '#eee', elevation: 2 },
+  orderBar:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 14, paddingVertical: 9 },
+  orderBarLabel: { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
+  orderBarNum:   { fontSize: 22, fontWeight: '900', color: '#fff' },
   cardDone:     { borderColor: '#22c55e' },
   cardOnWay:    { borderColor: '#f59e0b' },
   cardAssigned: { borderColor: '#3b82f6' },

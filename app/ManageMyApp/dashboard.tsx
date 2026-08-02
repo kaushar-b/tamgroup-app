@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { useRouter } from 'expo-router';
 import { ref, onValue, update, set, get, query, orderByChild, remove } from 'firebase/database';
 import { db, auth } from '../../lib/firebase';
@@ -122,7 +124,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
           <Text style={c.typeTxt}>{order.orderType === 'delivery' ? 'Delivery' : 'Pick Up'}</Text>
         </View>
         <View style={c.cardInfo}>
-          <Text style={c.cardName}>{order.name}</Text>
+          <Text style={c.cardName}>{order.orderNumber ? `#${String(order.orderNumber).padStart(3, '0')}  ` : ''}{order.name}</Text>
           <Text style={c.cardMeta}>{order.date} · P {order.total}.00</Text>
           <View style={[c.statusBadge, { backgroundColor: si.color + '22' }]}>
             <Text style={[c.statusTxt, { color: si.color }]}>{si.text}</Text>
@@ -209,6 +211,42 @@ export default function ManagerDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const knownOrderIds = useRef<Set<string>>(new Set());
   const isFirstLoad    = useRef(true);
+
+  const generateSalesPDF = async () => {
+    const list = filteredCompleted;
+    if (!list.length) { Alert.alert('No Sales', 'There are no completed orders for this selection.'); return; }
+    const dateLabel = dateFilter || 'All Dates';
+    let grand = 0;
+    const rows = list.map(o => {
+      const dishes = (o.items || []).map((it: any) => it.name + (it.quantity > 1 ? ' x' + it.quantity : '')).join(', ');
+      const sale = o.total || 0;
+      grand += sale;
+      const num = o.orderNumber ? '#' + String(o.orderNumber).padStart(3, '0') : '-';
+      const type = o.orderType === 'delivery' ? 'Delivery' : 'Pick Up';
+      return '<tr><td>' + num + '</td><td>' + type + '</td><td>' + dishes + '</td><td style="text-align:right">P ' + sale + '.00</td></tr>';
+    }).join('');
+    const html = '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>'
+      + 'body{font-family:Helvetica,Arial,sans-serif;padding:24px;color:#1a1612;}'
+      + 'h1{color:#b60015;font-size:22px;margin:0 0 4px;}'
+      + '.sub{color:#666;font-size:13px;margin:0 0 18px;}'
+      + 'table{width:100%;border-collapse:collapse;font-size:13px;}'
+      + 'th{background:#b60015;color:#fff;text-align:left;padding:8px;}'
+      + 'td{padding:8px;border-bottom:1px solid #eee;}'
+      + 'tfoot td{font-weight:bold;border-top:2px solid #b60015;font-size:15px;}'
+      + '</style></head><body>'
+      + '<h1>Casa Del Sol - Sales Report</h1>'
+      + '<p class="sub">Date: ' + dateLabel + '  |  Orders: ' + list.length + '</p>'
+      + '<table><thead><tr><th>Order #</th><th>Type</th><th>Dishes</th><th style="text-align:right">Sale</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '<tfoot><tr><td colspan="3">Total</td><td style="text-align:right">P ' + grand + '.00</td></tr></tfoot>'
+      + '</table></body></html>';
+    try {
+      const { uri } = await Print.printToFileAsync({ html });
+      if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Sales Report' });
+    } catch (e) {
+      Alert.alert('Error', 'Could not generate the report.');
+    }
+  };
 
   // Register this device's push token as the MANAGER token
   useEffect(() => {
@@ -339,6 +377,12 @@ export default function ManagerDashboard() {
           </ScrollView>
         </View>
       )}
+      {tab === 'completed' && shown.length > 0 && (
+        <TouchableOpacity style={s.pdfBtn} onPress={generateSalesPDF}>
+          <Ionicons name="download-outline" size={18} color="#fff" />
+          <Text style={s.pdfBtnTxt}>Download Sales Report {dateFilter ? '(' + dateFilter + ')' : '(All)'}</Text>
+        </TouchableOpacity>
+      )}
       {shown.length === 0 ? (
         <View style={s.empty}>
           <Ionicons name="receipt-outline" size={56} color={RED} />
@@ -373,6 +417,8 @@ const s = StyleSheet.create({
   tabBadgeTxtActive: { color: RED },
   empty:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyTxt:       { fontSize: 16, fontWeight: '700', color: '#1a1612' },
+  pdfBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#b60015', marginHorizontal: 16, marginTop: 12, borderRadius: 12, paddingVertical: 13 },
+  pdfBtnTxt:      { fontSize: 14, fontWeight: '800', color: '#fff' },
   dateFilterRow:  { backgroundColor: '#fff', paddingVertical: 10, paddingLeft: 16, borderBottomWidth: 1, borderBottomColor: YELLOW, flexDirection: 'row', alignItems: 'center', gap: 10 },
   dateFilterLabel:{ fontSize: 12, fontWeight: '700', color: '#1a1612', flexShrink: 0 },
   dateChip:       { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f3f3f3', borderWidth: 1, borderColor: '#eee' },

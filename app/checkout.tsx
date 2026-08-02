@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../context/CartContext';
 import { useRouter } from 'expo-router';
-import { ref, push, set, get } from 'firebase/database';
+import { ref, push, set, get, runTransaction } from 'firebase/database';
 import { db } from '../lib/firebase';
 import { getBotswanaTime } from '../lib/getBotswanaTime';
 import { registerForPushToken, sendPushNotification, CHANNELS } from '../lib/notifications';
@@ -42,18 +42,23 @@ export default function Checkout() {
 
   const deliveryFee = orderType === 'delivery' ? DELIVERY_FEE : 0;
   const vatAmount   = Math.round(total * VAT_RATE);
-  const grandTotal  = total + deliveryFee + vatAmount + (tip ?? 0);
+  const grandTotal  = total + deliveryFee + (tip ?? 0);
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!orderType) e.orderType = 'Please select Pick Up or Delivery';
-    if (orderType === 'delivery' && !paymentMethod) e.paymentMethod = 'Please select a payment method';
-    if (!name.trim()) e.name = 'Full name is required';
-    if (!phone.trim()) e.phone = 'Phone number is required';
-    if (phone.length !== 8) e.phone = 'Phone number must be 8 digits';
-    if (orderType === 'delivery' && !address1.trim()) e.address1 = 'Address line 1 is required';
+    const missing: string[] = [];
+    if (!orderType) { e.orderType = 'Please select Pick Up or Delivery'; missing.push('Select Pick Up or Delivery'); }
+    if (orderType === 'delivery' && !paymentMethod) { e.paymentMethod = 'Please select a payment method'; missing.push('Select a payment method'); }
+    if (!name.trim()) { e.name = 'Full name is required'; missing.push('Enter your full name'); }
+    if (!phone.trim()) { e.phone = 'Phone number is required'; missing.push('Enter your phone number'); }
+    else if (phone.length !== 8) { e.phone = 'Phone number must be 8 digits'; missing.push('Enter a valid 8-digit phone number'); }
+    if (orderType === 'delivery' && !address1.trim()) { e.address1 = 'Address line 1 is required'; missing.push('Enter your delivery address'); }
     setErrors(e);
-    return Object.keys(e).length === 0;
+    if (missing.length) {
+      Alert.alert('Missing Information', 'Please complete the following:\n\n' + missing.map(m => '•  ' + m).join('\n'));
+      return false;
+    }
+    return true;
   };
 
   const handlePlaceOrder = async () => {
@@ -68,8 +73,14 @@ export default function Checkout() {
       const orderId     = newOrderRef.key!;
       const customerPushToken = await registerForPushToken();
 
+      // atomic global order number
+      const counterRef = ref(db, 'orderCounter');
+      const txn = await runTransaction(counterRef, (curr) => (curr || 0) + 1);
+      const orderNumber = txn.snapshot.val() || 1;
+
       const orderData = {
         id: orderId,
+        orderNumber,
         date: new Date().toLocaleDateString('en-GB', {
           day: '2-digit', month: 'short', year: 'numeric',
           hour: '2-digit', minute: '2-digit'
@@ -264,7 +275,9 @@ export default function Checkout() {
             </>
           )}
 
-          {/* Tip */}
+          {/* Tip - delivery only */}
+          {orderType === 'delivery' && (
+          <>
           <Text style={s.sectionLabel}>Want to Tip the Driver?</Text>
           <View style={s.tipRow}>
             <TouchableOpacity style={[s.tipBtn, tip === null && s.tipBtnActive]} onPress={() => setTip(null)}>
@@ -276,6 +289,8 @@ export default function Checkout() {
               </TouchableOpacity>
             ))}
           </View>
+          </>
+          )}
 
           {/* Summary */}
           <Text style={s.sectionLabel}>Order Summary</Text>

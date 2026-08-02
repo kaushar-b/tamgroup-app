@@ -88,11 +88,11 @@ function DishModal({ dish, onClose }: { dish: typeof DISHES[0] | null; onClose: 
                 </TouchableOpacity>
                 <View style={modal.qtyRow}>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}>
-                    <Ionicons name="remove" size={18} color="#1a1612" />
+                    <Ionicons name="remove" size={28} color="#1a1612" />
                   </TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}>
-                    <Ionicons name="add" size={18} color="#1a1612" />
+                    <Ionicons name="add" size={28} color="#1a1612" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -199,7 +199,7 @@ const modal = StyleSheet.create({
   cartControls: { gap: 10 },
   removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical: 14 },
   removeBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
-  qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 12 },
-  qtyBtn:       { padding: 4 },
-  qtyText:      { fontSize: 18, fontWeight: '800', color: '#1a1612', minWidth: 24, textAlign: 'center' },
+  qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16 },
+  qtyBtn:       { padding: 12 },
+  qtyText:      { fontSize: 22, fontWeight: '800', color: '#1a1612', minWidth: 32, textAlign: 'center' },
 });

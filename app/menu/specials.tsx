@@ -159,11 +159,11 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
                 </TouchableOpacity>
                 <View style={modal.qtyRow}>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => removeFromCart(dish.id)}>
-                    <Ionicons name="remove" size={18} color="#1a1612" />
+                    <Ionicons name="remove" size={28} color="#1a1612" />
                   </TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
                   <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}>
-                    <Ionicons name="add" size={18} color="#1a1612" />
+                    <Ionicons name="add" size={28} color="#1a1612" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -187,24 +187,19 @@ function WeeklySpecialsInner() {
     return () => { mountedRef.current = false; };
   }, []);
 
-  const fetchTime = useCallback(async () => {
+  const fetchTime = useCallback(() => {
     if (!mountedRef.current) return;
-    setLoading(true);
-    for (let attempt = 0; attempt < 8; attempt++) {
-      try {
-        const t = await getBotswanaTime();
-        if (!mountedRef.current) return;
-        setBwTime(t);
-        setLoading(false);
-        return;
-      } catch {
-        if (!mountedRef.current) return;
-        // Wait longer between each retry (500ms, 1s, 2s, 2s...)
-        const delay = attempt < 2 ? 500 : attempt < 4 ? 1000 : 2000;
-        await new Promise(r => setTimeout(r, delay));
-      }
-    }
-    if (mountedRef.current) setLoading(false);
+    const now = new Date();
+    const dow = now.getDay();
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    setBwTime({
+      dayOfWeek: dow,
+      dayName: DAYS[dow],
+      hour: now.getHours(),
+      minute: now.getMinutes(),
+      isSunday: dow === 0,
+    });
+    setLoading(false);
   }, []);
 
   useEffect(() => { fetchTime(); }, [fetchTime]);
@@ -355,9 +350,9 @@ const modal = StyleSheet.create({
   cartControls: { gap: 10 },
   removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical: 14 },
   removeBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
-  qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 12 },
-  qtyBtn:       { padding: 4 },
-  qtyText:      { fontSize: 18, fontWeight: '800', color: '#1a1612', minWidth: 24, textAlign: 'center' },
+  qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16 },
+  qtyBtn:       { padding: 12 },
+  qtyText:      { fontSize: 22, fontWeight: '800', color: '#1a1612', minWidth: 32, textAlign: 'center' },
 });
 
 export default function WeeklySpecials() {

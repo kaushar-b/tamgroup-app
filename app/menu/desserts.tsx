@@ -44,11 +44,26 @@ export default function Desserts() {
       </View>
 
       <ScrollView contentContainerStyle={s.content}>
-        <View style={s.comingSoonBadge}>
-          <Ionicons name="time-outline" size={22} color="#fff" />
-          <Text style={s.comingSoonText}>Coming Soon</Text>
+        <View style={s.promoCard}>
+          <Text style={s.promoTitle}>Download Gourmet Fine Pastries</Text>
+          <Text style={s.promoSub}>Check out our desserts, cakes & pastries!</Text>
+          <View style={s.storeRow}>
+            <TouchableOpacity style={s.storeBtn} activeOpacity={0.85}>
+              <Ionicons name="logo-google-playstore" size={26} color="#E9548C" />
+              <View>
+                <Text style={s.storeSmall}>GET IT ON</Text>
+                <Text style={s.storeBig}>Google Play</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.storeBtn} activeOpacity={0.85}>
+              <Ionicons name="logo-apple-appstore" size={26} color="#E9548C" />
+              <View>
+                <Text style={s.storeSmall}>Download on the</Text>
+                <Text style={s.storeBig}>App Store</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={s.sub}>Our desserts menu is being prepared.{'\n'}Check back soon!</Text>
 
         {DESSERT_IMAGES.map((img, i) => (
           <View key={i} style={s.imgCard}>
@@ -74,6 +89,13 @@ const s = StyleSheet.create({
   title:           { fontSize: 18, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
   subtitle:        { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
   content:         { padding: 16, alignItems: 'center' },
+  promoCard:       { width: '100%', backgroundColor: '#fff', borderRadius: 20, padding: 22, marginTop: 8, marginBottom: 20, alignItems: 'center', elevation: 3, borderWidth: 1.5, borderColor: '#F5C6D6' },
+  promoTitle:      { fontSize: 19, fontWeight: '900', color: '#1a1612', textAlign: 'center', marginBottom: 6 },
+  promoSub:        { fontSize: 13, color: '#6b6b6b', textAlign: 'center', marginBottom: 16, fontWeight: '600' },
+  storeRow:        { flexDirection: 'row', gap: 10, flexWrap: 'wrap', justifyContent: 'center' },
+  storeBtn:        { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderWidth: 2, borderColor: '#E9548C', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 14 },
+  storeSmall:      { fontSize: 8, fontWeight: '700', color: '#E9548C', letterSpacing: 0.5 },
+  storeBig:        { fontSize: 14, fontWeight: '900', color: '#E9548C' },
   comingSoonBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: RED, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 30, marginBottom: 12, marginTop: 8 },
   comingSoonText:  { fontSize: 16, fontWeight: '900', color: '#fff', letterSpacing: 1 },
   sub:             { fontSize: 14, color: '#1a1612', textAlign: 'center', lineHeight: 22, marginBottom: 24, fontWeight: '600' },

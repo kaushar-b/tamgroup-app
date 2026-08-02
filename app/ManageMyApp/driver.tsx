@@ -80,7 +80,7 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
     ]}>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={c.cardInfo}>
-          <Text style={c.cardName}>{order.name}</Text>
+          <Text style={c.cardName}>{order.orderNumber ? `#${String(order.orderNumber).padStart(3, '0')}  ` : ''}{order.name}</Text>
           <Text style={c.cardMeta}>{order.date}</Text>
           <Text style={c.cardAddr} numberOfLines={1}>{order.address || 'No address'}</Text>
           <View style={[c.statusBadge, { backgroundColor: statusColor + '22' }]}>

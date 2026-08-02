@@ -156,7 +156,7 @@ const modal = StyleSheet.create({
   price:        { fontSize: 22, fontWeight: '800', color: RED },
   addBtn:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 18, marginBottom: 8 },
   addBtnTxt:    { fontSize: 16, fontWeight: '800', color: '#1a1612' },
-  cartControls: { gap: 10 },
+  cartControls: { gap: 10, marginBottom: 28 },
   removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical: 14 },
   removeBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
   qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16 },

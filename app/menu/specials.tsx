@@ -233,33 +233,41 @@ function WeeklySpecialsInner() {
       </View>
 
       <ScrollView contentContainerStyle={s.list}>
-        {/* ── FULL WEEK CALENDAR ── */}
+        {/* FULL WEEK CALENDAR */}
         <Text style={s.weekTitle}>This Week's Menu</Text>
-        <View style={s.weekGrid}>
+
+        {isSunday && (
+          <View style={s.sundayTag}>
+            <Text style={s.sundayTagTxt}>Sunday - All Dishes Available</Text>
+          </View>
+        )}
+
+        <View style={[s.weekGrid, isSunday && s.weekFrame]}>
           {SPECIALS.map(dish => {
             const isToday = !isSunday && dish.day === today;
             return (
-              <TouchableOpacity
-                key={dish.id}
-                style={[s.weekCard, isToday && s.weekCardActive, !isToday && !isSunday && s.weekCardDisabled]}
-                onPress={() => { if (isToday || isSunday) setActiveDish(dish); }}
-                activeOpacity={isToday || isSunday ? 0.85 : 1}
-              >
-                <Text style={[s.weekDay, isToday && s.weekDayActive]}>{dish.day.slice(0, 3).toUpperCase()}</Text>
-                <Image source={dish.images[0]} style={s.weekImg} resizeMode="cover" />
-                <Text style={[s.weekName, isToday && s.weekNameActive]} numberOfLines={2}>{dish.name}</Text>
-                <Text style={[s.weekPrice, isToday && s.weekPriceActive]}>P {dish.price}</Text>
+              <View key={dish.id} style={s.weekCellWrap}>
                 {isToday && (
-                  <View style={s.todayBadge}>
-                    <Text style={s.todayBadgeTxt}>TODAY</Text>
+                  <View style={s.todayBar}>
+                    <Text style={s.todayBarTxt}>TODAY</Text>
                   </View>
                 )}
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[s.weekCard, isToday && s.weekCardActive, !isToday && !isSunday && s.weekCardDisabled]}
+                  onPress={() => { if (isToday || isSunday) setActiveDish(dish); }}
+                  activeOpacity={isToday || isSunday ? 0.85 : 1}
+                >
+                  <Text style={[s.weekDay, isToday && s.weekDayActive]}>{dish.day.slice(0, 3).toUpperCase()}</Text>
+                  <Image source={dish.images[0]} style={s.weekImg} resizeMode="cover" />
+                  <Text style={[s.weekName, isToday && s.weekNameActive]} numberOfLines={2}>{dish.name}</Text>
+                  <Text style={[s.weekPrice, isToday && s.weekPriceActive]}>P {dish.price}</Text>
+                </TouchableOpacity>
+              </View>
             );
           })}
         </View>
 
-        {/* ── TODAY'S FEATURED DISH ── */}
+        {/* TODAY'S FEATURED DISH */}
         {!loading && todayDishes.length > 0 && (
           <>
             <Text style={s.featuredTitle}>
@@ -309,9 +317,15 @@ const s = StyleSheet.create({
   emptyText:    { fontSize: 15, fontWeight: '600', color: '#1a1612', textAlign: 'center' },
   weekTitle:    { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 4 },
   featuredTitle:{ fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 8 },
-  weekGrid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  weekCard:     { width: '30%', backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', alignItems: 'center', paddingBottom: 10, elevation: 2 },
-  weekCardActive:{ borderWidth: 2, borderColor: RED },
+  weekGrid:     { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 20 },
+  weekFrame:    { borderWidth: 2, borderColor: RED, borderRadius: 16, padding: 10, backgroundColor: 'rgba(182,0,21,0.03)' },
+  sundayTag:    { alignSelf: 'center', backgroundColor: RED, borderRadius: 10, paddingHorizontal: 16, paddingVertical: 7, marginBottom: 10 },
+  sundayTagTxt: { fontSize: 12, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
+  weekCellWrap: { width: '30%' },
+  todayBar:     { backgroundColor: RED, borderTopLeftRadius: 10, borderTopRightRadius: 10, alignItems: 'center', paddingVertical: 3 },
+  todayBarTxt:  { fontSize: 9, fontWeight: '900', color: '#fff', letterSpacing: 1 },
+  weekCard:     { width: '100%', backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', alignItems: 'center', paddingBottom: 10, elevation: 2 },
+  weekCardActive:{ borderWidth: 2, borderColor: RED, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
   weekCardDisabled:{ opacity: 0.55 },
   weekImg:      { width: '100%', height: 64, marginBottom: 6 },
   weekDay:      { fontSize: 9, fontWeight: '900', color: '#aaa', letterSpacing: 1, marginTop: 8, marginBottom: 2 },
@@ -320,14 +334,12 @@ const s = StyleSheet.create({
   weekNameActive:{ color: RED },
   weekPrice:    { fontSize: 12, fontWeight: '800', color: '#888', marginTop: 4 },
   weekPriceActive:{ color: RED },
-  todayBadge:   { position: 'absolute', top: 6, right: 6, backgroundColor: RED, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 },
-  todayBadgeTxt:{ fontSize: 8, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
   list:         { paddingHorizontal: 16, paddingTop: 12 },
   card:         { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 },
   cardImgWrap:  { width: '100%', height: Math.round((SW - 40) * 0.6) },
   cardImg:      { width: '100%', height: '100%' },
   cardBody:     { padding: 16 },
-  cardDay:      { fontSize: 11, fontWeight: '700', color: RED, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 1 },
+  cardDay:      { fontSize: 11, fontWeight: '700', color: RED, marginBottom: 2, textTransform: 'uppercase', letterSpacing:1 },
   cardName:     { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
   cardDesc:     { fontSize: 13, color: '#6b6b6b', lineHeight: 19, marginBottom: 8 },
   cardPrice:    { fontSize: 16, fontWeight: '800', color: RED },
@@ -347,8 +359,8 @@ const modal = StyleSheet.create({
   price:        { fontSize: 22, fontWeight: '800', color: RED },
   addBtn:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16, marginBottom: 24 },
   addBtnTxt:    { fontSize: 16, fontWeight: '800', color: '#1a1612' },
-  cartControls: { gap: 10 },
-  removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical: 14 },
+  cartControls: { gap: 10, marginBottom: 28 },
+  removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical:14 },
   removeBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
   qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16 },
   qtyBtn:       { padding: 12 },

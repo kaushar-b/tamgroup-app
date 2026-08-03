@@ -128,6 +128,9 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
           <Text style={c.typeTxt}>{order.orderType === 'delivery' ? 'Delivery' : 'Pick Up'}</Text>
         </View>
         <View style={c.cardInfo}>
+          {Array.from(new Set((order.items||[]).map(it => it.name))).map((nm, i) => (
+            <Text key={i} style={c.itemTitle}>{nm}</Text>
+          ))}
           <Text style={c.cardName}>{order.name}</Text>
           <Text style={c.cardMeta}>{order.date} · P {order.total}.00</Text>
           <View style={[c.statusBadge, { backgroundColor: si.color + '22' }]}>
@@ -443,6 +446,7 @@ const c = StyleSheet.create({
   typeTxt:      { fontSize: 11, fontWeight: '800', color: '#fff' },
   cardInfo:     { flex: 1 },
   cardName:     { fontSize: 15, fontWeight: '800', color: '#1a1612' },
+  itemTitle:    { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 1 },
   cardMeta:     { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
   statusBadge:  { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, marginTop: 5 },
   statusTxt:    { fontSize: 11, fontWeight: '700' },

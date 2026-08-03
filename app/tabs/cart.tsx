@@ -5,10 +5,12 @@ import { useRouter } from 'expo-router';
 
 const RED = '#b60015';
 const YELLOW = '#FFD544';
+const MIN_ORDER = 120;
 
 export default function Cart() {
   const { items, addToCart, removeFromCart, clearCart, total } = useCart();
   const router = useRouter();
+  const belowMin = total < MIN_ORDER;
   const removeAll = (id: string) => {
     const item = items.find(i => i.id === id);
     if (item) for (let x = 0; x < item.quantity; x++) removeFromCart(id);
@@ -55,7 +57,7 @@ export default function Cart() {
                   <Ionicons name="add" size={16} color="#1a1612" />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={s.binBtn} onPress={() => removeAll(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <TouchableOpacity style={s.binBtn} onPress={() => removeAll(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8,right: 8 }}>
                 <Ionicons name="trash-outline" size={18} color={RED} />
               </TouchableOpacity>
             </View>
@@ -71,9 +73,12 @@ export default function Cart() {
           <Text style={s.totalLabel}>Total</Text>
           <Text style={s.totalAmount}>P {total}.00</Text>
         </View>
+        {items.length > 0 && belowMin && (
+          <Text style={s.minText}>Minimum order P{MIN_ORDER}.00</Text>
+        )}
         <TouchableOpacity
-          style={[s.checkoutBtn, items.length === 0 && s.checkoutDisabled]}
-          disabled={items.length === 0}
+          style={[s.checkoutBtn, (items.length === 0 || belowMin) && s.checkoutDisabled]}
+          disabled={items.length === 0 || belowMin}
           onPress={() => router.push('/checkout')}
         >
           <Ionicons name="card" size={18} color="#fff" />
@@ -95,7 +100,7 @@ const s = StyleSheet.create({
   emptyIcon:        { width: 96, height: 96, borderRadius: 48, backgroundColor: YELLOW, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   emptyTitle:       { fontSize: 20, fontWeight: '700', color: '#1a1612' },
   emptyText:        { fontSize: 14, color: '#6b6b6b' },
-  card:             { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 14, marginBottom: 12, padding: 12, elevation: 1 },
+  card:             { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 14, marginBottom:12, padding: 12, elevation: 1 },
   cardIcon:         { width: 46, height: 46, backgroundColor: YELLOW, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   cardImg:          { width: 46, height: 46, borderRadius: 10, marginRight: 12 },
   cardInfo:         { flex: 1 },
@@ -111,6 +116,7 @@ const s = StyleSheet.create({
   totalRow:         { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
   totalLabel:       { fontSize: 18, fontWeight: '700', color: '#1a1612' },
   totalAmount:      { fontSize: 18, fontWeight: '800', color: RED },
+  minText:          { fontSize: 13, fontWeight: '800', color: RED, textAlign: 'center', marginBottom: 10 },
   checkoutBtn:      { backgroundColor: RED, borderRadius: 14, padding: 18, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
   checkoutDisabled: { opacity: 0.4 },
   checkoutText:     { fontSize: 16, fontWeight: '700', color: '#fff' },

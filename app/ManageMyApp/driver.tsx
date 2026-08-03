@@ -84,6 +84,9 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
       </View>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={c.cardInfo}>
+          {Array.from(new Set((order.items||[]).map(it => it.name))).map((nm, i) => (
+            <Text key={i} style={c.itemTitle}>{nm}</Text>
+          ))}
           <Text style={c.cardName}>{order.name}</Text>
           <Text style={c.cardMeta}>{order.date}</Text>
           <Text style={c.cardAddr} numberOfLines={1}>{order.address || 'No address'}</Text>
@@ -308,6 +311,7 @@ const c = StyleSheet.create({
   cardHead:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 14, paddingTop: 8, gap: 10 },
   cardInfo:       { flex: 1 },
   cardName:       { fontSize: 15, fontWeight: '800', color: '#1a1612' },
+  itemTitle:      { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 1 },
   cardMeta:       { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
   cardAddr:       { fontSize: 12, color: '#6b6b6b', marginTop: 2 },
   statusBadge:    { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, marginTop: 5 },

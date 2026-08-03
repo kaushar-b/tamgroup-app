@@ -34,7 +34,7 @@ export default function Checkout() {
   const [phone, setPhone]                 = useState('');
   const [address1, setAddress1]           = useState('');
   const [address2, setAddress2]           = useState('');
-  const [city, setCity]                   = useState('');
+  const [city, setCity]                   = useState('Phakalane');
   const [errors, setErrors]               = useState<Record<string, string>>({});
   const [orderPlaced, setOrderPlaced]     = useState(false);
   const [placing, setPlacing]             = useState(false);
@@ -53,6 +53,7 @@ export default function Checkout() {
     if (!phone.trim()) { e.phone = 'Phone number is required'; missing.push('Enter your phone number'); }
     else if (phone.length !== 8) { e.phone = 'Phone number must be 8 digits'; missing.push('Enter a valid 8-digit phone number'); }
     if (orderType === 'delivery' && !address1.trim()) { e.address1 = 'Address line 1 is required'; missing.push('Enter your delivery address'); }
+    if (orderType === 'delivery' && !address2.trim()) { e.address2 = 'Area / Suburb is required'; missing.push('Enter your area / suburb'); }
     setErrors(e);
     if (missing.length) {
       Alert.alert('Missing Information', 'Please complete the following:\n\n' + missing.map(m => '�  ' + m).join('\n'));
@@ -278,7 +279,7 @@ export default function Checkout() {
                 </View>
                 <View style={[s.inputWrap, s.inputBorder]}>
                   <Text style={s.inputLabel}>City</Text>
-                  <TextInput style={s.input} value={city} onChangeText={setCity}
+                  <TextInput style={[s.input, { backgroundColor: '#f3f3f3', color: '#1a1612' }]} value="Phakalane" editable={false} onChangeText={setCity}
                     placeholder="e.g. Gaborone" placeholderTextColor="#aaa" />
                 </View>
               </View>

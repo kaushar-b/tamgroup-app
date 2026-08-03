@@ -116,6 +116,9 @@ export default function Orders() {
                 </View>
                 <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(expanded === order.id ? null : order.id)}>
                   <View style={s.cardLeft}>
+                    {Array.from(new Set((order.items||[]).map(it => it.name))).map((nm, i) => (
+                      <Text key={i} style={s.itemTitle}>{nm}</Text>
+                    ))}
                     <Text style={s.cardDate}>{order.date}</Text>
                     <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
                     <View style={[s.statusBadge, { backgroundColor: sl.color + '22' }]}>
@@ -177,6 +180,7 @@ const s = StyleSheet.create({
   cardHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 },
   cardLeft:     { gap: 4, flex: 1 },
   cardDate:     { fontSize: 13, color: '#6b6b6b' },
+  itemTitle:    { fontSize: 15, fontWeight: '700', color: '#1a1612', marginBottom: 2 },
   cardType:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
   statusBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginTop: 4 },
   statusText:   { fontSize: 12, fontWeight: '700' },

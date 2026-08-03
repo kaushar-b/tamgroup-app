@@ -12,6 +12,7 @@ const YELLOW = '#FFD544';
 
 type Order = {
   id: string;
+  orderNumber?: number | null;
   date: string;
   name: string;
   phone: string;
@@ -31,6 +32,7 @@ type Order = {
 function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: boolean }) {
   const [open, setOpen] = useState(false);
   const ds = order.driverStatus;
+  const online = order.paymentMethod === 'online' || order.orderType === 'pickup';
 
   const confirmStatus = (newStatus: 'on_the_way' | 'delivered') => {
     const label = newStatus === 'on_the_way' ? 'mark this order as On the Way' : 'mark this order as Delivered';
@@ -46,22 +48,14 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
             if (newStatus === 'delivered') updates.status = 'completed';
             update(ref(db, `orders/${order.id}`), updates);
 
-            if (order.customerPushToken) {
-              if (newStatus === 'on_the_way') {
-                sendPushNotification(
-                  order.customerPushToken,
-                  'Delivery on the Way',
-                  'Your order is on the way!',
-                  CHANNELS.CUSTOMER
-                );
-              } else {
-                sendPushNotification(
-                  order.customerPushToken,
-                  'Order Delivered',
-                  'Your order has been delivered. Enjoy your meal!',
-                  CHANNELS.CUSTOMER
-                );
-              }
+            // Notify customer ONLY on delivered (on-the-way notification removed)
+            if (newStatus === 'delivered' && order.customerPushToken) {
+              sendPushNotification(
+                order.customerPushToken,
+                'Order Delivered',
+                'Your order has been delivered. Enjoy your meal!',
+                CHANNELS.CUSTOMER
+              );
             }
           }
         }
@@ -81,6 +75,12 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
       <View style={c.orderBar}>
         <Text style={c.orderBarLabel}>Order</Text>
         <Text style={c.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
+      </View>
+      <View style={c.payTagWrap}>
+        <View style={[c.payTag, online ? c.payTagOnline : c.payTagCod]}>
+          {online && <Ionicons name="checkmark-circle" size={13} color="#fff" />}
+          <Text style={c.payTagTxt}>{online ? 'Paid Online' : 'Pay on Delivery'}</Text>
+        </View>
       </View>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={c.cardInfo}>
@@ -126,7 +126,7 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
           {order.paymentMethod ? (
             <View style={c.infoRow}>
               <Ionicons name="card-outline" size={14} color="#6b6b6b" />
-              <Text style={c.infoTxt}>{order.paymentMethod === 'online' ? 'Pay Online' : 'Pay on Delivery'}</Text>
+              <Text style={c.infoTxt}>{online ? 'Paid Online' : 'Pay on Delivery'}</Text>
             </View>
           ) : null}
           {order.tip ? (
@@ -138,7 +138,6 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
 
           {!isCompleted && (
             <View style={c.btnGroup}>
-              {/* ON THE WAY button — only show if not yet on_the_way or delivered */}
               <TouchableOpacity
                 style={[
                   c.driverBtn,
@@ -158,7 +157,6 @@ function DriverOrderCard({ order, isCompleted }: { order: Order; isCompleted: bo
                 )}
               </TouchableOpacity>
 
-              {/* DELIVERED button — only enabled after on_the_way */}
               <TouchableOpacity
                 style={[
                   c.driverBtn,
@@ -277,7 +275,7 @@ export default function DriverDashboard() {
 
 const s = StyleSheet.create({
   container:         { flex: 1, backgroundColor: YELLOW },
-  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
+  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20,paddingTop: 52, paddingBottom: 16, backgroundColor: RED },
   headerTitle:       { fontSize: 20, fontWeight: '900', color: '#fff' },
   headerSub:         { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
   signOutBtn:        { padding: 8 },
@@ -302,7 +300,12 @@ const c = StyleSheet.create({
   orderBar:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 14, paddingVertical: 9 },
   orderBarLabel:  { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
   orderBarNum:    { fontSize: 22, fontWeight: '900', color: '#fff' },
-  cardHead:       { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
+  payTagWrap:     { alignItems: 'flex-end', paddingHorizontal: 12, paddingTop: 10 },
+  payTag:         { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  payTagOnline:   { backgroundColor: '#22c55e' },
+  payTagCod:      { backgroundColor: '#9a8f8f' },
+  payTagTxt:      { fontSize: 11, fontWeight: '900', color: '#fff', letterSpacing: 0.3 },
+  cardHead:       { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 14, paddingTop: 8, gap: 10 },
   cardInfo:       { flex: 1 },
   cardName:       { fontSize: 15, fontWeight: '800', color: '#1a1612' },
   cardMeta:       { fontSize: 12, color: '#6b6b6b', marginTop: 2 },

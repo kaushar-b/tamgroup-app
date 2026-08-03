@@ -14,6 +14,7 @@ const YELLOW = '#FFD544';
 
 type Order = {
   id: string;
+  orderNumber?: number | null;
   date: string;
   name: string;
   phone: string;
@@ -33,10 +34,13 @@ type Order = {
   createdAt: number;
 };
 
+function isPaidOnline(order: Order) {
+  return order.paymentMethod === 'online' || order.orderType === 'pickup';
+}
+
 function statusInfo(order: Order): { text: string; color: string } {
   if (order.driverStatus === 'delivered')        return { text: 'Delivered', color: '#22c55e' };
   if (order.driverStatus === 'on_the_way')       return { text: 'On the Way', color: '#f59e0b' };
-  if (order.driverStatus === 'preparing')        return { text: 'Preparing', color: '#3b82f6' };
   if (order.assignedToDriver)                    return { text: 'Driver Assigned', color: '#3b82f6' };
   if (order.preparingStatus === 'ready')         return { text: 'Ready for Pickup', color: '#22c55e' };
   if (order.preparingStatus === 'preparing')     return { text: 'Preparing', color: '#3b82f6' };
@@ -47,14 +51,14 @@ function statusInfo(order: Order): { text: string; color: string } {
 function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'completed' | 'pickup' }) {
   const [open, setOpen] = useState(false);
   const si = statusInfo(order);
+  const online = isPaidOnline(order);
 
   const assignDriver = () => {
     Alert.alert('Assign to Driver', `Send "${order.name}"'s order to driver?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Assign', onPress: async () => {
-          await update(ref(db, `orders/${order.id}`), { assignedToDriver: true, driverStatus: 'preparing' });
-
+          await update(ref(db, `orders/${order.id}`), { assignedToDriver: true, driverStatus: null });
           const driverTokenSnap = await get(ref(db, 'staffTokens/driver'));
           const driverToken = driverTokenSnap.val();
           if (driverToken) {
@@ -79,18 +83,13 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
     ]);
   };
 
-  const markPickupPreparing = () =>
+  const markPreparing = () =>
     update(ref(db, `orders/${order.id}`), { preparingStatus: 'preparing' });
 
   const markPickupReady = async () => {
     await update(ref(db, `orders/${order.id}`), { preparingStatus: 'ready' });
     if (order.customerPushToken) {
-      sendPushNotification(
-        order.customerPushToken,
-        'Order Ready',
-        'Your order is ready for pickup!',
-        CHANNELS.CUSTOMER
-      );
+      sendPushNotification(order.customerPushToken, 'Order Ready', 'Your order is ready for pickup!', CHANNELS.CUSTOMER);
     }
   };
 
@@ -100,12 +99,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
       { text: 'Yes', onPress: async () => {
         await update(ref(db, `orders/${order.id}`), { status: 'completed', preparingStatus: 'pickedup' });
         if (order.customerPushToken) {
-          sendPushNotification(
-            order.customerPushToken,
-            'Order Picked Up',
-            'Thank you! Enjoy your meal!',
-            CHANNELS.CUSTOMER
-          );
+          sendPushNotification(order.customerPushToken, 'Order Picked Up', 'Thank you! Enjoy your meal!', CHANNELS.CUSTOMER);
         }
       }},
     ]);
@@ -121,6 +115,12 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
       <View style={c.orderBar}>
         <Text style={c.orderBarLabel}>Order</Text>
         <Text style={c.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
+      </View>
+      <View style={c.payTagWrap}>
+        <View style={[c.payTag, online ? c.payTagOnline : c.payTagCod]}>
+          {online && <Ionicons name="checkmark-circle" size={13} color="#fff" />}
+          <Text style={c.payTagTxt}>{online ? 'Paid Online' : 'Pay on Delivery'}</Text>
+        </View>
       </View>
       <TouchableOpacity style={c.cardHead} onPress={() => setOpen(o => !o)}>
         <View style={[c.typeBadge, order.orderType === 'delivery' ? c.badgeDelivery : c.badgePickup]}>
@@ -155,7 +155,7 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
             <View style={c.infoRow}><Ionicons name="call-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{order.phone}</Text></View>
           ) : null}
           {order.paymentMethod ? (
-            <View style={c.infoRow}><Ionicons name="card-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{order.paymentMethod === 'online' ? 'Pay Online' : 'Pay on Delivery'}</Text></View>
+            <View style={c.infoRow}><Ionicons name="card-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>{online ? 'Paid Online' : 'Pay on Delivery'}</Text></View>
           ) : null}
           {order.tip ? (
             <View style={c.infoRow}><Ionicons name="gift-outline" size={14} color="#6b6b6b" /><Text style={c.infoTxt}>Tip: P{order.tip}.00</Text></View>
@@ -163,15 +163,24 @@ function OrderCard({ order, role }: { order: Order; role: 'live' | 'sent' | 'com
 
           {/* ACTIONS */}
           {role === 'live' && order.orderType === 'delivery' && !order.assignedToDriver && (
-            <TouchableOpacity style={c.actionBtn} onPress={assignDriver}>
-              <Ionicons name="car-sport" size={18} color="#fff" />
-              <Text style={c.actionTxt}>Assign to Driver</Text>
-            </TouchableOpacity>
+            <>
+              {order.preparingStatus !== 'preparing' ? (
+                <TouchableOpacity style={[c.actionBtn, { backgroundColor: '#3b82f6' }]} onPress={markPreparing}>
+                  <Ionicons name="flame" size={18} color="#fff" />
+                  <Text style={c.actionTxt}>Mark as Preparing</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={c.actionBtn} onPress={assignDriver}>
+                  <Ionicons name="car-sport" size={18} color="#fff" />
+                  <Text style={c.actionTxt}>Assign to Driver</Text>
+                </TouchableOpacity>
+              )}
+            </>
           )}
           {role === 'live' && order.orderType === 'pickup' && order.preparingStatus !== 'ready' && order.status !== 'completed' && (
             <>
-              {!order.preparingStatus && (
-                <TouchableOpacity style={[c.actionBtn, { backgroundColor: '#3b82f6' }]} onPress={markPickupPreparing}>
+              {order.preparingStatus !== 'preparing' && (
+                <TouchableOpacity style={[c.actionBtn, { backgroundColor: '#3b82f6' }]} onPress={markPreparing}>
                   <Ionicons name="flame" size={18} color="#fff" />
                   <Text style={c.actionTxt}>Mark as Preparing</Text>
                 </TouchableOpacity>
@@ -212,7 +221,7 @@ export default function ManagerDashboard() {
   const router = useRouter();
   const [tab, setTab]       = useState<'live' | 'sent' | 'completed' | 'pickup'>('live');
   const todayLabel = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-  const [dateFilter, setDateFilter] = useState<string>(todayLabel);  // '' = All, else 'D Mon YYYY'
+  const [dateFilter, setDateFilter] = useState<string>(todayLabel);
   const [orders, setOrders] = useState<Order[]>([]);
   const knownOrderIds = useRef<Set<string>>(new Set());
   const isFirstLoad    = useRef(true);
@@ -223,27 +232,31 @@ export default function ManagerDashboard() {
     const dateLabel = dateFilter || 'All Dates';
     let grand = 0;
     const rows = list.map(o => {
-      const dishes = (o.items || []).map((it: any) => it.name + (it.quantity > 1 ? ' x' + it.quantity : '')).join(', ');
+      const dishes = (o.items || []).map((it: any) => it.name + (it.quantity > 1 ? ' x' + it.quantity : '')).join('<br>');
       const sale = o.total || 0;
       grand += sale;
       const num = o.orderNumber ? '#' + String(o.orderNumber).padStart(3, '0') : '-';
       const type = o.orderType === 'delivery' ? 'Delivery' : 'Pick Up';
-      return '<tr><td>' + num + '</td><td>' + type + '</td><td>' + dishes + '</td><td style="text-align:right">P ' + sale + '.00</td></tr>';
+      const online = o.paymentMethod === 'online' || o.orderType === 'pickup';
+      const box = online ? '<span style="display:inline-block;width:14px;height:14px;border:1.5px solid #1a1612;text-align:center;line-height:14px;">&#10003;</span>' : '<span style="display:inline-block;width:14px;height:14px;border:1.5px solid #1a1612;"></span>';
+      return '<tr><td style="text-align:center">' + box + '</td><td>' + num + '</td><td>' + type + '</td><td>' + dishes + '</td><td style="text-align:right">P ' + sale + '.00</td></tr>';
     }).join('');
     const html = '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>'
       + 'body{font-family:Helvetica,Arial,sans-serif;padding:24px;color:#1a1612;}'
       + 'h1{color:#b60015;font-size:22px;margin:0 0 4px;}'
-      + '.sub{color:#666;font-size:13px;margin:0 0 18px;}'
+      + '.sub{color:#666;font-size:13px;margin:0 0 6px;}'
+      + '.key{color:#1a1612;font-size:12px;margin:0 0 16px;font-weight:bold;}'
       + 'table{width:100%;border-collapse:collapse;font-size:13px;}'
       + 'th{background:#b60015;color:#fff;text-align:left;padding:8px;}'
-      + 'td{padding:8px;border-bottom:1px solid #eee;}'
+      + 'td{padding:8px;border-bottom:1px solid #eee;vertical-align:top;}'
       + 'tfoot td{font-weight:bold;border-top:2px solid #b60015;font-size:15px;}'
       + '</style></head><body>'
       + '<h1>Casa Del Sol - Sales Report</h1>'
       + '<p class="sub">Date: ' + dateLabel + '  |  Orders: ' + list.length + '</p>'
-      + '<table><thead><tr><th>Order #</th><th>Type</th><th>Dishes</th><th style="text-align:right">Sale</th></tr></thead>'
+      + '<p class="key">KEY: Ticked boxes indicate "Paid Online" orders.</p>'
+      + '<table><thead><tr><th></th><th>Order #</th><th>Type</th><th>Dishes</th><th style="text-align:right">Sale</th></tr></thead>'
       + '<tbody>' + rows + '</tbody>'
-      + '<tfoot><tr><td colspan="3">Total</td><td style="text-align:right">P ' + grand + '.00</td></tr></tfoot>'
+      + '<tfoot><tr><td colspan="4">Total</td><td style="text-align:right">P ' + grand + '.00</td></tr></tfoot>'
       + '</table></body></html>';
     try {
       const { uri } = await Print.printToFileAsync({ html });
@@ -253,46 +266,28 @@ export default function ManagerDashboard() {
     }
   };
 
-  // Register this device's push token as the MANAGER token
   useEffect(() => {
     (async () => {
       try {
         const token = await registerForPushToken();
-        if (token) {
-          await set(ref(db, 'staffTokens/manager'), token);
-        }
-        await set(ref(db, 'debug/managerTokenAttempt'), {
-          token: token ?? 'NULL',
-          timestamp: Date.now(),
-        });
-      } catch (err: any) {
-        await set(ref(db, 'debug/managerTokenAttempt'), {
-          token: 'ERROR',
-          error: err?.message ?? String(err),
-          timestamp: Date.now(),
-        });
-      }
+        if (token) await set(ref(db, 'staffTokens/manager'), token);
+      } catch (err: any) {}
     })();
   }, []);
 
-  // Listen for orders + fire a LOCAL notification when a brand-new order arrives
   useEffect(() => {
     const q = query(ref(db, 'orders'), orderByChild('createdAt'));
     return onValue(q, snap => {
       const data = snap.val();
       if (!data) { setOrders([]); return; }
       const list = (Object.values(data) as Order[]);
-
       if (isFirstLoad.current) {
         list.forEach(o => knownOrderIds.current.add(o.id));
         isFirstLoad.current = false;
       } else {
-        // New order push now comes from the customer's device at checkout
-        // (works even when this dashboard is killed — see checkout.tsx)
         const newOnes = list.filter(o => !knownOrderIds.current.has(o.id));
         newOnes.forEach(o => knownOrderIds.current.add(o.id));
       }
-
       setOrders(list.reverse());
     });
   }, []);
@@ -309,7 +304,7 @@ export default function ManagerDashboard() {
     ]);
   };
 
-  const TABS: { key: 'live' | 'sent' | 'completed'; label: string; count: number }[] = [
+  const TABS: { key: 'live' | 'sent' | 'completed' | 'pickup'; label: string; count: number }[] = [
     { key: 'live',      label: 'Live Orders',         count: liveOrders.length },
     { key: 'sent',      label: 'Sent for Delivery',   count: sentOrders.length },
     { key: 'completed', label: 'Completed',            count: completedOrders.length },
@@ -364,27 +359,23 @@ export default function ManagerDashboard() {
         <View style={s.dateFilterRow}>
           <Text style={s.dateFilterLabel}>Filter by date:</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingRight: 16 }}>
-            <TouchableOpacity
-              style={[s.dateChip, dateFilter === '' && s.dateChipActive]}
-              onPress={() => setDateFilter('')}
-            >
-              <Text style={[s.dateChipTxt, dateFilter === '' && s.dateChipTxtActive]}>All</Text>
+            <TouchableOpacity style={[s.dateChip, dateFilter === todayLabel && s.dateChipActive]} onPress={() => setDateFilter(todayLabel)}>
+              <Text style={[s.dateChipTxt, dateFilter === todayLabel && s.dateChipTxtActive]}>Today - {todayLabel}</Text>
             </TouchableOpacity>
-            {Array.from(new Set(completedOrders.map(o => o.date.split(',')[0].trim()))).map(d => (
-              <TouchableOpacity
-                key={d}
-                style={[s.dateChip, dateFilter === d && s.dateChipActive]}
-                onPress={() => setDateFilter(prev => prev === d ? '' : d)}
-              >
+            {Array.from(new Set(completedOrders.map(o => o.date.split(',')[0].trim()))).filter(d => d !== todayLabel).map(d => (
+              <TouchableOpacity key={d} style={[s.dateChip, dateFilter === d && s.dateChipActive]} onPress={() => setDateFilter(d)}>
                 <Text style={[s.dateChipTxt, dateFilter === d && s.dateChipTxtActive]}>{d}</Text>
               </TouchableOpacity>
             ))}
+            <TouchableOpacity style={[s.dateChip, dateFilter === '' && s.dateChipActive]} onPress={() => setDateFilter('')}>
+              <Text style={[s.dateChipTxt, dateFilter === '' && s.dateChipTxtActive]}>All</Text>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       )}
       {tab === 'completed' && shown.length > 0 && (
         <TouchableOpacity style={s.pdfBtn} onPress={generateSalesPDF}>
-          <Ionicons name="download-outline" size={18} color="#fff" />
+          <Ionicons name="download-outline" size={18} color="#1a1612" />
           <Text style={s.pdfBtnTxt}>Download Sales Report {dateFilter ? '(' + dateFilter + ')' : '(All)'}</Text>
         </TouchableOpacity>
       )}
@@ -422,8 +413,8 @@ const s = StyleSheet.create({
   tabBadgeTxtActive: { color: RED },
   empty:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   emptyTxt:       { fontSize: 16, fontWeight: '700', color: '#1a1612' },
-  pdfBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#b60015', marginHorizontal: 16, marginTop: 12, borderRadius: 12, paddingVertical: 13 },
-  pdfBtnTxt:      { fontSize: 14, fontWeight: '800', color: '#fff' },
+  pdfBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: YELLOW, marginHorizontal: 16, marginTop: 12, borderRadius: 12, paddingVertical: 13, borderWidth: 1.5, borderColor: '#1a1612' },
+  pdfBtnTxt:      { fontSize: 14, fontWeight: '800', color: '#1a1612' },
   dateFilterRow:  { backgroundColor: '#fff', paddingVertical: 10, paddingLeft: 16, borderBottomWidth: 1, borderBottomColor: YELLOW, flexDirection: 'row', alignItems: 'center', gap: 10 },
   dateFilterLabel:{ fontSize: 12, fontWeight: '700', color: '#1a1612', flexShrink: 0 },
   dateChip:       { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: '#f3f3f3', borderWidth: 1, borderColor: '#eee' },
@@ -437,10 +428,15 @@ const c = StyleSheet.create({
   orderBar:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 14, paddingVertical: 9 },
   orderBarLabel: { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
   orderBarNum:   { fontSize: 22, fontWeight: '900', color: '#fff' },
+  payTagWrap:    { alignItems: 'flex-end', paddingHorizontal: 12, paddingTop: 10 },
+  payTag:        { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  payTagOnline:  { backgroundColor: '#22c55e' },
+  payTagCod:     { backgroundColor: '#9a8f8f' },
+  payTagTxt:     { fontSize: 11, fontWeight: '900', color: '#fff', letterSpacing: 0.3 },
   cardDone:     { borderColor: '#22c55e' },
   cardOnWay:    { borderColor: '#f59e0b' },
   cardAssigned: { borderColor: '#3b82f6' },
-  cardHead:     { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
+  cardHead:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 14, paddingTop: 8, gap: 10 },
   typeBadge:    { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 8 },
   badgeDelivery:{ backgroundColor: RED },
   badgePickup:  { backgroundColor: '#1a1612' },

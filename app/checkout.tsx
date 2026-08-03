@@ -101,7 +101,7 @@ export default function Checkout() {
         address: orderType === 'delivery'
           ? `${address1}${address2 ? ', ' + address2 : ''}${city ? ', ' + city : ''}`
           : '',
-        paymentMethod: orderType === 'delivery' ? paymentMethod : null,
+        paymentMethod: orderType === 'delivery' ? paymentMethod : 'online',
         tip: tip ?? 0,
         items: items.map(i => ({
           id: i.id, name: i.name, price: i.price,

@@ -14,11 +14,13 @@ type OrderItem = { id: string; name: string; price: number; quantity: number; ic
 
 type SavedOrder = {
   id: string;
+  orderNumber?: number | null;
   date: string;
   orderType: 'pickup' | 'delivery';
   name: string;
   phone: string;
   address?: string;
+  paymentMethod?: string | null;
   items: OrderItem[];
   total: number;
   status: string;
@@ -30,7 +32,6 @@ type SavedOrder = {
 function statusLabel(order: SavedOrder): { text: string; color: string; icon: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap } {
   if (order.driverStatus === 'delivered')     return { text: 'Delivered',           color: '#22c55e', icon: 'checkmark-circle' };
   if (order.driverStatus === 'on_the_way')    return { text: 'On the Way',          color: '#f59e0b', icon: 'car-sport' };
-  if (order.driverStatus === 'preparing')     return { text: 'Preparing',           color: '#3b82f6', icon: 'flame' };
   if (order.assignedToDriver)                 return { text: 'Driver Assigned',     color: '#3b82f6', icon: 'person' };
   if (order.preparingStatus === 'ready')      return { text: 'Ready for Pickup',    color: '#22c55e', icon: 'checkmark-circle' };
   if (order.preparingStatus === 'preparing')  return { text: 'Preparing',           color: '#3b82f6', icon: 'flame' };
@@ -43,10 +44,7 @@ export default function Orders() {
   const { addToCart, clearCart } = useCart();
   const [orders, setOrders]       = useState<SavedOrder[]>([]);
   const [expanded, setExpanded]   = useState<string | null>(null);
-  const [userPhone, setUserPhone] = useState<string | null>(null);
 
-  // We filter orders by the user's phone stored during checkout
-  // Since we save phone as "+267XXXXXXXX", we can match on that
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, () => {});
     return unsub;
@@ -103,15 +101,21 @@ export default function Orders() {
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 30 }}>
           {orders.map(order => {
             const sl = statusLabel(order);
+            const online = order.paymentMethod === 'online' || order.orderType === 'pickup';
             return (
               <View key={order.id} style={s.card}>
                 <View style={s.orderBar}>
                   <Text style={s.orderBarLabel}>Order</Text>
                   <Text style={s.orderBarNum}>#{order.orderNumber ? String(order.orderNumber).padStart(3, '0') : '--'}</Text>
                 </View>
+                <View style={s.payTagWrap}>
+                  <View style={[s.payTag, online ? s.payTagOnline : s.payTagCod]}>
+                    {online && <Ionicons name="checkmark-circle" size={13} color="#fff" />}
+                    <Text style={s.payTagTxt}>{online ? 'Paid Online' : 'Pay on Delivery'}</Text>
+                  </View>
+                </View>
                 <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(expanded === order.id ? null : order.id)}>
                   <View style={s.cardLeft}>
-
                     <Text style={s.cardDate}>{order.date}</Text>
                     <Text style={s.cardType}>{order.orderType === 'pickup' ? 'Pick Up' : 'Delivery'}</Text>
                     <View style={[s.statusBadge, { backgroundColor: sl.color + '22' }]}>
@@ -165,11 +169,15 @@ const s = StyleSheet.create({
   orderBar:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: RED, paddingHorizontal: 16, paddingVertical: 9 },
   orderBarLabel:{ fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 1 },
   orderBarNum:  { fontSize: 22, fontWeight: '900', color: '#fff' },
-  cardHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
+  payTagWrap:   { alignItems: 'flex-end', paddingHorizontal: 12, paddingTop: 10 },
+  payTag:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  payTagOnline: { backgroundColor: '#22c55e' },
+  payTagCod:    { backgroundColor: '#9a8f8f' },
+  payTagTxt:    { fontSize: 11, fontWeight: '900', color: '#fff', letterSpacing: 0.3 },
+  cardHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 },
   cardLeft:     { gap: 4, flex: 1 },
   cardDate:     { fontSize: 13, color: '#6b6b6b' },
   cardType:     { fontSize: 14, fontWeight: '700', color: '#1a1612' },
-  orderNum:     { fontSize: 15, fontWeight: '900', color: RED, marginBottom: 2 },
   statusBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginTop: 4 },
   statusText:   { fontSize: 12, fontWeight: '700' },
   cardRight:    { alignItems: 'flex-end', gap: 4 },

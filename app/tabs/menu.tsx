@@ -22,7 +22,6 @@ const CATEGORIES = [
   { id: 'starters',  label: 'Starters',            route: '/menu/starters' },
   { id: 'paella',    label: 'Paella',               route: '/menu/paella' },
   { id: 'specials',  label: 'Weekly Specials',      route: '/menu/specials' },
-  { id: 'aperitifs', label: 'Signature Aperitifs',  route: '/menu/aperitifs' },
   { id: 'desserts',  label: 'Desserts',             route: '/menu/desserts' },
 ];
 

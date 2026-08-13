@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef, Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCart } from '../../context/CartContext';
-import { getBotswanaTime, BotswanaTime } from '../../lib/getBotswanaTime';
 import { ref as dbRef, set as dbSet } from 'firebase/database';
 import { db } from '../../lib/firebase';
+import { subscribeSection, MenuItem, DAYS } from '../../lib/menu';
+import { getBotswanaTime } from '../../lib/getBotswanaTime';
 
 class SpecialsErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message: string }> {
   constructor(props: { children: ReactNode }) {
@@ -44,77 +45,20 @@ const { width: SW } = Dimensions.get('window');
 const RED    = '#b60015';
 const YELLOW = '#FFD544';
 
-const SPECIALS = [
-  {
-    id: 'ws1', day: 'Monday',
-    name: 'Beef Bourguignon — Rich Beef Stew',
-    description: 'Cooked beef chunks in red wine sauce...',
-    details: 'Cooked beef chunks in red wine sauce with carrots, onions, bacon/pancetta, and parsley.',
-    price: 150,
-    images: [
-      require('../../assets/images/products/Beef Bourguignon1.jpeg'),
-      require('../../assets/images/products/Beef Bourguignon2.jpeg'),
-      require('../../assets/images/products/Beef Bourguignon3.jpeg'),
-    ],
-  },
-  {
-    id: 'ws2', day: 'Tuesday',
-    name: 'Coq au Vin — Braised Chicken',
-    description: 'Chicken pieces in a glossy red wine...',
-    details: 'Chicken pieces in a glossy red wine with pearl onions, carrots, and herbs.',
-    price: 150,
-    images: [
-      require('../../assets/images/products/Coq au Vin1.jpeg'),
-      require('../../assets/images/products/Coq au Vin2.jpeg'),
-    ],
-  },
-  {
-    id: 'ws3', day: 'Wednesday',
-    name: 'Lamb Cutlets',
-    description: 'Tender lamb cutlets, herb-marinated and grilled...',
-    details: 'Tender lamb cutlets marinated in fresh herbs, garlic, and olive oil, grilled to perfection and served with seasonal sides.',
-    price: 150,
-    images: [
-      require('../../assets/images/products/Lamb Chops1.jpeg'),
-      require('../../assets/images/products/Lamb Chops2.jpeg'),
-    ],
-  },
-  {
-    id: 'ws4', day: 'Thursday',
-    name: 'Garlic Butter Shrimp',
-    description: 'Sautéed prawns in garlic, parsley, and...',
-    details: 'Sautéed prawns in garlic, parsley, and olive oil/butter sauce.',
-    price: 150,
-    images: [
-      require('../../assets/images/products/Garlic Butter Shrimp1.jpeg'),
-      require('../../assets/images/products/Garlic Butter Shrimp2.jpeg'),
-      require('../../assets/images/products/Garlic Butter Shrimp3.jpeg'),
-    ],
-  },
-  {
-    id: 'ws5', day: 'Friday',
-    name: 'Fish of the Day',
-    description: 'Pescado del día, prepared simply with olive oil...',
-    details: 'Pescado del día — prepared simply with olive oil, herbs, and seasonal sides.',
-    price: 150,
-    images: [require('../../assets/images/products/Fish of the day1.jpeg')],
-  },
-  {
-    id: 'ws6', day: 'Saturday',
-    name: 'Zarzuela de Poisson',
-    description: 'Rich Catalan seafood stew made with shrimp...',
-    details: 'Spanish rich Catalan seafood stew made with shrimp, mussels, clams, fish, onions, tomatoes, garlic, and olive oil.',
-    price: 175,
-    images: [require('../../assets/images/products/Zarzuela1.jpeg')],
-  },
-];
+const dayIndex = (d?: string) => {
+  const i = DAYS.indexOf(d || '');
+  return i === -1 ? 99 : i;
+};
 
-function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose: () => void }) {
+function DishModal({ dish, onClose }: { dish: MenuItem | null; onClose: () => void }) {
   const { addToCart, removeFromCart, items } = useCart();
   const [imgIdx, setImgIdx] = useState(0);
+  useEffect(() => { setImgIdx(0); }, [dish?.id]);
   if (!dish) return null;
   const qty = items.find(i => i.id === dish.id)?.quantity ?? 0;
   const inCart = qty > 0;
+  const imgs = dish.images?.length ? dish.images : [];
+  const cartImage = imgs[0] ? { uri: imgs[0] } : undefined;
 
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
@@ -122,13 +66,15 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
         <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
         <View style={modal.sheet}>
           <View style={modal.imageBox}>
-            <Image source={dish.images[imgIdx]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-            {dish.images.length > 1 && (
+            {imgs[imgIdx]
+              ? <Image source={{ uri: imgs[imgIdx] }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+              : <View style={modal.imgEmpty}><Ionicons name="image-outline" size={48} color="#ccc" /></View>}
+            {imgs.length > 1 && (
               <>
                 <TouchableOpacity style={[modal.navBtn, { left: 10 }]} onPress={() => setImgIdx(i => Math.max(0, i - 1))}>
                   <Ionicons name="chevron-back" size={22} color="#fff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={[modal.navBtn, { right: 10 }]} onPress={() => setImgIdx(i => Math.min(dish.images.length - 1, i + 1))}>
+                <TouchableOpacity style={[modal.navBtn, { right: 10 }]} onPress={() => setImgIdx(i => Math.min(imgs.length - 1, i + 1))}>
                   <Ionicons name="chevron-forward" size={22} color="#fff" />
                 </TouchableOpacity>
               </>
@@ -140,14 +86,14 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
           </View>
           <ScrollView contentContainerStyle={modal.body}>
             <Text style={modal.name}>{dish.name}</Text>
-            <Text style={modal.desc}>{dish.details}</Text>
+            <Text style={modal.desc}>{dish.description}</Text>
             <View style={modal.priceRow}>
               <Text style={modal.price}>P {dish.price}.00</Text>
             </View>
             {!inCart ? (
               <TouchableOpacity
                 style={modal.addBtn}
-                onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}
+                onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: cartImage })}
               >
                 <Ionicons name="cart" size={20} color="#1a1612" />
                 <Text style={modal.addBtnTxt}>Add to Cart</Text>
@@ -162,7 +108,7 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
                     <Ionicons name="remove" size={28} color="#1a1612" />
                   </TouchableOpacity>
                   <Text style={modal.qtyText}>{qty}</Text>
-                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: dish.images[0] })}>
+                  <TouchableOpacity style={modal.qtyBtn} onPress={() => addToCart(dish.id, { id: dish.id, name: dish.name, price: dish.price, icon: 'restaurant', image: cartImage })}>
                     <Ionicons name="add" size={28} color="#1a1612" />
                   </TouchableOpacity>
                 </View>
@@ -177,9 +123,12 @@ function DishModal({ dish, onClose }: { dish: typeof SPECIALS[0] | null; onClose
 
 function WeeklySpecialsInner() {
   const router = useRouter();
-  const [activeDish, setActiveDish] = useState<typeof SPECIALS[0] | null>(null);
-  const [bwTime, setBwTime]         = useState<BotswanaTime | null>(null);
-  const [loading, setLoading]       = useState(true);
+  const [dishes, setDishes]           = useState<MenuItem[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [activeDish, setActiveDish]   = useState<MenuItem | null>(null);
+  const [today, setToday]             = useState('');
+  const [isSunday, setIsSunday]       = useState(false);
+  const [timeState, setTimeState]     = useState<'loading' | 'ok' | 'error'>('loading');
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -187,26 +136,41 @@ function WeeklySpecialsInner() {
     return () => { mountedRef.current = false; };
   }, []);
 
-  const fetchTime = useCallback(() => {
+  useEffect(() => {
+    const unsub = subscribeSection('specials', list => { setDishes(list); setDataLoading(false); });
+    return unsub;
+  }, []);
+
+  const fetchTime = useCallback(async () => {
     if (!mountedRef.current) return;
-    const now = new Date();
-    const dow = now.getDay();
-    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    setBwTime({
-      dayOfWeek: dow,
-      dayName: DAYS[dow],
-      hour: now.getHours(),
-      minute: now.getMinutes(),
-      isSunday: dow === 0,
-    });
-    setLoading(false);
+    setTimeState('loading');
+    try {
+      const t = await getBotswanaTime();
+      if (!mountedRef.current) return;
+      setToday(t.dayName);
+      setIsSunday(t.isSunday);
+      setTimeState('ok');
+    } catch {
+      if (!mountedRef.current) return;
+      setToday('');
+      setIsSunday(false);
+      setTimeState('error');
+    }
   }, []);
 
   useEffect(() => { fetchTime(); }, [fetchTime]);
 
-  const isSunday    = bwTime?.isSunday ?? false;
-  const today       = bwTime?.dayName  ?? '';
-  const todayDishes = isSunday ? SPECIALS : SPECIALS.filter(s => s.day === today);
+  const verified = timeState === 'ok';
+  const week = [...dishes].sort((a, b) => dayIndex(a.day) - dayIndex(b.day));
+  const sundayDishes = week.filter(d => d.sundayAvailable !== false);
+  const gridDishes = isSunday ? sundayDishes : week;
+  const todayDishes = verified ? (isSunday ? sundayDishes : week.filter(s => s.day === today)) : [];
+
+  const bannerText =
+    dataLoading || timeState === 'loading' ? 'Verifying date…'
+    : timeState === 'error' ? "Couldn't verify date — tap refresh"
+    : isSunday ? 'Sunday — All Specials!'
+    : `Today: ${today}`;
 
   return (
     <View style={s.container}>
@@ -222,80 +186,96 @@ function WeeklySpecialsInner() {
         <View style={{ width: 70 }} />
       </View>
 
-      <View style={s.dayBanner}>
-        <Ionicons name="calendar" size={16} color="#1a1612" />
-        <Text style={s.dayLabel}>
-          {loading ? 'Loading...' : isSunday ? 'Sunday — All Specials!' : `Today: ${today}`}
-        </Text>
+      <View style={[s.dayBanner, timeState === 'error' && s.dayBannerError]}>
+        <Ionicons name={timeState === 'error' ? 'warning' : 'calendar'} size={16} color={timeState === 'error' ? RED : '#1a1612'} />
+        <Text style={[s.dayLabel, timeState === 'error' && { color: RED }]}>{bannerText}</Text>
         <TouchableOpacity onPress={fetchTime} style={s.refreshBtn}>
           <Ionicons name="refresh" size={16} color={RED} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={s.list}>
-        {/* FULL WEEK CALENDAR */}
-        <Text style={s.weekTitle}>This Week's Menu</Text>
+      {dataLoading ? (
+        <View style={s.center}><ActivityIndicator size="large" color={RED} /></View>
+      ) : (
+        <ScrollView contentContainerStyle={s.list}>
+          <Text style={s.weekTitle}>This Week's Menu</Text>
 
-        {isSunday && (
-          <View style={s.sundayTag}>
-            <Text style={s.sundayTagTxt}>Sunday - All Dishes Available</Text>
+          {verified && isSunday && sundayDishes.length > 0 && (
+            <View style={s.sundayTag}>
+              <Text style={s.sundayTagTxt}>Sunday Specials</Text>
+            </View>
+          )}
+
+          <View style={[s.weekGrid, verified && isSunday && s.weekFrame]}>
+            {gridDishes.map(dish => {
+              const orderable = verified && (isSunday || dish.day === today);
+              const isToday = verified && !isSunday && dish.day === today;
+              return (
+                <View key={dish.id} style={s.weekCellWrap}>
+                  {isToday && (
+                    <View style={s.todayBar}>
+                      <Text style={s.todayBarTxt}>TODAY</Text>
+                    </View>
+                  )}
+                  <TouchableOpacity
+                    style={[s.weekCard, isToday && s.weekCardActive, !orderable && s.weekCardDisabled]}
+                    onPress={() => { if (orderable) setActiveDish(dish); }}
+                    activeOpacity={orderable ? 0.85 : 1}
+                  >
+                    <Text style={[s.weekDay, isToday && s.weekDayActive]}>{(dish.day || '').slice(0, 3).toUpperCase()}</Text>
+                    {dish.images?.[0]
+                      ? <Image source={{ uri: dish.images[0] }} style={s.weekImg} resizeMode="cover" />
+                      : <View style={[s.weekImg, s.weekImgEmpty]}><Ionicons name="image-outline" size={20} color="#ccc" /></View>}
+                    <Text style={[s.weekName, isToday && s.weekNameActive]} numberOfLines={2}>{dish.name}</Text>
+                    <Text style={[s.weekPrice, isToday && s.weekPriceActive]}>P {dish.price}</Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
           </View>
-        )}
 
-        <View style={[s.weekGrid, isSunday && s.weekFrame]}>
-          {SPECIALS.map(dish => {
-            const isToday = !isSunday && dish.day === today;
-            return (
-              <View key={dish.id} style={s.weekCellWrap}>
-                {isToday && (
-                  <View style={s.todayBar}>
-                    <Text style={s.todayBarTxt}>TODAY</Text>
+          {verified && todayDishes.length > 0 && (
+            <>
+              <Text style={s.featuredTitle}>{isSunday ? 'All Specials' : `Today's Special`}</Text>
+              {todayDishes.map(dish => (
+                <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
+                  <View style={s.cardImgWrap}>
+                    {dish.images?.[0]
+                      ? <Image source={{ uri: dish.images[0] }} style={s.cardImg} resizeMode="cover" />
+                      : <View style={[s.cardImg, s.cardImgEmpty]}><Ionicons name="image-outline" size={40} color="#ccc" /></View>}
                   </View>
-                )}
-                <TouchableOpacity
-                  style={[s.weekCard, isToday && s.weekCardActive, !isToday && !isSunday && s.weekCardDisabled]}
-                  onPress={() => { if (isToday || isSunday) setActiveDish(dish); }}
-                  activeOpacity={isToday || isSunday ? 0.85 : 1}
-                >
-                  <Text style={[s.weekDay, isToday && s.weekDayActive]}>{dish.day.slice(0, 3).toUpperCase()}</Text>
-                  <Image source={dish.images[0]} style={s.weekImg} resizeMode="cover" />
-                  <Text style={[s.weekName, isToday && s.weekNameActive]} numberOfLines={2}>{dish.name}</Text>
-                  <Text style={[s.weekPrice, isToday && s.weekPriceActive]}>P {dish.price}</Text>
+                  <View style={s.cardBody}>
+                    <Text style={s.cardDay}>{dish.day}</Text>
+                    <Text style={s.cardName}>{dish.name}</Text>
+                    <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
+                    <Text style={s.cardPrice}>P {dish.price}.00</Text>
+                  </View>
                 </TouchableOpacity>
-              </View>
-            );
-          })}
-        </View>
+              ))}
+            </>
+          )}
 
-        {/* TODAY'S FEATURED DISH */}
-        {!loading && todayDishes.length > 0 && (
-          <>
-            <Text style={s.featuredTitle}>
-              {isSunday ? 'All Specials' : `Today's Special`}
-            </Text>
-            {todayDishes.map(dish => (
-              <TouchableOpacity key={dish.id} style={s.card} onPress={() => setActiveDish(dish)} activeOpacity={0.88}>
-                <View style={s.cardImgWrap}>
-                  <Image source={dish.images[0]} style={s.cardImg} resizeMode="cover" />
-                </View>
-                <View style={s.cardBody}>
-                  <Text style={s.cardDay}>{dish.day}</Text>
-                  <Text style={s.cardName}>{dish.name}</Text>
-                  <Text style={s.cardDesc} numberOfLines={2}>{dish.description}</Text>
-                  <Text style={s.cardPrice}>P {dish.price}.00</Text>
-                </View>
+          {verified && todayDishes.length === 0 && (
+            <View style={s.emptyWrap}>
+              <Ionicons name="moon-outline" size={48} color={RED} />
+              <Text style={s.emptyText}>{isSunday ? 'No specials available today.' : 'No specials today. Check back tomorrow!'}</Text>
+            </View>
+          )}
+
+          {timeState === 'error' && (
+            <View style={s.emptyWrap}>
+              <Ionicons name="cloud-offline-outline" size={48} color={RED} />
+              <Text style={s.emptyText}>Couldn't verify today's date. Ordering is locked until we confirm the date.</Text>
+              <TouchableOpacity style={s.retryBtn} onPress={fetchTime}>
+                <Ionicons name="refresh" size={16} color="#fff" />
+                <Text style={s.retryBtnTxt}>Retry</Text>
               </TouchableOpacity>
-            ))}
-          </>
-        )}
-        {!loading && todayDishes.length === 0 && !isSunday && (
-          <View style={s.emptyWrap}>
-            <Ionicons name="moon-outline" size={48} color={RED} />
-            <Text style={s.emptyText}>No specials today. Check back tomorrow!</Text>
-          </View>
-        )}
-        <View style={{ height: 60 }} />
-      </ScrollView>
+            </View>
+          )}
+
+          <View style={{ height: 60 }} />
+        </ScrollView>
+      )}
 
       <DishModal dish={activeDish} onClose={() => setActiveDish(null)} />
     </View>
@@ -311,10 +291,14 @@ const s = StyleSheet.create({
   title:        { fontSize: 18, fontWeight: '800', color: '#1a1612', textAlign: 'center' },
   subtitle:     { fontSize: 11, color: RED, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
   dayBanner:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, marginBottom: 4, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1, borderColor: YELLOW },
+  dayBannerError:{ borderColor: RED, backgroundColor: '#fff5f5' },
   dayLabel:     { flex: 1, fontSize: 14, fontWeight: '700', color: '#1a1612' },
   refreshBtn:   { padding: 4 },
+  center:       { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   emptyWrap:    { alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24, paddingVertical: 32 },
   emptyText:    { fontSize: 15, fontWeight: '600', color: '#1a1612', textAlign: 'center' },
+  retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: RED, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 10 },
+  retryBtnTxt:  { fontSize: 14, fontWeight: '800', color: '#fff' },
   weekTitle:    { fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 4 },
   featuredTitle:{ fontSize: 15, fontWeight: '800', color: '#1a1612', marginBottom: 12, marginTop: 8 },
   weekGrid:     { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'stretch', gap: 10, marginBottom: 20 },
@@ -328,6 +312,7 @@ const s = StyleSheet.create({
   weekCardActive:{ borderWidth: 2, borderColor: RED, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
   weekCardDisabled:{ opacity: 0.55 },
   weekImg:      { width: '100%', height: 64, marginBottom: 6 },
+  weekImgEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5eec9' },
   weekDay:      { fontSize: 9, fontWeight: '900', color: '#aaa', letterSpacing: 1, marginTop: 8, marginBottom: 2 },
   weekDayActive:{ color: RED },
   weekName:     { fontSize: 11, fontWeight: '700', color: '#1a1612', textAlign: 'center', paddingHorizontal: 6, lineHeight: 15, minHeight: 30 },
@@ -338,8 +323,9 @@ const s = StyleSheet.create({
   card:         { backgroundColor: '#fff', borderRadius: 18, marginBottom: 20, overflow: 'hidden', elevation: 2 },
   cardImgWrap:  { width: '100%', height: Math.round((SW - 40) * 0.6) },
   cardImg:      { width: '100%', height: '100%' },
+  cardImgEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5eec9' },
   cardBody:     { padding: 16 },
-  cardDay:      { fontSize: 11, fontWeight: '700', color: RED, marginBottom: 2, textTransform: 'uppercase', letterSpacing:1 },
+  cardDay:      { fontSize: 11, fontWeight: '700', color: RED, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 1 },
   cardName:     { fontSize: 17, fontWeight: '800', color: '#1a1612', marginBottom: 4 },
   cardDesc:     { fontSize: 13, color: '#6b6b6b', lineHeight: 19, marginBottom: 8 },
   cardPrice:    { fontSize: 16, fontWeight: '800', color: RED },
@@ -349,6 +335,7 @@ const modal = StyleSheet.create({
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%' },
   imageBox:     { width: SW, height: SW, backgroundColor: '#eee', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden' },
+  imgEmpty:     { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   navBtn:       { position: 'absolute', top: '50%', marginTop: -22, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 22, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   backBtn:      { position: 'absolute', top: 14, right: 14, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, elevation: 6, zIndex: 10 },
   backBtnText:  { fontSize: 14, fontWeight: '700', color: '#1a1612' },
@@ -360,7 +347,7 @@ const modal = StyleSheet.create({
   addBtn:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16, marginBottom: 24 },
   addBtnTxt:    { fontSize: 16, fontWeight: '800', color: '#1a1612' },
   cartControls: { gap: 10, marginBottom: 28 },
-  removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical:14 },
+  removeBtn:    { alignItems: 'center', justifyContent: 'center', backgroundColor: RED, borderRadius: 14, paddingVertical: 14 },
   removeBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
   qtyRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 28, backgroundColor: YELLOW, borderRadius: 14, paddingVertical: 16 },
   qtyBtn:       { padding: 12 },

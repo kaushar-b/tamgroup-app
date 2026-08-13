@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useRouter } from 'expo-router';
@@ -356,6 +356,15 @@ export default function ManagerDashboard() {
             </TouchableOpacity>
           ))}
         </View>
+        <View style={s.tabRow}>
+          <TouchableOpacity style={s.chefBtn} onPress={() => router.push('/ManageMyApp/kitchen')}>
+            <MaterialCommunityIcons name="chef-hat" size={30} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity style={s.mgmtBtn} onPress={() => router.push('/ManageMyApp/menu-manager')}>
+            <MaterialCommunityIcons name="silverware-fork-knife" size={20} color="#fff" />
+            <Text style={s.mgmtBtnTxt}>Manage Menu</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {tab === 'completed' && (
@@ -424,6 +433,9 @@ const s = StyleSheet.create({
   dateChipActive: { backgroundColor: RED, borderColor: RED },
   dateChipTxt:    { fontSize: 12, fontWeight: '700', color: '#6b6b6b' },
   dateChipTxtActive:{ color: '#fff' },
+  chefBtn:        { width: 60, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.1)' },
+  mgmtBtn:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 10, borderRadius: 10, backgroundColor: RED },
+  mgmtBtnTxt:     { fontSize: 14, fontWeight: '800', color: '#fff' },
 });
 
 const c = StyleSheet.create({
@@ -460,7 +472,7 @@ const c = StyleSheet.create({
   infoRow:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
   infoTxt:      { fontSize: 13, color: '#6b6b6b', flex: 1 },
   actionBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, padding: 14, borderRadius: 12, backgroundColor: RED },
-  actionTxt:    { fontSize: 14, fontWeight: '800', color: '#fff' },
+  actionTxt:    { fontSize: 14, fontWeight: '800', color: '#221111' },
   sentNote:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: '#dbeafe' },
   sentNoteTxt:  { fontSize: 13, color: '#1d4ed8', flex: 1 },
   deleteBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, padding: 12, borderRadius: 12, backgroundColor: '#6b6b6b' },

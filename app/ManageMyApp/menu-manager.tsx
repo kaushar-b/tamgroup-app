@@ -36,7 +36,7 @@ export default function MenuManager() {
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={s.backBtn} onPress={() => router.replace('/ManageMyApp/dashboard')}>
           <Ionicons name="arrow-back" size={24} color={DARK} />
           <Text style={s.backText}>Back</Text>
         </TouchableOpacity>

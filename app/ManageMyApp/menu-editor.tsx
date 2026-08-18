@@ -79,6 +79,7 @@ export default function MenuEditor() {
   const [group, setGroup] = useState<'main' | 'salads'>('main');
   const [day, setDay]     = useState<string>('Monday');
   const [sundayAvailable, setSundayAvailable] = useState(true);
+  const [available, setAvailable] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved]   = useState(false);
   const createdAt = useRef<number | undefined>(undefined);
@@ -97,6 +98,7 @@ export default function MenuEditor() {
         if (v.group) setGroup(v.group);
         if (v.day) setDay(v.day);
         if (v.sundayAvailable !== undefined) setSundayAvailable(v.sundayAvailable !== false);
+        if (v.available !== undefined) setAvailable(v.available !== false);
         createdAt.current = v.createdAt;
         sortOrder.current = v.sortOrder;
       }
@@ -133,7 +135,7 @@ export default function MenuEditor() {
       await saveMenuItem(section, {
         id: idRef.current, name, description: desc, price: priceNum,
         images: finalImages, sortOrder: sortOrder.current, createdAt: createdAt.current,
-        group, day, sundayAvailable,
+        group, day, sundayAvailable, available,
       });
       setImages(finalImages);
       setSaving(false);
@@ -191,6 +193,19 @@ export default function MenuEditor() {
 
         <Text style={styles.label}>Price (P)</Text>
         <TextInput style={styles.input} value={price} onChangeText={setPrice} placeholder="150" placeholderTextColor="#c0a9a9" keyboardType="number-pad" />
+        <Text style={styles.label}>Availability</Text>
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleTextWrap}>
+            <Text style={styles.toggleTitle}>Show on menu</Text>
+            <Text style={styles.toggleSub}>Off = hidden from customers completely</Text>
+          </View>
+          <Switch
+            value={available}
+            onValueChange={setAvailable}
+            trackColor={{ false: '#ccc', true: GREEN }}
+            thumbColor="#fff"
+          />
+        </View>
 
         {section === 'starters' && (
           <>

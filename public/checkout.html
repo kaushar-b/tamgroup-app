@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casa Del Sol - Secure Payment</title>
+  <style>
+    :root { --red: #b60015; --yellow: #FFD544; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f5f5f5; color: #1a1612; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 48px; }
+    .head { text-align: center; margin-bottom: 18px; }
+    .head h1 { font-size: 20px; margin: 0 0 4px; color: var(--red); }
+    .head p { margin: 0; font-size: 13px; color: #6b6b6b; }
+    .amount { text-align: center; font-size: 28px; font-weight: 800; margin: 8px 0 20px; }
+    #buttonPaymentListContainer { margin-bottom: 12px; }
+    #embeddedPaymentContainer { min-height: 200px; margin-bottom: 16px; }
+    #status { text-align: center; font-size: 14px; padding: 12px; border-radius: 10px; margin-top: 12px; display: none; }
+    .status-loading { background: #fff8dd; color: #7a6a00; display: block !important; }
+    .status-error { background: #ffe5e8; color: var(--red); display: block !important; }
+    .status-ok { background: #e6f9ec; color: #15803d; display: block !important; }
+    .spinner { text-align: center; padding: 40px; color: #6b6b6b; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <h1>Casa Del Sol</h1>
+      <p>Secure payment powered by Cybersource</p>
+    </div>
+    <div class="amount" id="amountLabel">P -</div>
+
+    <div id="spinner" class="spinner">Loading secure payment...</div>
+    <div id="buttonPaymentListContainer"></div>
+    <div id="embeddedPaymentContainer"></div>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const params    = new URLSearchParams(window.location.search);
+    const orderId   = params.get('orderId') || '';
+    const amount    = params.get('amount')  || '1.00';
+    const CREATE_CC = 'https://us-central1-tam-app-2674c.cloudfunctions.net/createCaptureContext';
+    const CONFIRM   = 'https://us-central1-tam-app-2674c.cloudfunctions.net/confirmPayment';
+
+    document.getElementById('amountLabel').textContent = 'P ' + amount;
+
+    const statusEl  = document.getElementById('status');
+    const spinnerEl = document.getElementById('spinner');
+    function setStatus(msg, kind) { statusEl.className = 'status-' + kind; statusEl.textContent = msg; }
+
+    function notifyApp(result) {
+      try { if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify(result)); } catch (e) {}
+      const rp = new URLSearchParams(result);
+      setTimeout(() => { window.location.href = 'casapay://return?' + rp.toString(); }, 1200);
+    }
+
+    async function start() {
+      try {
+        const ccRes = await fetch(CREATE_CC, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount })
+        });
+        if (!ccRes.ok) throw new Error('capture context failed');
+        const captureContext = (await ccRes.text()).trim();
+
+        const payload = JSON.parse(atob(captureContext.split('.')[1]));
+        const clientLib = payload.ctx[0].data.clientLibrary;
+        const integrity = payload.ctx[0].data.clientLibraryIntegrity;
+
+        await new Promise((resolve, reject) => {
+          const sc = document.createElement('script');
+          sc.src = clientLib;
+          sc.integrity = integrity;
+          sc.crossOrigin = 'anonymous';
+          sc.onload = resolve;
+          sc.onerror = () => reject(new Error('SDK load failed'));
+          document.head.appendChild(sc);
+        });
+
+        const accept = await window.Accept(captureContext);
+        const up = await accept.unifiedPayments(false); // false = embedded (two containers)
+
+        spinnerEl.style.display = 'none';
+
+        const showArgs = {
+          containers: {
+            paymentSelection: '#buttonPaymentListContainer',
+            paymentScreen:    '#embeddedPaymentContainer'
+          }
+        };
+        const showResult = await up.show(showArgs);
+        console.log('SHOW RESULT type:', typeof showResult, showResult);
+
+        // The transient token may be the string itself, or nested in an object.
+        let transientToken = showResult;
+        if (showResult && typeof showResult === 'object') {
+          transientToken = showResult.transientToken || showResult.token || showResult.jwt || showResult.id || '';
+        }
+        console.log('TOKEN length:', (transientToken || '').length);
+
+        if (!transientToken) { throw new Error('No transient token returned from show()'); }
+
+        setStatus('Processing payment...', 'loading');
+
+        const confRes = await fetch(CONFIRM, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transientToken, orderId, amount })
+        });
+        const conf = await confRes.json();
+
+        if (conf.paid) {
+          setStatus('Payment successful! Returning to app...', 'ok');
+          notifyApp({ status: 'success', orderId });
+        } else {
+          setStatus('Payment declined. Please try another card.', 'error');
+          notifyApp({ status: 'declined', orderId });
+        }
+      } catch (err) {
+        spinnerEl.style.display = 'none';
+        setStatus('Payment could not be completed. ' + (err.message || ''), 'error');
+        console.error('CHECKOUT ERROR:', err);
+        notifyApp({ status: 'error', orderId, message: err.message || '' });
+      }
+    }
+
+    start();
+  </script>
+</body>
+</html>

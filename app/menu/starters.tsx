@@ -111,7 +111,7 @@ export default function Starters() {
   }, []);
 
   const q = search.toLowerCase();
-  const filtered = dishes.filter(d => d.name.toLowerCase().includes(q));
+  const filtered = dishes.filter(d => d.available !== false && d.name.toLowerCase().includes(q));
   const mains  = filtered.filter(d => d.group !== 'salads');
   const salads = filtered.filter(d => d.group === 'salads');
 

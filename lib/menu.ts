@@ -24,6 +24,7 @@ export type MenuItem = {
   group?: 'main' | 'salads'; // starters only
   day?: string;              // specials only
   sundayAvailable?: boolean; // specials only — controls the Sunday all-specials view
+  available?: boolean;       // all sections — false = hidden from customers
 };
 
 // Live subscription to one section, sorted. Returns an unsubscribe function.
@@ -43,6 +44,7 @@ export function subscribeSection(section: Section, cb: (items: MenuItem[]) => vo
         group: v.group,
         day: v.day,
         sundayAvailable: v.sundayAvailable,
+        available: v.available,
       });
     });
     items.sort((a, b) => (a.sortOrder - b.sortOrder) || (a.createdAt - b.createdAt));
@@ -67,7 +69,7 @@ export async function uploadMenuImage(section: Section, itemId: string, localUri
 export async function saveMenuItem(section: Section, item: {
   id: string; name: string; description: string; price: number;
   images: string[]; sortOrder?: number; createdAt?: number;
-  group?: 'main' | 'salads'; day?: string; sundayAvailable?: boolean;
+  group?: 'main' | 'salads'; day?: string; sundayAvailable?: boolean; available?: boolean;
 }) {
   const payload: any = {
     name: item.name.trim(),
@@ -76,6 +78,7 @@ export async function saveMenuItem(section: Section, item: {
     images: item.images,
     sortOrder: item.sortOrder ?? Date.now(),
     createdAt: item.createdAt ?? Date.now(),
+    available: item.available !== false, // default true
   };
   if (section === 'starters') payload.group = item.group ?? 'main';
   if (section === 'specials') {

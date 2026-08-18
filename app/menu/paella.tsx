@@ -93,7 +93,7 @@ export default function Paella() {
     return unsub;
   }, []);
 
-  const filtered = dishes.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = dishes.filter(d => d.available !== false && d.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <View style={s.container}>

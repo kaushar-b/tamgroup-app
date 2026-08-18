@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "tam-app-2674c"
-  }
+  },
+  "targets": {
+    "tam-app-2674c": {
+      "hosting": {
+        "tam-app-2674c": [
+          "tam-app-2674c"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -161,7 +161,7 @@ function WeeklySpecialsInner() {
   useEffect(() => { fetchTime(); }, [fetchTime]);
 
   const verified = timeState === 'ok';
-  const week = [...dishes].sort((a, b) => dayIndex(a.day) - dayIndex(b.day));
+  const week = [...dishes].filter(d => d.available !== false).sort((a, b) => dayIndex(a.day) - dayIndex(b.day));
   const sundayDishes = week.filter(d => d.sundayAvailable !== false);
   const gridDishes = isSunday ? sundayDishes : week;
   const todayDishes = verified ? (isSunday ? sundayDishes : week.filter(s => s.day === today)) : [];

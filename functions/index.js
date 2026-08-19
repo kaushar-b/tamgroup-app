@@ -95,6 +95,41 @@ exports.createCaptureContext = onRequest(
   }
 );
 
+// TEMP: capture full request/response detail for Absa support.
+exports.diagPayment = onRequest(
+  { secrets: [CYBS_MERCHANT_ID, CYBS_KEY_ID, CYBS_SHARED_SECRET], cors: true },
+  async (req, res) => {
+    const merchantId = CYBS_MERCHANT_ID.value();
+    const resource = "/pts/v2/payments";
+    const bodyObj = {
+      clientReferenceInformation: { code: "DIAGTEST" },
+      processingInformation: { capture: true, commerceIndicator: "internet" },
+      paymentInformation: { card: { number: "4111111111111111", expirationMonth: "12", expirationYear: "2031", securityCode: "123" } },
+      orderInformation: {
+        amountDetails: { totalAmount: "100.00", currency: "BWP" },
+        billTo: { firstName: "Test", lastName: "User", address1: "1 Main St", locality: "Gaborone", administrativeArea: "SE", postalCode: "0000", country: "BW", email: "test@example.com", phoneNumber: "71000000" }
+      }
+    };
+    try {
+      const r = await cybsRequest({
+        method: "post", resource, bodyObj,
+        merchantId, keyId: CYBS_KEY_ID.value(), sharedSecret: CYBS_SHARED_SECRET.value(),
+      });
+      res.status(200).json({ ok: true, requestUrl: `https://${CYBS_HOST}${resource}`, merchantId, status: r.data?.status, response: r.data });
+    } catch (err) {
+      res.status(200).json({
+        ok: false,
+        requestUrl: `https://${CYBS_HOST}${resource}`,
+        merchantId,
+        httpStatus: err.response?.status,
+        responseHeaders: err.response?.headers,
+        responsePayload: err.response?.data,
+        correlationId: err.response?.headers?.["v-c-correlation-id"] || err.response?.headers?.["v-c-lb-correlation-id"] || null,
+      });
+    }
+  }
+);
+
 // Function 2: confirm payment
 exports.confirmPayment = onRequest(
   { secrets: [CYBS_MERCHANT_ID, CYBS_KEY_ID, CYBS_SHARED_SECRET], cors: true },

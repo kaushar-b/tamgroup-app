@@ -15,7 +15,7 @@ Appearance.setColorScheme('light');
 // To change driver email:  update DRIVER_EMAIL below
 // Passwords are managed in Firebase Authentication console
 const MANAGER_EMAIL = 'casadelsol.bw@gmail.com';
-const DRIVER_EMAIL  = 'web.expert.remote@gmail.com';
+const DRIVER_EMAIL  = 'contact.casadelsol.bw@gmail.com';
 // ──────────────────────────────────────────────────────────────
 
 // ─── BACKGROUND NOTIFICATION TASK ─────────────────────────────
